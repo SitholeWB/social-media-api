@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.4.3" />
+  </ItemGroup>
+
 </Project>

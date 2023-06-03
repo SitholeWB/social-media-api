@@ -1,4 +1,4 @@
-﻿namespace SocialMediaApi.Models.Entities.JsonEntities
+﻿namespace SocialMediaApi.Domain.Entities.JsonEntities
 {
     public class Reaction
     {

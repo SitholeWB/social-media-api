@@ -1,7 +1,7 @@
-﻿using SocialMediaApi.Models.Entities.JsonEntities;
-using SocialMediaApi.Models.Enums;
+﻿using SocialMediaApi.Domain.Entities.JsonEntities;
+using SocialMediaApi.Domain.Enums;
 
-namespace SocialMediaApi.Models.Entities.Base
+namespace SocialMediaApi.Domain.Entities.Base
 {
     public abstract class BasePost
     {

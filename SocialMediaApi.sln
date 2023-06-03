@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Services", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Interfaces", "SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj", "{DDEF53A0-B8FA-43E6-99B2-F2A0793D6883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Models", "SocialMediaApi.Models\SocialMediaApi.Models.csproj", "{31193B31-F4C3-488A-8899-CB1700525DA2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Domain", "SocialMediaApi.Domain\SocialMediaApi.Domain.csproj", "{31193B31-F4C3-488A-8899-CB1700525DA2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Repositories", "SocialMediaApi.Repositories\SocialMediaApi.Repositories.csproj", "{769022AF-085D-471C-A4F0-31ACFD8F2D25}"
 EndProject

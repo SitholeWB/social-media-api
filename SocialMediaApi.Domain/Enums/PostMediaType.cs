@@ -1,4 +1,4 @@
-﻿namespace SocialMediaApi.Models.Enums
+﻿namespace SocialMediaApi.Domain.Enums
 {
     public enum PostMediaType
     {

@@ -1,6 +1,6 @@
-﻿using SocialMediaApi.Models.Entities.Base;
+﻿using SocialMediaApi.Domain.Entities.Base;
 
-namespace SocialMediaApi.Models.Entities
+namespace SocialMediaApi.Domain.Entities
 {
     public class GroupPost : BasePost
     {

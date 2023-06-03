@@ -1,4 +1,4 @@
-﻿namespace SocialMediaApi.Models.Entities.Base
+﻿namespace SocialMediaApi.Domain.Entities.Base
 {
     public class BaseUser
     {

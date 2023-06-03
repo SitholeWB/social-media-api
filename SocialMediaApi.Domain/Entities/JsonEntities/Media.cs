@@ -1,7 +1,7 @@
-﻿using SocialMediaApi.Models.Enums;
+﻿using SocialMediaApi.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace SocialMediaApi.Models.Entities.JsonEntities
+namespace SocialMediaApi.Domain.Entities.JsonEntities
 {
     public class Media
     {
