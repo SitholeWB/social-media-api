@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Repositories;
 using SocialMediaApi.Services;
+using System.Text.Json;
 
 namespace SocialMediaApi
 {
@@ -16,6 +19,7 @@ namespace SocialMediaApi
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +29,19 @@ namespace SocialMediaApi
 
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            app.UseExceptionHandler(a => a.Run(async context =>
+            {
+                var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                var exception = exceptionHandlerPathFeature.Error;
+                if (exception is SocialMediaException)
+                {
+                    var result = JsonSerializer.Serialize(new { error = exception.Message });
+                    context.Response.ContentType = "application/json";
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsync(result);
+                }
+            }));
 
             app.UseHttpsRedirection();
 

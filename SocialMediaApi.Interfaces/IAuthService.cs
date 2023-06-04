@@ -1,4 +1,6 @@
-﻿using SocialMediaApi.Domain.Entities.Base;
+﻿// Ignore Spelling: Auth
+
+using SocialMediaApi.Domain.Entities.Base;
 
 namespace SocialMediaApi.Interfaces
 {
