@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using SocialMediaApi.Domain.Common;
 using System.Runtime.Serialization;
 
 namespace SocialMediaApi.Domain.Exceptions

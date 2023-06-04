@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>
@@ -23,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SocialMediaApi.Data\SocialMediaApi.Data.csproj" />
     <ProjectReference Include="..\SocialMediaApi.Domain\SocialMediaApi.Domain.csproj" />
     <ProjectReference Include="..\SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj" />
-    <ProjectReference Include="..\SocialMediaApi.Repositories\SocialMediaApi.Repositories.csproj" />
-    <ProjectReference Include="..\SocialMediaApi.Services\SocialMediaApi.Services.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Logic\SocialMediaApi.Logic.csproj" />
   </ItemGroup>
 
 </Project>

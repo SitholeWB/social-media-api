@@ -1,9 +1,10 @@
+using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Interfaces;
-using SocialMediaApi.Repositories;
-using SocialMediaApi.Services;
+using SocialMediaApi.Logic.Services;
 using System.Text.Json;
 
 namespace SocialMediaApi
@@ -24,7 +25,12 @@ namespace SocialMediaApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssemblyContaining<Program>();
+                cfg.Lifetime = ServiceLifetime.Transient;
+                cfg.NotificationPublisher = new ForeachAwaitPublisher();
+            });
             var app = builder.Build();
 
             app.UseSwagger();
@@ -33,7 +39,7 @@ namespace SocialMediaApi
             app.UseExceptionHandler(a => a.Run(async context =>
             {
                 var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-                var exception = exceptionHandlerPathFeature.Error;
+                var exception = exceptionHandlerPathFeature?.Error;
                 if (exception is SocialMediaException)
                 {
                     var result = JsonSerializer.Serialize(new { error = exception.Message });

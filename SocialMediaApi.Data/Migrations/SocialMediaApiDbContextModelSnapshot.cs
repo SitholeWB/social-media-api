@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SocialMediaApi.Repositories;
+using SocialMediaApi.Data;
 
 #nullable disable
 
 namespace SocialMediaApi.Repositories.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230604144346_initial")]
-    partial class initial
+    partial class SocialMediaApiDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

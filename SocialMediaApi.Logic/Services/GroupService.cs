@@ -1,25 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Pagination.EntityFrameworkCore.Extensions;
+using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Mappers;
+using SocialMediaApi.Domain.Models.Events;
 using SocialMediaApi.Domain.Models.Group;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
-using SocialMediaApi.Repositories;
 
-namespace SocialMediaApi.Services
+namespace SocialMediaApi.Logic.Services
 {
     public class GroupService : IGroupService
     {
         private readonly SocialMediaApiDbContext _dbContext;
         private readonly IAuthService _authService;
+        private readonly IMediator _publisher;
 
-        public GroupService(SocialMediaApiDbContext dbContext, IAuthService authService)
+        public GroupService(SocialMediaApiDbContext dbContext, IAuthService authService, IMediator publisher)
         {
             _dbContext = dbContext;
             _authService = authService;
+            _publisher = publisher;
         }
 
         public async Task<GroupViewModel> AddGroupAsync(AddGroupModel model)
@@ -41,6 +45,7 @@ namespace SocialMediaApi.Services
             };
             var addedEntity = await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
+            await _publisher.Publish(new AddGroupEvent { Group = addedEntity.Entity });
             return GroupMapper.ToView(addedEntity.Entity)!;
         }
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialMediaApi.Domain.Entities;
 
-namespace SocialMediaApi.Repositories
+namespace SocialMediaApi.Data
 {
     public class SocialMediaApiDbContext : DbContext
     {

@@ -1,7 +1,7 @@
 ﻿using SocialMediaApi.Domain.Entities.Base;
 using SocialMediaApi.Interfaces;
 
-namespace SocialMediaApi.Services
+namespace SocialMediaApi.Logic.Services
 {
     public class AuthService : IAuthService
     {
