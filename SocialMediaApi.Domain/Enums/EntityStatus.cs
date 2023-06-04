@@ -1,6 +1,6 @@
 ﻿namespace SocialMediaApi.Domain.Enums
 {
-    public enum PostState
+    public enum EntityStatus
     {
         None = 0,
         Processing = 1,

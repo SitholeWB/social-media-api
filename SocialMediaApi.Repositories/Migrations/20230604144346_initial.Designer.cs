@@ -12,7 +12,7 @@ using SocialMediaApi.Repositories;
 namespace SocialMediaApi.Repositories.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230604122416_initial")]
+    [Migration("20230604144346_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -38,15 +38,15 @@ namespace SocialMediaApi.Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PostState")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -65,14 +65,14 @@ namespace SocialMediaApi.Repositories.Migrations
                     b.Property<int>("Downloads")
                         .HasColumnType("int");
 
+                    b.Property<int>("EntityStatus")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("PostState")
-                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");

@@ -10,8 +10,8 @@ namespace SocialMediaApi.Repositories
             Database.Migrate();
         }
 
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<GroupPost> GroupPosts { get; set; }
+        public DbSet<Group> Groups { get; set; } = default!;
+        public DbSet<GroupPost> GroupPosts { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

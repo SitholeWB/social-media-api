@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using SocialMediaApi.Interfaces;
 using SocialMediaApi.Repositories;
+using SocialMediaApi.Services;
 
 namespace SocialMediaApi
 {
@@ -14,6 +16,7 @@ namespace SocialMediaApi
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IGroupService, GroupService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

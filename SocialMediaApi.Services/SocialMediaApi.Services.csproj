@@ -11,4 +11,10 @@
     <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.4.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SocialMediaApi.Domain\SocialMediaApi.Domain.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Repositories\SocialMediaApi.Repositories.csproj" />
+  </ItemGroup>
+
 </Project>

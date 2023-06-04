@@ -18,7 +18,7 @@ namespace SocialMediaApi.Repositories.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostState = table.Column<int>(type: "int", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -34,7 +34,7 @@ namespace SocialMediaApi.Repositories.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostState = table.Column<int>(type: "int", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ThumbnailUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Downloads = table.Column<int>(type: "int", nullable: false),

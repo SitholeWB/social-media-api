@@ -9,7 +9,7 @@ namespace SocialMediaApi.Domain.ViewModels
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public BaseUser Creator { get; set; } = new BaseUser();
-        public PostState PostState { get; set; }
+        public EntityStatus PostState { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
     }

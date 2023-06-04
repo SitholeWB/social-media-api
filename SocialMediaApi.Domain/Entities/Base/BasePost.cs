@@ -7,7 +7,7 @@ namespace SocialMediaApi.Domain.Entities.Base
     {
         public Guid Id { get; set; }
         public BaseUser Creator { get; set; } = new BaseUser();
-        public PostState PostState { get; set; }
+        public EntityStatus EntityStatus { get; set; }
         public string? Text { get; set; }
         public string? ThumbnailUrl { get; set; }
         public int Downloads { get; set; } = 0;

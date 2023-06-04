@@ -9,14 +9,14 @@ namespace SocialMediaApi.Domain.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = default!;
 
         public string Description { get; set; } = string.Empty;
         public BaseUser Creator { get; set; } = new BaseUser();
-        public PostState PostState { get; set; }
+        public EntityStatus EntityStatus { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
 
-        public virtual ICollection<GroupPost> Posts { get; set; }
+        public virtual ICollection<GroupPost> Posts { get; set; } = default!;
     }
 }
