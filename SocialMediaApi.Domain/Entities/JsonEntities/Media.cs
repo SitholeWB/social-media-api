@@ -11,8 +11,6 @@ namespace SocialMediaApi.Domain.Entities.JsonEntities
 
     public class Content
     {
-        public Guid Id { get; set; }
-
         [Required]
         public string Url { get; set; } = string.Empty;
 

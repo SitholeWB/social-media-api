@@ -5,6 +5,11 @@ namespace SocialMediaApi.Repositories
 {
     public class SocialMediaApiDbContext : DbContext
     {
+        public SocialMediaApiDbContext(DbContextOptions<SocialMediaApiDbContext> options) : base(options)
+        {
+            Database.Migrate();
+        }
+
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupPost> GroupPosts { get; set; }
 
@@ -24,15 +29,13 @@ namespace SocialMediaApi.Repositories
                 groupPost => groupPost.Media, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
-                    ownedNavigationBuilder.OwnsMany(media => media.Content, mediaOwnedNavigationBuilder =>
-                    {
-                        mediaOwnedNavigationBuilder.ToJson();
-                    });
+                    ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
             modelBuilder.Entity<GroupPost>().OwnsOne(
                 groupPost => groupPost.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
+                    ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
         }
     }

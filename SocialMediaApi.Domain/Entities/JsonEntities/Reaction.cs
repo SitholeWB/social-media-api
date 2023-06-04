@@ -4,7 +4,6 @@
     {
         public int ReactionsCount { get; set; } = 0;
 
-        // <Emoji, count>
-        public IDictionary<string, int> Reactions { get; set; } = new Dictionary<string, int>();
+        public IList<Emoji> Emojis { get; set; } = new List<Emoji>();
     }
 }

@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using SocialMediaApi.Repositories;
+
 namespace SocialMediaApi
 {
     public class Program
@@ -5,6 +8,8 @@ namespace SocialMediaApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<SocialMediaApiDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("WebApiContext") ?? throw new InvalidOperationException("Connection string 'WebApiContext' not found.")));
 
             // Add services to the container.
 
