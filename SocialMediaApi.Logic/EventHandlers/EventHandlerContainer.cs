@@ -27,7 +27,7 @@ namespace SocialMediaApi.Logic.EventHandlers
             _mappings[name].Add(typeof(THandler));
         }
 
-        public static void Unsubscribe<T, THandler>()
+        public static void UnSubscribe<T, THandler>()
             where T : EventBase
             where THandler : IEventHandler<T>
         {
@@ -83,7 +83,7 @@ namespace SocialMediaApi.Logic.EventHandlers
             return Task.CompletedTask;
         }
 
-        public async void RunAndForget<T>(IEventHandler<T> handler, T o) where T : EventBase
+        private static async void RunAndForget<T>(IEventHandler<T> handler, T o) where T : EventBase
         {
             await handler.RunAsync(o);
         }
