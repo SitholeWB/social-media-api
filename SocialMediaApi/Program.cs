@@ -1,4 +1,3 @@
-using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using SocialMediaApi.Data;
@@ -22,15 +21,13 @@ namespace SocialMediaApi
             builder.Services.AddControllers();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddNotificationHandlers();
+            builder.Services.AddEventSubscriptions();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblyContaining<Program>();
-                cfg.Lifetime = ServiceLifetime.Transient;
-                cfg.NotificationPublisher = new ForeachAwaitPublisher();
-            });
+
             var app = builder.Build();
 
             app.UseSwagger();
