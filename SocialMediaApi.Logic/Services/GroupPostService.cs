@@ -1,4 +1,5 @@
-﻿using Pagination.EntityFrameworkCore.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.JsonEntities;
@@ -65,7 +66,16 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteGroupPostAsync(Guid groupId, Guid id)
         {
-            throw new NotImplementedException();
+            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var authUser = await _authService.GetAuthorizedUser();
+            if (!authUser.Id.Equals(groupPost.Creator.Id))
+            {
+                throw new SocialMediaException("Post can only be deleted by the creator.");
+            }
+            groupPost.EntityStatus = EntityStatus.Deleted;
+            _dbContext.GroupPosts.Update(groupPost);
+            await _dbContext.SaveChangesAsync();
+            await _publisher.PublishAsync(new DeleteGroupPostEvent { GroupPost = groupPost });
         }
 
         public Task<GroupPostViewModel> GetGroupPostAsync(Guid groupId, Guid id)
