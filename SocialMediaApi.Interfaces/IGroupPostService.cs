@@ -12,7 +12,7 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeleteGroupPostAsync(Guid groupId, Guid id);
 
-        public Task<GroupPostViewModel> GetGroupPostAsync(Guid groupId, Guid id);
+        public Task<GroupPostViewModel?> GetGroupPostAsync(Guid groupId, Guid id);
 
         public Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20);
     }

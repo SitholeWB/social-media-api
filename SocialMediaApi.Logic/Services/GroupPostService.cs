@@ -78,9 +78,9 @@ namespace SocialMediaApi.Logic.Services
             await _publisher.PublishAsync(new DeleteGroupPostEvent { GroupPost = groupPost });
         }
 
-        public Task<GroupPostViewModel> GetGroupPostAsync(Guid groupId, Guid id)
+        public async Task<GroupPostViewModel?> GetGroupPostAsync(Guid groupId, Guid id)
         {
-            throw new NotImplementedException();
+            return GroupPostMapper.ToView(await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId));
         }
 
         public Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
