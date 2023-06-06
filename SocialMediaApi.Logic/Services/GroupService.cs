@@ -57,7 +57,8 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Group can only be deleted by the creator.");
             }
-            _dbContext.Groups.Remove(group);
+            group.EntityStatus = EntityStatus.Deleted;
+            _dbContext.Groups.Update(group);
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new DeleteGroupEvent { Group = group });
         }
