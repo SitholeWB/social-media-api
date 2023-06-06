@@ -45,7 +45,7 @@ namespace SocialMediaApi.Logic.Services
             };
             var addedEntity = await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAndForgetAsync(new AddGroupEvent { Group = addedEntity.Entity });
+            await _publisher.PublishAsync(new AddGroupEvent { Group = addedEntity.Entity });
             return GroupMapper.ToView(addedEntity.Entity)!;
         }
 
@@ -59,6 +59,7 @@ namespace SocialMediaApi.Logic.Services
             }
             _dbContext.Groups.Remove(group);
             await _dbContext.SaveChangesAsync();
+            await _publisher.PublishAsync(new DeleteGroupEvent { Group = group });
         }
 
         public async Task<GroupViewModel?> GetGroupAsync(Guid id)
@@ -84,6 +85,7 @@ namespace SocialMediaApi.Logic.Services
             group.LastModifiedDate = DateTimeOffset.UtcNow;
             _dbContext.Update(group);
             await _dbContext.SaveChangesAsync();
+            await _publisher.PublishAsync(new UpdateGroupEvent { Group = group });
             return GroupMapper.ToView(group)!;
         }
     }
