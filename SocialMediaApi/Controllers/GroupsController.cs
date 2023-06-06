@@ -22,8 +22,7 @@ namespace SocialMediaApi.Controllers
         [HttpGet]
         public async Task<ActionResult<Pagination<GroupViewModel>>> GetGroupsAsync(int page = 1)
         {
-            var tt = await _groupService.GetGroupsAsync(page, 20);
-            return Ok(tt);
+            return Ok(await _groupService.GetGroupsAsync(page, 20));
         }
 
         [HttpGet("{id}")]
