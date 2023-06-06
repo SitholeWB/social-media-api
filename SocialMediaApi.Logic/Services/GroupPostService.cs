@@ -88,9 +88,22 @@ namespace SocialMediaApi.Logic.Services
             return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
         }
 
-        public Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model)
+        public async Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(model?.Text))
+            {
+                throw new SocialMediaException("Text is required.");
+            }
+            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+
+            groupPost.Text = model.Text;
+            groupPost.ThumbnailUrl = model.ThumbnailUrl;
+            groupPost.Media = model.Media;
+            groupPost.LastModifiedDate = DateTimeOffset.UtcNow;
+            _dbContext.Update(groupPost);
+            await _dbContext.SaveChangesAsync();
+            await _publisher.PublishAsync(new UpdateGroupPostEvent { GroupPost = groupPost });
+            return GroupPostMapper.ToView(groupPost)!;
         }
     }
 }
