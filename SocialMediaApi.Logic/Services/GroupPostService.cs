@@ -85,7 +85,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, GroupPostMapper.ToView!);
+            return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
         }
 
         public Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model)
