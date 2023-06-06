@@ -80,7 +80,11 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("Group name is required.");
             }
             var group = await _dbContext.Groups.FirstOrDefaultAsync(x => x.Id == id) ?? throw new SocialMediaException("No Group found for given Id.");
-
+            var authUser = await _authService.GetAuthorizedUser();
+            if (!authUser.Id.Equals(group.Creator.Id))
+            {
+                throw new SocialMediaException("Group can only be updated by the creator.");
+            }
             group.Name = model.Name;
             group.Description = model.Description;
             group.LastModifiedDate = DateTimeOffset.UtcNow;

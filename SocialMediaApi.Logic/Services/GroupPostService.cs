@@ -95,7 +95,11 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("Text is required.");
             }
             var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-
+            var authUser = await _authService.GetAuthorizedUser();
+            if (!authUser.Id.Equals(groupPost.Creator.Id))
+            {
+                throw new SocialMediaException("Post can only be updated by the creator.");
+            }
             groupPost.Text = model.Text;
             groupPost.ThumbnailUrl = model.ThumbnailUrl;
             groupPost.Media = model.Media;
