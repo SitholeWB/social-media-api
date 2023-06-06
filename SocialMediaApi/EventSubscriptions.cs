@@ -8,6 +8,8 @@ namespace SocialMediaApi
         public static IServiceCollection AddEventSubscriptions(this IServiceCollection services)
         {
             EventHandlerContainer.Subscribe<AddGroupEvent, AddGroupNotificationHandler>();
+            EventHandlerContainer.Subscribe<DeleteGroupEvent, DeleteGroupNotificationHandler>();
+            EventHandlerContainer.Subscribe<UpdateGroupEvent, UpdateGroupNotificationHandler>();
             return services;
         }
     }

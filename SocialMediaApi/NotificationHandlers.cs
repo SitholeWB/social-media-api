@@ -8,6 +8,8 @@ namespace SocialMediaApi
         {
             services.AddScoped<EventHandlerContainer>();
             services.AddScoped<AddGroupNotificationHandler>();
+            services.AddScoped<UpdateGroupNotificationHandler>();
+            services.AddScoped<DeleteGroupNotificationHandler>();
             return services;
         }
     }
