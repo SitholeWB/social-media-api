@@ -83,9 +83,9 @@ namespace SocialMediaApi.Logic.Services
             return GroupPostMapper.ToView(await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId));
         }
 
-        public Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
+        public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            throw new NotImplementedException();
+            return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, GroupPostMapper.ToView!);
         }
 
         public Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model)
