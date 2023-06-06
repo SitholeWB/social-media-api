@@ -21,6 +21,7 @@ namespace SocialMediaApi
             builder.Services.AddControllers();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddScoped<IGroupPostService, GroupPostService>();
             builder.Services.AddNotificationHandlers();
             builder.Services.AddEventSubscriptions();
 
