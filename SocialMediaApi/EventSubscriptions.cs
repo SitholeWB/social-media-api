@@ -1,6 +1,6 @@
 ﻿using SocialMediaApi.Domain.Events.Groups;
 using SocialMediaApi.Logic.EventHandlers;
-using SocialMediaApi.Logic.EventHandlers.Group;
+using SocialMediaApi.Logic.EventHandlers.Groups;
 
 namespace SocialMediaApi
 {

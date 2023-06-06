@@ -2,7 +2,7 @@
 using SocialMediaApi.Interfaces;
 using System.Diagnostics;
 
-namespace SocialMediaApi.Logic.EventHandlers.Group
+namespace SocialMediaApi.Logic.EventHandlers.Groups
 {
     public class DeleteGroupNotificationHandler : IEventHandler<DeleteGroupEvent>
     {
