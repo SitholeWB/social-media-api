@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
-using SocialMediaApi.Domain.Models.Group;
+using SocialMediaApi.Domain.Models.Groups;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 

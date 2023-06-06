@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SocialMediaApi.Domain.Models.Group
+namespace SocialMediaApi.Domain.Models.Groups
 {
     public class UpdateGroupModel
     {

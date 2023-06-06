@@ -1,8 +1,8 @@
 ﻿using SocialMediaApi.Domain.Entities;
 
-namespace SocialMediaApi.Domain.Events
+namespace SocialMediaApi.Domain.Events.Groups
 {
-    public class AddGroupEvent : EventBase
+    public class DeleteGroupEvent : EventBase
     {
         public Group Group { get; set; } = default!;
     }

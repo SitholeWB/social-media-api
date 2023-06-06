@@ -1,4 +1,5 @@
 ﻿using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.EventHandlers.Group;
 
 namespace SocialMediaApi
 {

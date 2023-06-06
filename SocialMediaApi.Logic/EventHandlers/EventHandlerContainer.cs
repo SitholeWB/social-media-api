@@ -40,20 +40,6 @@ namespace SocialMediaApi.Logic.EventHandlers
             }
         }
 
-        public void Publish<T>(T o) where T : EventBase
-        {
-            var name = typeof(T);
-
-            if (_mappings.ContainsKey(name))
-            {
-                foreach (var handler in _mappings[name])
-                {
-                    var service = _serviceProvider.GetService(handler) as IEventHandler<T>;
-                    service!.Run(o);
-                }
-            }
-        }
-
         public async Task PublishAsync<T>(T o) where T : EventBase
         {
             var name = typeof(T);

@@ -1,5 +1,5 @@
 ﻿using Pagination.EntityFrameworkCore.Extensions;
-using SocialMediaApi.Domain.Models.GroupPost;
+using SocialMediaApi.Domain.Models.GroupPosts;
 using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces

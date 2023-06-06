@@ -1,19 +1,12 @@
-﻿using SocialMediaApi.Domain.Events;
+﻿using SocialMediaApi.Domain.Events.Groups;
 using SocialMediaApi.Interfaces;
 using System.Diagnostics;
 
-namespace SocialMediaApi.Logic.EventHandlers
+namespace SocialMediaApi.Logic.EventHandlers.Group
 {
-    public class UpdateGroupNotificationHandler : IEventHandler<UpdateGroupEvent>
+    public class AddGroupNotificationHandler : IEventHandler<AddGroupEvent>
     {
-        public void Run(UpdateGroupEvent obj)
-        {
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Trace.WriteLine("???????????????????");
-            Console.WriteLine("Confirm Email Sent.");
-        }
-
-        public async Task RunAsync(UpdateGroupEvent obj)
+        public async Task RunAsync(AddGroupEvent obj)
         {
             Trace.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
             await Task.Delay(TimeSpan.FromSeconds(20));

@@ -1,18 +1,11 @@
-﻿using SocialMediaApi.Domain.Events;
+﻿using SocialMediaApi.Domain.Events.Groups;
 using SocialMediaApi.Interfaces;
 using System.Diagnostics;
 
-namespace SocialMediaApi.Logic.EventHandlers
+namespace SocialMediaApi.Logic.EventHandlers.Group
 {
     public class DeleteGroupNotificationHandler : IEventHandler<DeleteGroupEvent>
     {
-        public void Run(DeleteGroupEvent obj)
-        {
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Trace.WriteLine("???????????????????");
-            Console.WriteLine("Confirm Email Sent.");
-        }
-
         public async Task RunAsync(DeleteGroupEvent obj)
         {
             Trace.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
