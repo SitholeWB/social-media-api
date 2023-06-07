@@ -17,5 +17,6 @@ namespace SocialMediaApi.Domain.Entities.Base
         public Media Media { get; set; } = new Media { };
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
+        public DateTimeOffset ExpireDate { get; set; }
     }
 }

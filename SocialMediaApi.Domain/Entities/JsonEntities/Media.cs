@@ -6,7 +6,7 @@ namespace SocialMediaApi.Domain.Entities.JsonEntities
     public class Media
     {
         public PostMediaType MediaType { get; set; } = PostMediaType.TextOnly;
-        public IList<Content> Content { get; set; } = new List<Content>();
+        public List<Content> Content { get; set; } = new List<Content>();
     }
 
     public class Content

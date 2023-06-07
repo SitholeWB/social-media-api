@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialMediaApi.Data;
 
@@ -11,9 +12,11 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Repositories.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    partial class SocialMediaApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230607182134_new_active_group_post")]
+    partial class new_active_group_post
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

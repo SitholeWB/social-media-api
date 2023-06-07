@@ -4,6 +4,6 @@
     {
         public int ReactionsCount { get; set; } = 0;
 
-        public IList<Emoji> Emojis { get; set; } = new List<Emoji>();
+        public List<Emoji> Emojis { get; set; } = new List<Emoji>();
     }
 }
