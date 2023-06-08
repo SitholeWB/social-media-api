@@ -7,11 +7,11 @@ namespace SocialMediaApi.Interfaces
 {
     public interface INewGroupPostService
     {
-        public Task<GroupPostViewModel> AddNewGroupPostAsync(Guid groupId, AddNewGroupPostModel model);
+        public Task AddNewGroupPostAsync(Guid groupId, AddNewGroupPostModel model);
 
-        public Task<GroupPostViewModel> UpdateNewGroupPostAsync(Guid groupId, Guid id, UpdateNewGroupPostModel model);
+        public Task UpdateNewGroupPostAsync(Guid groupId, Guid id, UpdateNewGroupPostModel model);
 
-        public Task<GroupPostViewModel> UpdateNewGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType);
+        public Task UpdateNewGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType);
 
         public Task DeleteNewGroupPostAsync(Guid groupId, Guid id);
 

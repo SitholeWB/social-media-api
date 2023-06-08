@@ -19,5 +19,21 @@ namespace SocialMediaApi.Domain.Entities.Base
         public DateTimeOffset LastModifiedDate { get; set; }
         public DateTimeOffset ExpireDate { get; set; }
         public int Rank { get; set; }
+
+        public static T GetChild<T>(BasePost post) where T : BasePost, new()
+        {
+            return new T
+            {
+                CreatedDate = post.CreatedDate,
+                LastModifiedDate = post.LastModifiedDate,
+                Creator = post.Creator,
+                Downloads = post.Downloads,
+                EntityStatus = post.EntityStatus,
+                ExpireDate = post.ExpireDate,
+                Id = post.Id,
+                Media = post.Media,
+                Rank = post.Rank
+            };
+        }
     }
 }

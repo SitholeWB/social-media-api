@@ -1,4 +1,5 @@
 ﻿using SocialMediaApi.Domain.Entities;
+using SocialMediaApi.Domain.Entities.Base;
 using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Domain.Mappers
@@ -7,25 +8,57 @@ namespace SocialMediaApi.Domain.Mappers
     {
         public static GroupPostViewModel? ToView(GroupPost? groupPost)
         {
-            if (groupPost == null)
+            var viewPost = BaseToView(groupPost);
+            if (viewPost == null)
+            {
+                return default;
+            }
+            viewPost.GroupId = groupPost!.GroupId;
+            return viewPost;
+        }
+
+        public static GroupPostViewModel? ToView(NewGroupPost? groupPost)
+        {
+            var viewPost = BaseToView(groupPost);
+            if (viewPost == null)
+            {
+                return default;
+            }
+            viewPost.GroupId = groupPost!.GroupId;
+            return viewPost;
+        }
+
+        public static GroupPostViewModel? ToView(ActiveGroupPost? groupPost)
+        {
+            var viewPost = BaseToView(groupPost);
+            if (viewPost == null)
+            {
+                return default;
+            }
+            viewPost.GroupId = groupPost!.GroupId;
+            return viewPost;
+        }
+
+        private static GroupPostViewModel? BaseToView(BasePost? basePost)
+        {
+            if (basePost == null)
             {
                 return default;
             }
             return new GroupPostViewModel
             {
-                CreatedDate = groupPost.CreatedDate,
-                Creator = groupPost.Creator,
-                Id = groupPost.Id,
-                LastModifiedDate = groupPost.LastModifiedDate,
-                Media = groupPost.Media,
-                Views = groupPost.Views,
-                TotalComments = groupPost.TotalComments,
-                ThumbnailUrl = groupPost.ThumbnailUrl,
-                Downloads = groupPost.Downloads,
-                EntityStatus = groupPost.EntityStatus,
-                GroupId = groupPost.GroupId,
-                Reactions = groupPost.Reactions,
-                Text = groupPost.Text,
+                CreatedDate = basePost.CreatedDate,
+                Creator = basePost.Creator,
+                Id = basePost.Id,
+                LastModifiedDate = basePost.LastModifiedDate,
+                Media = basePost.Media,
+                Views = basePost.Views,
+                TotalComments = basePost.TotalComments,
+                ThumbnailUrl = basePost.ThumbnailUrl,
+                Downloads = basePost.Downloads,
+                EntityStatus = basePost.EntityStatus,
+                Reactions = basePost.Reactions,
+                Text = basePost.Text,
             };
         }
     }

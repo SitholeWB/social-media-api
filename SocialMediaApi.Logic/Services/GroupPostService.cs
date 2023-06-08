@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Pagination.EntityFrameworkCore.Extensions;
+﻿using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.JsonEntities;
@@ -68,7 +67,11 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteGroupPostAsync(Guid groupId, Guid id)
         {
-            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var groupPost = await _dbContext.GroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            if (!groupPost.GroupId.Equals(groupId))
+            {
+                throw new SocialMediaException("No Post found for given Id & groupId.");
+            }
             var authUser = await _authService.GetAuthorizedUser();
             if (!authUser.Id.Equals(groupPost.Creator.Id))
             {
@@ -82,7 +85,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<GroupPostViewModel?> GetGroupPostAsync(Guid groupId, Guid id)
         {
-            return GroupPostMapper.ToView(await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId));
+            return GroupPostMapper.ToView(await _dbContext.GroupPosts.FindAsync(id));
         }
 
         public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
@@ -92,7 +95,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
         {
-            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var groupPost = await _dbContext.GroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
             var rank = await _configService.GetRankingConfig(entityActionType);
             groupPost.Rank += rank;
             _dbContext.Update(groupPost);
@@ -101,7 +104,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task UpdateGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
         {
-            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var groupPost = await _dbContext.GroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
             var minutes = await _configService.GetExpireDateMinutesConfig(entityActionType);
             groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(minutes);
             _dbContext.Update(groupPost);
@@ -114,7 +117,11 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Text is required.");
             }
-            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var groupPost = await _dbContext.NewGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            if (!groupPost.GroupId.Equals(groupId))
+            {
+                throw new SocialMediaException("No Post found for given Id & groupId.");
+            }
             var authUser = await _authService.GetAuthorizedUser();
             if (!authUser.Id.Equals(groupPost.Creator.Id))
             {
