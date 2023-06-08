@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Interfaces;
+using SocialMediaApi.Interfaces.UnitOfWork;
 using SocialMediaApi.Logic.Services;
+using SocialMediaApi.Logic.UnitOfWork;
 using System.Text.Json;
 
 namespace SocialMediaApi
@@ -22,6 +24,7 @@ namespace SocialMediaApi
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
             builder.Services.AddScoped<IGroupPostService, GroupPostService>();
+            builder.Services.AddScoped<IPostUnitOfWork, PostUnitOfWork>();
             builder.Services.AddNotificationHandlers();
             builder.Services.AddEventSubscriptions();
 
