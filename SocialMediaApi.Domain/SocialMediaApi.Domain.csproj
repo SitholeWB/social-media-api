@@ -12,8 +12,4 @@
     <None Remove="Domain\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Settings\" />
-  </ItemGroup>
-
 </Project>

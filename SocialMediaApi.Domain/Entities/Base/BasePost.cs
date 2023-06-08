@@ -18,5 +18,6 @@ namespace SocialMediaApi.Domain.Entities.Base
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public DateTimeOffset ExpireDate { get; set; }
+        public int Rank { get; set; }
     }
 }

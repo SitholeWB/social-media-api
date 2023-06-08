@@ -19,12 +19,14 @@ namespace SocialMediaApi.Logic.Services
         private readonly SocialMediaApiDbContext _dbContext;
         private readonly IAuthService _authService;
         private readonly EventHandlerContainer _publisher;
+        private readonly IConfigService _configService;
 
-        public GroupPostService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher)
+        public GroupPostService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService)
         {
             _dbContext = dbContext;
             _authService = authService;
             _publisher = publisher;
+            _configService = configService;
         }
 
         public async Task<GroupPostViewModel> AddGroupPostAsync(Guid groupId, AddGroupPostModel model)
@@ -86,6 +88,24 @@ namespace SocialMediaApi.Logic.Services
         public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
             return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
+        }
+
+        public async Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
+        {
+            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var rank = await _configService.GetRankingConfig(entityActionType);
+            groupPost.Rank += rank;
+            _dbContext.Update(groupPost);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
+        {
+            var groupPost = await _dbContext.GroupPosts.FirstOrDefaultAsync(x => x.Id == id && x.GroupId == groupId) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            var minutes = await _configService.GetExpireDateMinutesConfig(entityActionType);
+            groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(minutes);
+            _dbContext.Update(groupPost);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model)

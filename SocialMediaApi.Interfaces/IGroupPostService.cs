@@ -1,4 +1,5 @@
 ﻿using Pagination.EntityFrameworkCore.Extensions;
+using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.Models.GroupPosts;
 using SocialMediaApi.Domain.ViewModels;
 
@@ -9,6 +10,10 @@ namespace SocialMediaApi.Interfaces
         public Task<GroupPostViewModel> AddGroupPostAsync(Guid groupId, AddGroupPostModel model);
 
         public Task<GroupPostViewModel> UpdateGroupPostAsync(Guid groupId, Guid id, UpdateGroupPostModel model);
+
+        public Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType);
+
+        public Task UpdateGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType);
 
         public Task DeleteGroupPostAsync(Guid groupId, Guid id);
 
