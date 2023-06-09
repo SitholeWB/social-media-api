@@ -1,11 +1,10 @@
 ﻿using SocialMediaApi.Domain.Enums;
+using SocialMediaApi.Domain.Settings;
 
 namespace SocialMediaApi.Interfaces
 {
     public interface IConfigService
     {
-        public Task<int> GetExpireDateMinutesConfig(EntityActionType entityActionType);
-
-        public Task<int> GetRankingConfig(EntityActionType entityActionType);
+        public Task<EntityActionConfig> GetActionConfigAsync(EntityActionType entityActionType);
     }
 }

@@ -3,6 +3,7 @@ using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.GroupPosts;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
+using SocialMediaApi.Interfaces.UnitOfWork;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,9 +15,9 @@ namespace SocialMediaApi.Controllers
     {
         private readonly IGroupPostService _groupPostService;
 
-        public GroupPostsController(IGroupPostService groupPostService)
+        public GroupPostsController(IPostUnitOfWork postUnitOfWork)
         {
-            _groupPostService = groupPostService;
+            _groupPostService = postUnitOfWork.GroupPostService;
         }
 
         [HttpGet]

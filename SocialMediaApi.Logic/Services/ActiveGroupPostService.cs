@@ -84,8 +84,8 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
-            var minutes = await _configService.GetExpireDateMinutesConfig(entityActionType);
-            groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(minutes);
+            var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
+            groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }
@@ -93,8 +93,8 @@ namespace SocialMediaApi.Logic.Services
         public async Task UpdateActiveGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
         {
             var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            var rank = await _configService.GetRankingConfig(entityActionType);
-            groupPost.Rank += rank;
+            var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
+            groupPost.Rank += entityActionConfig.Rank;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }
