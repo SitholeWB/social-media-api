@@ -13,12 +13,10 @@ namespace SocialMediaApi.Logic.Services
     public class NewGroupPostService : INewGroupPostService
     {
         private readonly SocialMediaApiDbContext _dbContext;
-        private readonly IConfigService _configService;
 
-        public NewGroupPostService(SocialMediaApiDbContext dbContext, IConfigService configService)
+        public NewGroupPostService(SocialMediaApiDbContext dbContext)
         {
             _dbContext = dbContext;
-            _configService = configService;
         }
 
         public async Task AddNewGroupPostAsync(Guid groupId, AddNewGroupPostModel model)
