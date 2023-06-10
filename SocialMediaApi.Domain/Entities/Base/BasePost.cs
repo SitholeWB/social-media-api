@@ -17,7 +17,7 @@ namespace SocialMediaApi.Domain.Entities.Base
         public Media Media { get; set; } = new Media { };
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
-        public DateTimeOffset ExpireDate { get; set; }
+        public DateTimeOffset ActionBasedDate { get; set; }
         public int Rank { get; set; }
 
         public static T GetChild<T>(BasePost post) where T : BasePost, new()
@@ -29,7 +29,7 @@ namespace SocialMediaApi.Domain.Entities.Base
                 Creator = post.Creator,
                 Downloads = post.Downloads,
                 EntityStatus = post.EntityStatus,
-                ExpireDate = post.ExpireDate,
+                ActionBasedDate = post.ActionBasedDate,
                 Id = post.Id,
                 Media = post.Media,
                 Rank = post.Rank

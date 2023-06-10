@@ -8,7 +8,7 @@ using SocialMediaApi.Data;
 
 #nullable disable
 
-namespace SocialMediaApi.Repositories.Migrations
+namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
     partial class SocialMediaApiDbContextModelSnapshot : ModelSnapshot
@@ -56,6 +56,9 @@ namespace SocialMediaApi.Repositories.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset>("ActionBasedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
@@ -69,14 +72,14 @@ namespace SocialMediaApi.Repositories.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("ExpireDate")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
@@ -105,24 +108,12 @@ namespace SocialMediaApi.Repositories.Migrations
                 {
                     b.HasBaseType("SocialMediaApi.Domain.Entities.GroupPost");
 
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
                     b.HasDiscriminator().HasValue("ActiveGroupPost");
                 });
 
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.NewGroupPost", b =>
                 {
                     b.HasBaseType("SocialMediaApi.Domain.Entities.GroupPost");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
-                    b.ToTable("GroupPosts", t =>
-                        {
-                            t.Property("Rank")
-                                .HasColumnName("NewGroupPost_Rank");
-                        });
 
                     b.HasDiscriminator().HasValue("NewGroupPost");
                 });

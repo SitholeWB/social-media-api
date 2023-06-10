@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SocialMediaApi.Repositories.Migrations
+namespace SocialMediaApi.Data.Migrations
 {
     /// <inheritdoc />
     public partial class initial : Migration
@@ -34,6 +34,7 @@ namespace SocialMediaApi.Repositories.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ThumbnailUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -42,6 +43,8 @@ namespace SocialMediaApi.Repositories.Migrations
                     TotalComments = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ActionBasedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Rank = table.Column<int>(type: "int", nullable: false),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Media = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Reactions = table.Column<string>(type: "nvarchar(max)", nullable: false)

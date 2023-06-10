@@ -90,7 +90,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
+            return await _dbContext.GroupPosts.OrderByDescending(x => x.ActionBasedDate).AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
         }
 
         public async Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
@@ -114,7 +114,7 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
             var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
+            groupPost.ActionBasedDate = groupPost.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }

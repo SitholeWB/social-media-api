@@ -85,7 +85,7 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
             var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            groupPost.ExpireDate = groupPost.ExpireDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
+            groupPost.ActionBasedDate = groupPost.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }
