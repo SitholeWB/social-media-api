@@ -20,5 +20,12 @@ namespace SocialMediaApi.Logic.Services
                 ExpireDateMinutes = 15
             });
         }
+
+        public async Task<EntityGroupPostConfig> GetEntityGroupPostConfigAsync()
+        {
+            return await Task.FromResult(new EntityGroupPostConfig
+            {
+            });
+        }
     }
 }

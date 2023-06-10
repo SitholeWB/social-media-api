@@ -39,12 +39,14 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("Media explicit definition is required.");
             }
             var authUser = await _authService.GetAuthorizedUser();
+            var entityGroupPostConfig = await _configService.GetEntityGroupPostConfigAsync();
             var entity = new GroupPost
             {
                 CreatedDate = DateTimeOffset.UtcNow,
                 Id = Guid.NewGuid(),
                 EntityStatus = EntityStatus.Ready,
                 LastModifiedDate = DateTimeOffset.UtcNow,
+                ActionBasedDate = DateTimeOffset.UtcNow.AddMinutes(entityGroupPostConfig.GroupPostDefaultExpireMinutes),
                 Creator = authUser,
                 Text = model!.Text,
                 Downloads = 0,
@@ -90,7 +92,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<GroupPostViewModel>> GetGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            return await _dbContext.GroupPosts.OrderByDescending(x => x.ActionBasedDate).AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
+            return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!, sortColumn: nameof(GroupPost.ActionBasedDate), orderByDescending: true);
         }
 
         public async Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)

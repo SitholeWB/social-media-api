@@ -1,5 +1,6 @@
 ﻿using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.Base;
+using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Domain.Mappers
@@ -14,6 +15,7 @@ namespace SocialMediaApi.Domain.Mappers
                 return default;
             }
             viewPost.GroupId = groupPost!.GroupId;
+            viewPost.EntityOrigin = EntityOrigin.None;
             return viewPost;
         }
 
@@ -25,6 +27,7 @@ namespace SocialMediaApi.Domain.Mappers
                 return default;
             }
             viewPost.GroupId = groupPost!.GroupId;
+            viewPost.EntityOrigin = EntityOrigin.New;
             return viewPost;
         }
 
@@ -36,6 +39,8 @@ namespace SocialMediaApi.Domain.Mappers
                 return default;
             }
             viewPost.GroupId = groupPost!.GroupId;
+            viewPost.EntityOrigin = EntityOrigin.Active;
+
             return viewPost;
         }
 
@@ -59,6 +64,8 @@ namespace SocialMediaApi.Domain.Mappers
                 EntityStatus = basePost.EntityStatus,
                 Reactions = basePost.Reactions,
                 Text = basePost.Text,
+                ActionBasedDate = basePost.ActionBasedDate,
+                Rank = basePost.Rank,
             };
         }
     }
