@@ -38,13 +38,12 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteActiveGroupPostAsync(Guid groupId, Guid id)
         {
-            var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!groupPost.GroupId.Equals(groupId))
+            var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id);
+            if (groupPost != null)
             {
-                throw new SocialMediaException("No Post found for given Id & groupId.");
+                _dbContext.ActiveGroupPosts.Remove(groupPost);
+                await _dbContext.SaveChangesAsync();
             }
-            _dbContext.ActiveGroupPosts.Remove(groupPost);
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteExpiredActiveGroupPostAsync()

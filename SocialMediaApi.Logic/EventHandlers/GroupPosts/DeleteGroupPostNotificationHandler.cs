@@ -1,22 +1,21 @@
 ﻿using SocialMediaApi.Domain.Events.GroupPosts;
 using SocialMediaApi.Interfaces;
-using System.Diagnostics;
+using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Logic.EventHandlers.GroupPosts
 {
     public class DeleteGroupPostNotificationHandler : IEventHandler<DeleteGroupPostEvent>
     {
+        private readonly IActiveGroupPostService _newGroupPostService;
+
+        public DeleteGroupPostNotificationHandler(IPostUnitOfWork postUnitOfWork)
+        {
+            _newGroupPostService = postUnitOfWork.ActiveGroupPostService;
+        }
+
         public async Task RunAsync(DeleteGroupPostEvent obj)
         {
-            Trace.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            await Task.Delay(TimeSpan.FromSeconds(20));
-            Trace.WriteLine("???????????????????");
-            /*return Task.Run(() =>
-            {
-                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Trace.WriteLine("???????????????????");
-                Console.WriteLine("Confirm Email Sent.");
-            });*/
+            await _newGroupPostService.DeleteActiveGroupPostAsync(obj.GroupPost.GroupId, obj.GroupPost.Id);
         }
     }
 }
