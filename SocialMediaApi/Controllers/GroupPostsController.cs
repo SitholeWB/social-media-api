@@ -14,16 +14,31 @@ namespace SocialMediaApi.Controllers
     public class GroupPostsController : ControllerBase
     {
         private readonly IGroupPostService _groupPostService;
+        private readonly IActiveGroupPostService _activeGroupPostService;
 
         public GroupPostsController(IPostUnitOfWork postUnitOfWork)
         {
             _groupPostService = postUnitOfWork.GroupPostService;
+            _activeGroupPostService = postUnitOfWork.ActiveGroupPostService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<Pagination<GroupPostViewModel>>> GetGroupPostsAsync([FromRoute] Guid groupId, int page = 1)
+        public async Task<ActionResult<Pagination<GroupPostViewModel>>> GetGroupPostsAsync([FromRoute] Guid groupId, int page = 1, int limit = 20, bool skipActivePosts = false)
         {
-            return Ok(await _groupPostService.GetGroupPostsAsync(groupId, page, 20));
+            if (limit <= 0)
+            {
+                limit = 20;
+            }
+            if (skipActivePosts)
+            {
+                return Ok(await _groupPostService.GetGroupPostsAsync(groupId, page, limit));
+            }
+            var pageResult = await _activeGroupPostService.GetActiveGroupPostsAsync(groupId, page, limit);
+            if (pageResult.Results.Count() < (limit / 2))
+            {
+                pageResult = await _groupPostService.GetGroupPostsAsync(groupId, page, limit);
+            }
+            return Ok(pageResult);
         }
 
         [HttpGet("{id}")]
