@@ -86,6 +86,11 @@ namespace SocialMediaApi.Data.Migrations
                 column: "ActionBasedDate");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ActiveGroupPosts_GroupId",
+                table: "ActiveGroupPosts",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupPosts_ActionBasedDate",
                 table: "GroupPosts",
                 column: "ActionBasedDate");
@@ -94,6 +99,11 @@ namespace SocialMediaApi.Data.Migrations
                 name: "IX_GroupPosts_GroupId",
                 table: "GroupPosts",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_EntityStatus",
+                table: "Groups",
+                column: "EntityStatus");
         }
 
         /// <inheritdoc />

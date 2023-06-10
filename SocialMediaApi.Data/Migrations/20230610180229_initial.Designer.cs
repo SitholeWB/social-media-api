@@ -12,7 +12,7 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230610165643_initial")]
+    [Migration("20230610180229_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -62,6 +62,8 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("ActionBasedDate");
 
+                    b.HasIndex("GroupId");
+
                     b.ToTable("ActiveGroupPosts");
                 });
 
@@ -89,6 +91,8 @@ namespace SocialMediaApi.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityStatus");
 
                     b.ToTable("Groups");
                 });
@@ -185,7 +189,7 @@ namespace SocialMediaApi.Data.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ActiveGroupPostId");
 
-                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Content", "Content", b2 =>
+                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MediaContent", "Content", b2 =>
                                 {
                                     b2.Property<Guid>("MediaActiveGroupPostId")
                                         .HasColumnType("uniqueidentifier");
@@ -195,6 +199,10 @@ namespace SocialMediaApi.Data.Migrations
                                         .HasColumnType("int");
 
                                     b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<string>("Duration")
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
@@ -359,7 +367,7 @@ namespace SocialMediaApi.Data.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("GroupPostId");
 
-                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Content", "Content", b2 =>
+                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MediaContent", "Content", b2 =>
                                 {
                                     b2.Property<Guid>("MediaGroupPostId")
                                         .HasColumnType("uniqueidentifier");
@@ -369,6 +377,10 @@ namespace SocialMediaApi.Data.Migrations
                                         .HasColumnType("int");
 
                                     b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<string>("Duration")
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 

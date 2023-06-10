@@ -23,8 +23,10 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.ToJson();
                 });
             modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+            modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
             modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.GroupId);
             //GroupPost
             modelBuilder.Entity<GroupPost>().OwnsOne(
                 groupPost => groupPost.Creator, ownedNavigationBuilder =>
