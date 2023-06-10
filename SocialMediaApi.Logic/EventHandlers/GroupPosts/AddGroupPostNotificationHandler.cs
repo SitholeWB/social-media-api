@@ -1,22 +1,24 @@
 ﻿using SocialMediaApi.Domain.Events.GroupPosts;
+using SocialMediaApi.Domain.Models.NewGroupPosts;
 using SocialMediaApi.Interfaces;
-using System.Diagnostics;
 
 namespace SocialMediaApi.Logic.EventHandlers.GroupPosts
 {
     public class AddGroupPostNotificationHandler : IEventHandler<AddGroupPostEvent>
     {
+        private readonly INewGroupPostService _newGroupPostService;
+
+        public AddGroupPostNotificationHandler(INewGroupPostService newGroupPostService)
+        {
+            _newGroupPostService = newGroupPostService;
+        }
+
         public async Task RunAsync(AddGroupPostEvent obj)
         {
-            Trace.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            await Task.Delay(TimeSpan.FromSeconds(20));
-            Trace.WriteLine("???????????????????");
-            /*return Task.Run(() =>
+            await _newGroupPostService.AddNewGroupPostAsync(obj.GroupPost.GroupId, new AddNewGroupPostModel
             {
-                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Trace.WriteLine("???????????????????");
-                Console.WriteLine("Confirm Email Sent.");
-            });*/
+                GroupPost = obj.GroupPost
+            });
         }
     }
 }

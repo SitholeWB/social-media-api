@@ -11,9 +11,10 @@ namespace SocialMediaApi.Data
         }
 
         public DbSet<Group> Groups { get; set; } = default!;
-        public DbSet<GroupPost> GroupPosts { get; set; } = default!;
+
         public DbSet<ActiveGroupPost> ActiveGroupPosts { get; set; } = default!;
         public DbSet<NewGroupPost> NewGroupPosts { get; set; } = default!;
+        public DbSet<GroupPost> GroupPosts { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,10 @@ namespace SocialMediaApi.Data
                 {
                     ownedNavigationBuilder.ToJson();
                 });
+            modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+            modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<NewGroupPost>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
             //GroupPost
             modelBuilder.Entity<GroupPost>().OwnsOne(
                 groupPost => groupPost.Creator, ownedNavigationBuilder =>
