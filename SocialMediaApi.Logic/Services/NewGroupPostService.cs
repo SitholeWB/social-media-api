@@ -2,7 +2,6 @@
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.Base;
-using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Mappers;
 using SocialMediaApi.Domain.Models.NewGroupPosts;
@@ -53,7 +52,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<GroupPostViewModel>> GetNewGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<NewGroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
+            return await _dbContext.AsPaginationAsync<NewGroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!, sortColumn: nameof(NewGroupPost.ActionBasedDate), orderByDescending: true);
         }
 
         public async Task UpdateNewGroupPostAsync(Guid groupId, Guid id, UpdateNewGroupPostModel model)
@@ -69,19 +68,8 @@ namespace SocialMediaApi.Logic.Services
             }
 
             groupPost.Text = model!.GroupPost.Text;
-            groupPost.ThumbnailUrl = model!.GroupPost.ThumbnailUrl;
             groupPost.Media = model!.GroupPost.Media;
             groupPost.LastModifiedDate = model!.GroupPost.LastModifiedDate;
-            groupPost.Rank = model!.GroupPost.Rank;
-            _dbContext.Update(groupPost);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateNewGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
-        {
-            var groupPost = await _dbContext.NewGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            groupPost.Rank += entityActionConfig.Rank;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }

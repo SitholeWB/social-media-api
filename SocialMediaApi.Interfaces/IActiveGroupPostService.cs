@@ -11,8 +11,6 @@ namespace SocialMediaApi.Interfaces
 
         public Task UpdateActiveGroupPostAsync(Guid groupId, Guid id, UpdateActiveGroupPostModel model);
 
-        public Task UpdateActiveGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType);
-
         public Task UpdateActiveGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType);
 
         public Task DeleteActiveGroupPostAsync(Guid groupId, Guid id);

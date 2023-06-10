@@ -59,13 +59,11 @@ namespace SocialMediaApi.Domain.Mappers
                 Media = basePost.Media,
                 Views = basePost.Views,
                 TotalComments = basePost.TotalComments,
-                ThumbnailUrl = basePost.ThumbnailUrl,
                 Downloads = basePost.Downloads,
                 EntityStatus = basePost.EntityStatus,
                 Reactions = basePost.Reactions,
                 Text = basePost.Text,
                 ActionBasedDate = basePost.ActionBasedDate,
-                Rank = basePost.Rank,
             };
         }
     }

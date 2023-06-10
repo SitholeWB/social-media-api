@@ -53,7 +53,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<GroupPostViewModel>> GetActiveGroupPostsAsync(Guid groupId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<ActiveGroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!);
+            return await _dbContext.AsPaginationAsync<ActiveGroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!, sortColumn: nameof(ActiveGroupPost.ActionBasedDate), orderByDescending: true);
         }
 
         public async Task UpdateActiveGroupPostAsync(Guid groupId, Guid id, UpdateActiveGroupPostModel model)
@@ -69,10 +69,8 @@ namespace SocialMediaApi.Logic.Services
             }
 
             groupPost.Text = model!.GroupPost.Text;
-            groupPost.ThumbnailUrl = model!.GroupPost.ThumbnailUrl;
             groupPost.Media = model!.GroupPost.Media;
             groupPost.LastModifiedDate = model!.GroupPost.LastModifiedDate;
-            groupPost.Rank = model!.GroupPost.Rank;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }
@@ -86,15 +84,6 @@ namespace SocialMediaApi.Logic.Services
             }
             var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
             groupPost.ActionBasedDate = groupPost.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
-            _dbContext.Update(groupPost);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateActiveGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
-        {
-            var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            groupPost.Rank += entityActionConfig.Rank;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }

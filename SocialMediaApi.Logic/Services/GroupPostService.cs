@@ -56,7 +56,6 @@ namespace SocialMediaApi.Logic.Services
                     Emojis = new List<Emoji>(),
                     ReactionsCount = 0
                 },
-                ThumbnailUrl = model?.ThumbnailUrl ?? "",
                 TotalComments = 0,
                 Views = 0,
                 Media = model!.Media
@@ -95,19 +94,6 @@ namespace SocialMediaApi.Logic.Services
             return await _dbContext.AsPaginationAsync<GroupPost, GroupPostViewModel>(page, limit, x => x.GroupId == groupId, GroupPostMapper.ToView!, sortColumn: nameof(GroupPost.ActionBasedDate), orderByDescending: true);
         }
 
-        public async Task UpdateGroupPostRankAsync(Guid groupId, Guid id, EntityActionType entityActionType)
-        {
-            var groupPost = await _dbContext.GroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!groupPost.GroupId.Equals(groupId))
-            {
-                throw new SocialMediaException("No Post found for given Id & groupId.");
-            }
-            var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            groupPost.Rank += entityActionConfig.Rank;
-            _dbContext.Update(groupPost);
-            await _dbContext.SaveChangesAsync();
-        }
-
         public async Task UpdateGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
         {
             var groupPost = await _dbContext.GroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
@@ -138,7 +124,6 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("Post can only be updated by the creator.");
             }
             groupPost.Text = model.Text;
-            groupPost.ThumbnailUrl = model.ThumbnailUrl;
             groupPost.Media = model.Media;
             groupPost.LastModifiedDate = DateTimeOffset.UtcNow;
             _dbContext.Update(groupPost);

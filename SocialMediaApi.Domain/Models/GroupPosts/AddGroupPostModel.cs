@@ -8,8 +8,6 @@ namespace SocialMediaApi.Domain.Models.GroupPosts
         [Required]
         public string Text { get; set; } = string.Empty;
 
-        public string? ThumbnailUrl { get; set; }
-
         [Required]
         public Media Media { get; set; } = new Media { };
     }
