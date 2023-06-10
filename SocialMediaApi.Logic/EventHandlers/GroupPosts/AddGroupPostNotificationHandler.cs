@@ -1,21 +1,22 @@
 ﻿using SocialMediaApi.Domain.Events.GroupPosts;
-using SocialMediaApi.Domain.Models.NewGroupPosts;
+using SocialMediaApi.Domain.Models.ActiveGroupPosts;
 using SocialMediaApi.Interfaces;
+using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Logic.EventHandlers.GroupPosts
 {
     public class AddGroupPostNotificationHandler : IEventHandler<AddGroupPostEvent>
     {
-        private readonly INewGroupPostService _newGroupPostService;
+        private readonly IActiveGroupPostService _newGroupPostService;
 
-        public AddGroupPostNotificationHandler(INewGroupPostService newGroupPostService)
+        public AddGroupPostNotificationHandler(IPostUnitOfWork postUnitOfWork)
         {
-            _newGroupPostService = newGroupPostService;
+            _newGroupPostService = postUnitOfWork.ActiveGroupPostService;
         }
 
         public async Task RunAsync(AddGroupPostEvent obj)
         {
-            await _newGroupPostService.AddNewGroupPostAsync(obj.GroupPost.GroupId, new AddNewGroupPostModel
+            await _newGroupPostService.AddActiveGroupPostAsync(obj.GroupPost.GroupId, new AddActiveGroupPostModel
             {
                 GroupPost = obj.GroupPost
             });

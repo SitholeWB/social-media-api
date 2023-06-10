@@ -52,29 +52,6 @@ namespace SocialMediaApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NewGroupPosts",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EntityStatus = table.Column<int>(type: "int", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Downloads = table.Column<int>(type: "int", nullable: false),
-                    Views = table.Column<int>(type: "int", nullable: false),
-                    TotalComments = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    ActionBasedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    Creator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Reactions = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NewGroupPosts", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GroupPosts",
                 columns: table => new
                 {
@@ -117,11 +94,6 @@ namespace SocialMediaApi.Data.Migrations
                 name: "IX_GroupPosts_GroupId",
                 table: "GroupPosts",
                 column: "GroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NewGroupPosts_ActionBasedDate",
-                table: "NewGroupPosts",
-                column: "ActionBasedDate");
         }
 
         /// <inheritdoc />
@@ -132,9 +104,6 @@ namespace SocialMediaApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "GroupPosts");
-
-            migrationBuilder.DropTable(
-                name: "NewGroupPosts");
 
             migrationBuilder.DropTable(
                 name: "Groups");

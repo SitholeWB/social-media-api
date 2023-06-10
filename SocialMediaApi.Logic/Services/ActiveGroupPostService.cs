@@ -1,4 +1,5 @@
-﻿using Pagination.EntityFrameworkCore.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.Base;
@@ -44,6 +45,20 @@ namespace SocialMediaApi.Logic.Services
             }
             _dbContext.ActiveGroupPosts.Remove(groupPost);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteExpiredActiveGroupPostAsync()
+        {
+            var limit = 1000;
+            var hasNext = true;
+            do
+            {
+                var groupPosts = await _dbContext.ActiveGroupPosts.Where(x => x.ActionBasedDate <= DateTimeOffset.UtcNow).Take(limit).ToListAsync();
+
+                _dbContext.ActiveGroupPosts.RemoveRange(groupPosts);
+                await _dbContext.SaveChangesAsync();
+                hasNext = groupPosts.Count > limit;
+            } while (hasNext);
         }
 
         public async Task<GroupPostViewModel?> GetActiveGroupPostAsync(Guid groupId, Guid id)

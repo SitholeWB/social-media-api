@@ -15,6 +15,8 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeleteActiveGroupPostAsync(Guid groupId, Guid id);
 
+        public Task DeleteExpiredActiveGroupPostAsync();
+
         public Task<GroupPostViewModel?> GetActiveGroupPostAsync(Guid groupId, Guid id);
 
         public Task<Pagination<GroupPostViewModel>> GetActiveGroupPostsAsync(Guid groupId, int page = 1, int limit = 20);

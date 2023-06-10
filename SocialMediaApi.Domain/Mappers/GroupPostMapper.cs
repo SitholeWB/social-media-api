@@ -19,18 +19,6 @@ namespace SocialMediaApi.Domain.Mappers
             return viewPost;
         }
 
-        public static GroupPostViewModel? ToView(NewGroupPost? groupPost)
-        {
-            var viewPost = BaseToView(groupPost);
-            if (viewPost == null)
-            {
-                return default;
-            }
-            viewPost.GroupId = groupPost!.GroupId;
-            viewPost.EntityOrigin = EntityOrigin.New;
-            return viewPost;
-        }
-
         public static GroupPostViewModel? ToView(ActiveGroupPost? groupPost)
         {
             var viewPost = BaseToView(groupPost);
