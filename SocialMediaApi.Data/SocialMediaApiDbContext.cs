@@ -14,6 +14,7 @@ namespace SocialMediaApi.Data
 
         public DbSet<ActiveGroupPost> ActiveGroupPosts { get; set; } = default!;
         public DbSet<GroupPost> GroupPosts { get; set; } = default!;
+        public DbSet<GroupPostComment> GroupPostComments { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,7 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.ToJson();
                 });
             modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+            modelBuilder.Entity<GroupPost>().HasMany(x => x.GroupPostComments).WithOne(x => x.GroupPost).HasForeignKey(x => x.GroupPostId);
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
             modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
@@ -59,6 +61,25 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
             modelBuilder.Entity<ActiveGroupPost>().OwnsOne(
+                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                    ownedNavigationBuilder.OwnsMany(x => x.Emojis);
+                });
+
+            //GroupPostComment
+            modelBuilder.Entity<GroupPostComment>().OwnsOne(
+                groupPost => groupPost.Creator, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                });
+            modelBuilder.Entity<GroupPostComment>().OwnsOne(
+                groupPost => groupPost.Media, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                    ownedNavigationBuilder.OwnsMany(media => media.Content);
+                });
+            modelBuilder.Entity<GroupPostComment>().OwnsOne(
                 groupPost => groupPost.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();

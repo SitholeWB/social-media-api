@@ -18,7 +18,7 @@ namespace SocialMediaApi.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Downloads = table.Column<int>(type: "int", nullable: false),
                     Views = table.Column<int>(type: "int", nullable: false),
                     Rank = table.Column<int>(type: "int", nullable: false),
@@ -59,7 +59,7 @@ namespace SocialMediaApi.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Downloads = table.Column<int>(type: "int", nullable: false),
                     Views = table.Column<int>(type: "int", nullable: false),
                     Rank = table.Column<int>(type: "int", nullable: false),
@@ -82,6 +82,36 @@ namespace SocialMediaApi.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GroupPostComments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EntityStatus = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Downloads = table.Column<int>(type: "int", nullable: false),
+                    Views = table.Column<int>(type: "int", nullable: false),
+                    Rank = table.Column<int>(type: "int", nullable: false),
+                    TotalComments = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ActionBasedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Creator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reactions = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupPostComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GroupPostComments_GroupPosts_GroupPostId",
+                        column: x => x.GroupPostId,
+                        principalTable: "GroupPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveGroupPosts_ActionBasedDate",
                 table: "ActiveGroupPosts",
@@ -91,6 +121,11 @@ namespace SocialMediaApi.Data.Migrations
                 name: "IX_ActiveGroupPosts_GroupId",
                 table: "ActiveGroupPosts",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupPostComments_GroupPostId",
+                table: "GroupPostComments",
+                column: "GroupPostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupPosts_ActionBasedDate",
@@ -113,6 +148,9 @@ namespace SocialMediaApi.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ActiveGroupPosts");
+
+            migrationBuilder.DropTable(
+                name: "GroupPostComments");
 
             migrationBuilder.DropTable(
                 name: "GroupPosts");
