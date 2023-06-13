@@ -54,5 +54,29 @@ namespace SocialMediaApi.Domain.Mappers
                 ActionBasedDate = basePost.ActionBasedDate,
             };
         }
+
+        public static GroupPostCommentViewModel? ToView(GroupPostComment? groupPostComment)
+        {
+            if (groupPostComment == null)
+            {
+                return default;
+            }
+            return new GroupPostCommentViewModel
+            {
+                CreatedDate = groupPostComment.CreatedDate,
+                Creator = groupPostComment.Creator,
+                Id = groupPostComment.Id,
+                LastModifiedDate = groupPostComment.LastModifiedDate,
+                Media = groupPostComment.Media,
+                Views = groupPostComment.Views,
+                TotalComments = groupPostComment.TotalComments,
+                Downloads = groupPostComment.Downloads,
+                GroupPostId = groupPostComment.GroupPostId,
+                Rank = groupPostComment.Rank,
+                Reactions = groupPostComment.Reactions,
+                Text = groupPostComment.Text,
+                ActionBasedDate = groupPostComment.ActionBasedDate,
+            };
+        }
     }
 }
