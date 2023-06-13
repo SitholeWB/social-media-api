@@ -12,7 +12,7 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230610180229_initial")]
+    [Migration("20230613184529_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -48,6 +48,9 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
@@ -120,6 +123,9 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");

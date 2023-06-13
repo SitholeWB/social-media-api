@@ -46,6 +46,9 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
@@ -117,6 +120,9 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");

@@ -16,7 +16,7 @@ namespace SocialMediaApi.Logic.Services
             }
             return await Task.FromResult(new EntityActionConfig
             {
-                Rank = 1,
+                RankIncrement = 1,
                 ExpireDateMinutes = 15
             });
         }

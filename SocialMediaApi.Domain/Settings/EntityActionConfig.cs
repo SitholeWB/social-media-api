@@ -2,7 +2,7 @@
 {
     public sealed class EntityActionConfig
     {
-        public int Rank { get; set; } = 0;
+        public int RankIncrement { get; set; } = 0;
         public int ExpireDateMinutes { get; set; } = 0;
     }
 }

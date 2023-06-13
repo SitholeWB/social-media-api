@@ -57,6 +57,7 @@ namespace SocialMediaApi.Logic.Services
                     ReactionsCount = 0
                 },
                 TotalComments = 0,
+                Rank = 0,
                 Views = 0,
                 Media = model!.Media
             };
@@ -103,6 +104,7 @@ namespace SocialMediaApi.Logic.Services
             }
             var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
             groupPost.ActionBasedDate = groupPost.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
+            groupPost.Rank += entityActionConfig.RankIncrement;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
         }

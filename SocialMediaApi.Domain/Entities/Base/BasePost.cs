@@ -11,6 +11,7 @@ namespace SocialMediaApi.Domain.Entities.Base
         public string? Text { get; set; }
         public int Downloads { get; set; } = 0;
         public int Views { get; set; } = 0;
+        public int Rank { get; set; } = 0;
         public int TotalComments { get; set; } = 0;
         public Reaction Reactions { get; set; } = new Reaction { };
         public Media Media { get; set; } = new Media { };
