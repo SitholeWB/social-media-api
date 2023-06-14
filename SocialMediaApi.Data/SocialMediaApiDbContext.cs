@@ -29,7 +29,7 @@ namespace SocialMediaApi.Data
             modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.GroupId);
-            modelBuilder.Entity<Reaction>().HasIndex(x => x.OwnerId);
+            modelBuilder.Entity<Reaction>().HasIndex(x => x.EntityId);
             //GroupPost
             modelBuilder.Entity<GroupPost>().OwnsOne(
                 groupPost => groupPost.Creator, ownedNavigationBuilder =>
