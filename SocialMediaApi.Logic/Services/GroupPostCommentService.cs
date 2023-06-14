@@ -67,7 +67,11 @@ namespace SocialMediaApi.Logic.Services
             groupPost.TotalComments += 1;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new AddGroupPostCommentEvent { GroupPostComment = addedEntity.Entity });
+            await _publisher.PublishAsync(new AddGroupPostCommentEvent
+            {
+                GroupPostComment = addedEntity.Entity,
+                GroupPost = groupPost,
+            });
             return GroupPostMapper.ToView(addedEntity.Entity)!;
         }
 
@@ -90,7 +94,11 @@ namespace SocialMediaApi.Logic.Services
             groupPost.TotalComments -= 1;
             _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new DeleteGroupPostCommentEvent { GroupPostComment = groupPostComment });
+            await _publisher.PublishAsync(new DeleteGroupPostCommentEvent
+            {
+                GroupPost = groupPost,
+                GroupPostComment = groupPostComment
+            });
         }
 
         public async Task<Pagination<GroupPostCommentViewModel>> GetGroupPostCommentsAsync(Guid groupPostId, int page = 1, int limit = 20)
@@ -114,12 +122,18 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Post Comment can only be updated by the creator.");
             }
+            var groupPost = await _dbContext.GroupPosts.FindAsync(groupPostId) ?? throw new SocialMediaException("No Post found for given Id.");
+
             groupPostComment.Text = model.Text;
             groupPostComment.Media = model.Media;
             groupPostComment.LastModifiedDate = DateTimeOffset.UtcNow;
             _dbContext.Update(groupPostComment);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new UpdateGroupPostCommentEvent { GroupPostComment = groupPostComment });
+            await _publisher.PublishAsync(new UpdateGroupPostCommentEvent
+            {
+                GroupPost = groupPost,
+                GroupPostComment = groupPostComment
+            });
             return GroupPostMapper.ToView(groupPostComment)!;
         }
 

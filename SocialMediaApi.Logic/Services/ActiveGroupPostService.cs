@@ -89,6 +89,25 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task UpdateActiveGroupPostCommentCountAsync(Guid groupId, Guid id, bool increment)
+        {
+            var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
+            if (!groupPost.GroupId.Equals(groupId))
+            {
+                throw new SocialMediaException("No Post found for given Id & groupId.");
+            }
+            if (increment)
+            {
+                groupPost.TotalComments += 1;
+            }
+            else
+            {
+                groupPost.TotalComments -= 1;
+            }
+            _dbContext.Update(groupPost);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task UpdateActiveGroupPostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
         {
             var groupPost = await _dbContext.ActiveGroupPosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");

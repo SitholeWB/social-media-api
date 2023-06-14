@@ -1,4 +1,5 @@
 ﻿using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.EventHandlers.GroupPostComments;
 using SocialMediaApi.Logic.EventHandlers.GroupPosts;
 using SocialMediaApi.Logic.EventHandlers.Groups;
 
@@ -17,6 +18,9 @@ namespace SocialMediaApi
             services.AddScoped<AddGroupPostNotificationHandler>();
             services.AddScoped<UpdateGroupPostNotificationHandler>();
             services.AddScoped<DeleteGroupPostNotificationHandler>();
+            //Group Post Comments
+            services.AddScoped<AddGroupPostCommentNotificationHandler>();
+            services.AddScoped<DeleteGroupPostCommentNotificationHandler>();
             return services;
         }
     }

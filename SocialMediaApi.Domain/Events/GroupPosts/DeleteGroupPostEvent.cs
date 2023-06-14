@@ -4,6 +4,6 @@ namespace SocialMediaApi.Domain.Events.GroupPosts
 {
     public class DeleteGroupPostEvent : EventBase
     {
-        public GroupPost GroupPost { get; set; } = default!;
+        public GroupPost? GroupPost { get; set; }
     }
 }

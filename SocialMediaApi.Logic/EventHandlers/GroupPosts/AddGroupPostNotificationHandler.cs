@@ -16,10 +16,13 @@ namespace SocialMediaApi.Logic.EventHandlers.GroupPosts
 
         public async Task RunAsync(AddGroupPostEvent obj)
         {
-            await _newGroupPostService.AddActiveGroupPostAsync(obj.GroupPost.GroupId, new AddActiveGroupPostModel
+            if (obj?.GroupPost != null)
             {
-                GroupPost = obj.GroupPost
-            });
+                await _newGroupPostService.AddActiveGroupPostAsync(obj.GroupPost!.GroupId, new AddActiveGroupPostModel
+                {
+                    GroupPost = obj.GroupPost
+                });
+            }
         }
     }
 }

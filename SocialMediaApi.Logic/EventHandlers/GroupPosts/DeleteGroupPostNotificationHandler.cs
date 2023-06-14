@@ -15,7 +15,10 @@ namespace SocialMediaApi.Logic.EventHandlers.GroupPosts
 
         public async Task RunAsync(DeleteGroupPostEvent obj)
         {
-            await _newGroupPostService.DeleteActiveGroupPostAsync(obj.GroupPost.GroupId, obj.GroupPost.Id);
+            if (obj?.GroupPost != null)
+            {
+                await _newGroupPostService.DeleteActiveGroupPostAsync(obj.GroupPost!.GroupId, obj.GroupPost.Id);
+            }
         }
     }
 }
