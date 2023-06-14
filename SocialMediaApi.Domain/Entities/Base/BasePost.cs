@@ -13,7 +13,7 @@ namespace SocialMediaApi.Domain.Entities.Base
         public int Views { get; set; } = 0;
         public int Rank { get; set; } = 0;
         public int TotalComments { get; set; } = 0;
-        public Reaction Reactions { get; set; } = new Reaction { };
+        public ReactionSummary Reactions { get; set; } = new ReactionSummary { };
         public Media Media { get; set; } = new Media { };
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }

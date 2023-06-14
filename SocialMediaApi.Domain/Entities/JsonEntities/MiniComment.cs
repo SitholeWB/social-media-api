@@ -10,7 +10,7 @@ namespace SocialMediaApi.Domain.Entities.JsonEntities
         [Required]
         public string Text { get; set; } = default!;
 
-        public Reaction Reactions { get; set; } = new Reaction { };
+        public ReactionSummary Reactions { get; set; } = new ReactionSummary { };
 
         [Required]
         public Media Media { get; set; } = new Media { };

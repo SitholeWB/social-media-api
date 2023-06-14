@@ -1,6 +1,6 @@
 ﻿namespace SocialMediaApi.Domain.Entities.JsonEntities
 {
-    public class Reaction
+    public class ReactionSummary
     {
         public int ReactionsCount { get; set; } = 0;
 

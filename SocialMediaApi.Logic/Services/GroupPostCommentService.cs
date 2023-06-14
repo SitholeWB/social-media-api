@@ -52,7 +52,7 @@ namespace SocialMediaApi.Logic.Services
                 Text = model!.Text,
                 Downloads = 0,
                 GroupPostId = groupPostId,
-                Reactions = new Reaction
+                Reactions = new ReactionSummary
                 {
                     Emojis = new List<Emoji>(),
                     ReactionsCount = 0
