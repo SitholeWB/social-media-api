@@ -78,5 +78,19 @@ namespace SocialMediaApi.Domain.Mappers
                 ActionBasedDate = groupPostComment.ActionBasedDate,
             };
         }
+
+        public static ReactionViewModel? ToView(Reaction? reaction)
+        {
+            if (reaction == null)
+            {
+                return default;
+            }
+            return new ReactionViewModel
+            {
+                Unicode = reaction.Unicode,
+                EntityId = reaction.EntityId,
+                Creator = reaction.Creator
+            };
+        }
     }
 }

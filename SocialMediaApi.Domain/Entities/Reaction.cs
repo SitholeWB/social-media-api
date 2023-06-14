@@ -11,6 +11,9 @@ namespace SocialMediaApi.Domain.Entities
         public Guid EntityId { get; set; }
 
         [Required]
+        public Guid UserId { get; set; }
+
+        [Required]
         public string Unicode { get; set; } = string.Empty;
 
         public BaseUser Creator { get; set; } = new BaseUser();
