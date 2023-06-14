@@ -38,6 +38,7 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Media explicit definition is required.");
             }
+            var groupPost = await _dbContext.GroupPosts.FindAsync(groupPostId) ?? throw new SocialMediaException("No Post found for given Id.");
             var authUser = await _authService.GetAuthorizedUser();
             var entityGroupPostConfig = await _configService.GetEntityGroupPostConfigAsync();
             var entity = new GroupPostComment
@@ -59,9 +60,12 @@ namespace SocialMediaApi.Logic.Services
                 TotalComments = 0,
                 Rank = 0,
                 Views = 0,
+                GroupPost = groupPost,
                 Media = model!.Media
             };
             var addedEntity = await _dbContext.AddAsync(entity);
+            groupPost.TotalComments += 1;
+            _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new AddGroupPostCommentEvent { GroupPostComment = addedEntity.Entity });
             return GroupPostMapper.ToView(addedEntity.Entity)!;
@@ -74,6 +78,8 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("No Post Comment found for given Id & groupPostId.");
             }
+            var groupPost = await _dbContext.GroupPosts.FindAsync(groupPostId) ?? throw new SocialMediaException("No Post found for given Id.");
+
             var authUser = await _authService.GetAuthorizedUser();
             if (!authUser.Id.Equals(groupPostComment.Creator.Id))
             {
@@ -81,6 +87,8 @@ namespace SocialMediaApi.Logic.Services
             }
             groupPostComment.EntityStatus = EntityStatus.Deleted;
             _dbContext.GroupPostComments.Update(groupPostComment);
+            groupPost.TotalComments -= 1;
+            _dbContext.Update(groupPost);
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new DeleteGroupPostCommentEvent { GroupPostComment = groupPostComment });
         }
