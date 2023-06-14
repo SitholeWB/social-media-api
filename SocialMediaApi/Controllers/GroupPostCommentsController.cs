@@ -9,7 +9,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {
-    [Route("api/v1/groups/{groupId}/posts/{postId}/comments")]
+    [Route("api/v1/post/{postId}/comments")]
     [ApiController]
     public class GroupPostCommentsController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace SocialMediaApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Pagination<GroupPostCommentViewModel>>> GetGroupPostCommentsAsync([FromRoute] Guid groupId, [FromRoute] Guid postId, int page = 1, int limit = 20)
+        public async Task<ActionResult<Pagination<GroupPostCommentViewModel>>> GetGroupPostCommentsAsync([FromRoute] Guid postId, int page = 1, int limit = 20)
         {
             if (limit <= 0)
             {
@@ -32,19 +32,19 @@ namespace SocialMediaApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GroupPostCommentViewModel>> AddGroupPostCommentAsync([FromRoute] Guid groupId, [FromRoute] Guid postId, [FromBody] AddGroupPostCommentModel model)
+        public async Task<ActionResult<GroupPostCommentViewModel>> AddGroupPostCommentAsync([FromRoute] Guid postId, [FromBody] AddGroupPostCommentModel model)
         {
             return Ok(await _groupPostService.AddGroupPostCommentAsync(postId, model));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<GroupPostCommentViewModel>> UpdateGroupPostCommentAsync([FromRoute] Guid groupId, [FromRoute] Guid postId, [FromRoute] Guid id, [FromBody] UpdateGroupPostCommentModel model)
+        public async Task<ActionResult<GroupPostCommentViewModel>> UpdateGroupPostCommentAsync([FromRoute] Guid postId, [FromRoute] Guid id, [FromBody] UpdateGroupPostCommentModel model)
         {
             return Ok(await _groupPostService.UpdateGroupPostCommentAsync(postId, id, model));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGroupPostCommentAsync([FromRoute] Guid groupId, [FromRoute] Guid postId, [FromRoute] Guid id)
+        public async Task<IActionResult> DeleteGroupPostCommentAsync([FromRoute] Guid postId, [FromRoute] Guid id)
         {
             await _groupPostService.DeleteGroupPostCommentAsync(postId, id);
             return Ok();
