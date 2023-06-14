@@ -17,7 +17,7 @@ namespace SocialMediaApi.Logic.EventHandlers.GroupPostComments
         {
             if (obj?.GroupPost != null && obj?.GroupPostComment != null)
             {
-                await _newGroupPostService.UpdateActiveGroupPostCommentCountAsync(obj.GroupPostComment!.GroupPostId, obj.GroupPost!.GroupId, true);
+                await _newGroupPostService.UpdateActiveGroupPostCommentCountAsync(obj.GroupPost!.GroupId, obj.GroupPostComment!.GroupPostId, true);
             }
         }
     }
