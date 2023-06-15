@@ -25,7 +25,7 @@ namespace SocialMediaApi.Logic.Services
             _publisher = publisher;
         }
 
-        public async Task AddReactionAsync(AddReactionModel model)
+        public async Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model)
         {
             if (string.IsNullOrEmpty(model?.Unicode))
             {
@@ -68,19 +68,33 @@ namespace SocialMediaApi.Logic.Services
                 UpdateUserReaction(userReaction, authUser, model);
             }
             await _dbContext.SaveChangesAsync();
+            return GroupPostMapper.ToView(userReaction)!;
         }
 
-        public async Task DeleteReactionAsync(Guid entityId)
+        public async Task<UserReactionViewModel?> DeleteReactionAsync(Guid entityId)
         {
             var userReaction = await _dbContext.UserReactions.FindAsync(entityId);
             if (userReaction != null)
             {
                 var authUser = await _authService.GetAuthorizedUser();
+                var oldReaction = userReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
                 userReaction.Reactions = userReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
-
+                var oldEmoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
+                if (oldEmoji != null)// Should never be null here but you will never know the future developer mind.
+                {
+                    if (oldEmoji.Count <= 1)
+                    {
+                        userReaction.Summary.Emojis = userReaction.Summary.Emojis.Where(x => x.Unicode != oldReaction?.Unicode).ToList();
+                    }
+                    else
+                    {
+                        oldEmoji.Count--;
+                    }
+                }
                 _dbContext.Update(userReaction);
                 await _dbContext.SaveChangesAsync();
             }
+            return GroupPostMapper.ToView(userReaction);
         }
 
         public async Task<UserReactionViewModel?> GetReactionAsync(Guid entityId)

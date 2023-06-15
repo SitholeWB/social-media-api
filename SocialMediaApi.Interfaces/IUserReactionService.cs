@@ -5,9 +5,9 @@ namespace SocialMediaApi.Interfaces
 {
     public interface IUserReactionService
     {
-        public Task AddReactionAsync(AddReactionModel model);
+        public Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model);
 
-        public Task DeleteReactionAsync(Guid entityId);
+        public Task<UserReactionViewModel?> DeleteReactionAsync(Guid entityId);
 
         public Task<UserReactionViewModel?> GetReactionAsync(Guid entityId);
     }
