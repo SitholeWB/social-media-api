@@ -79,18 +79,13 @@ namespace SocialMediaApi.Domain.Mappers
             };
         }
 
-        public static ReactionViewModel? ToView(Reaction? reaction)
+        public static UserReactionViewModel? ToView(UserReaction? reaction)
         {
             if (reaction == null)
             {
                 return default;
             }
-            return new ReactionViewModel
-            {
-                Unicode = reaction.Unicode,
-                EntityId = reaction.EntityId,
-                Creator = reaction.Creator
-            };
+            return reaction as UserReactionViewModel;
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using SocialMediaApi.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace SocialMediaApi.Domain.ViewModels
+namespace SocialMediaApi.Domain.JsonEntities
 {
-    public class ReactionViewModel
+    public class Reaction
     {
-        public Guid EntityId { get; set; }
-
         [Required]
         public string Unicode { get; set; } = string.Empty;
 

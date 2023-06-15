@@ -8,9 +8,9 @@ namespace SocialMediaApi.Logic.UnitOfWork
         private readonly IActiveGroupPostService _activeGroupPostService;
         private readonly IGroupPostService _groupPostService;
         private readonly IGroupPostCommentService _groupPostCommentService;
-        private readonly IReactionService _reactionService;
+        private readonly IUserReactionService _reactionService;
 
-        public PostUnitOfWork(IActiveGroupPostService activeGroupPostService, IGroupPostService groupPostService, IGroupPostCommentService groupPostCommentService, IReactionService reactionService)
+        public PostUnitOfWork(IActiveGroupPostService activeGroupPostService, IGroupPostService groupPostService, IGroupPostCommentService groupPostCommentService, IUserReactionService reactionService)
         {
             _activeGroupPostService = activeGroupPostService;
             _groupPostService = groupPostService;
@@ -24,6 +24,6 @@ namespace SocialMediaApi.Logic.UnitOfWork
 
         public IGroupPostCommentService GroupPostCommentService => _groupPostCommentService;
 
-        public IReactionService IReactionService => _reactionService;
+        public IUserReactionService IReactionService => _reactionService;
     }
 }

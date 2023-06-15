@@ -14,7 +14,7 @@ namespace SocialMediaApi.Data
         public DbSet<ActiveGroupPost> ActiveGroupPosts { get; set; } = default!;
         public DbSet<GroupPost> GroupPosts { get; set; } = default!;
         public DbSet<GroupPostComment> GroupPostComments { get; set; } = default!;
-        public DbSet<Reaction> Reactions { get; set; } = default!;
+        public DbSet<UserReaction> UserReactions { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,8 +29,6 @@ namespace SocialMediaApi.Data
             modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.GroupId);
-            modelBuilder.Entity<Reaction>().HasIndex(x => new { x.EntityId, x.UserId });
-            modelBuilder.Entity<Reaction>().HasIndex(x => x.EntityId);
             //GroupPost
             modelBuilder.Entity<GroupPost>().OwnsOne(
                 groupPost => groupPost.Creator, ownedNavigationBuilder =>
@@ -88,11 +86,18 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
 
-            //GroupPostComment
-            modelBuilder.Entity<Reaction>().OwnsOne(
-                groupPost => groupPost.Creator, ownedNavigationBuilder =>
+            //UserReaction
+            modelBuilder.Entity<UserReaction>().OwnsOne(
+                groupPost => groupPost.Summary, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
+                    ownedNavigationBuilder.OwnsMany(x => x.Emojis);
+                });
+            modelBuilder.Entity<UserReaction>().OwnsMany(
+                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                    ownedNavigationBuilder.OwnsOne(x => x.Creator);
                 });
         }
     }

@@ -53,6 +53,21 @@ namespace SocialMediaApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserReactions",
+                columns: table => new
+                {
+                    EntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Reactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Summary = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserReactions", x => x.EntityId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GroupPosts",
                 columns: table => new
                 {
@@ -151,6 +166,9 @@ namespace SocialMediaApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "GroupPostComments");
+
+            migrationBuilder.DropTable(
+                name: "UserReactions");
 
             migrationBuilder.DropTable(
                 name: "GroupPosts");
