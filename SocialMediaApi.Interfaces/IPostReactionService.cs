@@ -7,6 +7,6 @@ namespace SocialMediaApi.Interfaces
     {
         public Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model);
 
-        public Task DeleteReactionAsync(Guid entityId, Guid id);
+        public Task<UserReactionViewModel?> DeleteReactionAsync(Guid entityId);
     }
 }
