@@ -10,8 +10,7 @@ namespace SocialMediaApi.Logic.Services
             return await Task.FromResult(new BaseUser
             {
                 ImageUrl = "To be implemented.",
-                Name = "To be implemented.",
-                Role = "To be implemented.",
+                Name = "To be implemented."
             });
         }
 
@@ -20,8 +19,7 @@ namespace SocialMediaApi.Logic.Services
             return await Task.FromResult(new BaseUser
             {
                 ImageUrl = "To be implemented.",
-                Name = "To be implemented.",
-                Role = "To be implemented.",
+                Name = "To be implemented."
             });
         }
 
@@ -30,8 +28,7 @@ namespace SocialMediaApi.Logic.Services
             return await Task.FromResult(new BaseUser
             {
                 ImageUrl = "To be implemented.",
-                Name = "To be implemented.",
-                Role = "To be implemented.",
+                Name = "To be implemented."
             });
         }
     }
