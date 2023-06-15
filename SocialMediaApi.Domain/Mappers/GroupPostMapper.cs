@@ -85,7 +85,14 @@ namespace SocialMediaApi.Domain.Mappers
             {
                 return default;
             }
-            return reaction as UserReactionViewModel;
+            return new UserReactionViewModel
+            {
+                CreatedDate = reaction.CreatedDate,
+                EntityId = reaction.EntityId,
+                LastModifiedDate = reaction.LastModifiedDate,
+                Reactions = reaction.Reactions,
+                Summary = reaction.Summary,
+            };
         }
     }
 }

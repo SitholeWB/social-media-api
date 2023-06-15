@@ -7,5 +7,7 @@
         public IGroupPostService GroupPostService { get; }
 
         public IGroupPostCommentService GroupPostCommentService { get; }
+        public IPostReactionService IPostReactionService { get; }
+        public IUserReactionService IReactionService { get; }
     }
 }

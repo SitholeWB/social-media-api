@@ -35,7 +35,7 @@ namespace SocialMediaApi.Logic.Services
             var userReaction = await _dbContext.UserReactions.FindAsync(model.EntityId);
             if (userReaction == null)
             {
-                var entity = new UserReaction
+                userReaction = new UserReaction
                 {
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
@@ -61,7 +61,7 @@ namespace SocialMediaApi.Logic.Services
                         }
                     }
                 };
-                await _dbContext.AddAsync(entity);
+                await _dbContext.AddAsync(userReaction);
             }
             else
             {
@@ -107,7 +107,7 @@ namespace SocialMediaApi.Logic.Services
             var oldReaction = userReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
             userReaction.Reactions = userReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
             var oldEmoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
-            if (oldEmoji != null)// Should never be null here but you will never know the future developer mind.
+            if (oldEmoji != null)
             {
                 if (oldEmoji.Count <= 1)
                 {
@@ -124,7 +124,7 @@ namespace SocialMediaApi.Logic.Services
                 Creator = authUser,
                 Unicode = model.Unicode
             });
-            userReaction.Summary.ReactionsCount++;
+
             var emoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == model.Unicode);
             if (emoji == null)
             {
@@ -138,7 +138,7 @@ namespace SocialMediaApi.Logic.Services
             {
                 emoji.Count++;
             }
-
+            userReaction.Summary.ReactionsCount = userReaction.Reactions.Count;
             userReaction.LastModifiedDate = DateTimeOffset.UtcNow;
             _dbContext.Update(userReaction);
         }
