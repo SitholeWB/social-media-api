@@ -5,7 +5,7 @@ namespace SocialMediaApi.Interfaces
 {
     public interface IEntityDetailsService
     {
-        public Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model);
+        public Task<EntityReactionViewModel> AddReactionAsync(Guid entityId, AddEntityReactionModel model);
 
         public Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId);
 

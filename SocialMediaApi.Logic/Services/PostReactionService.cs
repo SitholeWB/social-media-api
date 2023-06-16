@@ -18,9 +18,9 @@ namespace SocialMediaApi.Logic.Services
             _userDetailsService = userDetailsService;
         }
 
-        public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
+        public async Task<EntityReactionViewModel> AddReactionAsync(Guid entityId, AddEntityReactionModel model)
         {
-            var entityReaction = await _entityDetailsService.AddReactionAsync(model);
+            var entityReaction = await _entityDetailsService.AddReactionAsync(entityId, model);
             var post = await _dbContext.Posts.FindAsync(entityReaction.EntityId);
             if (post != null)
             {
@@ -33,7 +33,7 @@ namespace SocialMediaApi.Logic.Services
                     _dbContext.ActivePosts.Update(activePost);
                 }
                 await _dbContext.SaveChangesAsync();
-                await _userDetailsService.AddPostReactionAsync(model);
+                await _userDetailsService.AddPostReactionAsync(entityId, model);
             }
 
             return entityReaction;

@@ -17,18 +17,18 @@ namespace SocialMediaApi.Logic.Services
             _dbContext = dbContext;
         }
 
-        public async Task AddCommentReactionAsync(AddEntityReactionModel model)
+        public async Task AddCommentReactionAsync(Guid entityId, AddEntityReactionModel model)
         {
             if (string.IsNullOrEmpty(model?.Unicode))
             {
                 throw new SocialMediaException("Unicode is required.");
             }
-            var userDetails = await _dbContext.UserDetails.FindAsync(model.EntityId);
+            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
             if (userDetails == null)
             {
                 userDetails = new UserDetails
                 {
-                    Id = model.EntityId,
+                    Id = entityId,
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
                     CommentReactions = new List<MiniReaction>(),
@@ -36,20 +36,20 @@ namespace SocialMediaApi.Logic.Services
                 };
                 userDetails.CommentReactions.Add(new MiniReaction
                 {
-                    EntityId = model.EntityId,
+                    EntityId = entityId,
                     Unicode = model.Unicode,
                 });
                 await _dbContext.SaveChangesAsync();
             }
             else
             {
-                var reaction = userDetails.CommentReactions.FirstOrDefault(x => x.EntityId == model.EntityId);
-                userDetails.CommentReactions = userDetails.CommentReactions.Where(x => x.EntityId != model.EntityId).ToList();
+                var reaction = userDetails.CommentReactions.FirstOrDefault(x => x.EntityId == entityId);
+                userDetails.CommentReactions = userDetails.CommentReactions.Where(x => x.EntityId != entityId).ToList();
                 if (reaction == null)
                 {
                     reaction = new MiniReaction
                     {
-                        EntityId = model.EntityId,
+                        EntityId = entityId,
                         Unicode = model.Unicode
                     };
                 }
@@ -63,18 +63,18 @@ namespace SocialMediaApi.Logic.Services
             }
         }
 
-        public async Task AddPostReactionAsync(AddEntityReactionModel model)
+        public async Task AddPostReactionAsync(Guid entityId, AddEntityReactionModel model)
         {
             if (string.IsNullOrEmpty(model?.Unicode))
             {
                 throw new SocialMediaException("Unicode is required.");
             }
-            var userDetails = await _dbContext.UserDetails.FindAsync(model.EntityId);
+            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
             if (userDetails == null)
             {
                 userDetails = new UserDetails
                 {
-                    Id = model.EntityId,
+                    Id = entityId,
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
                     CommentReactions = new List<MiniReaction>(),
@@ -82,7 +82,7 @@ namespace SocialMediaApi.Logic.Services
                 };
                 userDetails.PostReactions.Add(new MiniReaction
                 {
-                    EntityId = model.EntityId,
+                    EntityId = entityId,
                     Unicode = model.Unicode,
                 });
                 _dbContext.Add(userDetails);
@@ -90,13 +90,13 @@ namespace SocialMediaApi.Logic.Services
             }
             else
             {
-                var reaction = userDetails.PostReactions.FirstOrDefault(x => x.EntityId == model.EntityId);
-                userDetails.PostReactions = userDetails.PostReactions.Where(x => x.EntityId != model.EntityId).ToList();
+                var reaction = userDetails.PostReactions.FirstOrDefault(x => x.EntityId == entityId);
+                userDetails.PostReactions = userDetails.PostReactions.Where(x => x.EntityId != entityId).ToList();
                 if (reaction == null)
                 {
                     reaction = new MiniReaction
                     {
-                        EntityId = model.EntityId,
+                        EntityId = entityId,
                         Unicode = model.Unicode
                     };
                 }

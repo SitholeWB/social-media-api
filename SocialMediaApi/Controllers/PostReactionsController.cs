@@ -30,7 +30,7 @@ namespace SocialMediaApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CommentViewModel>> AddReactionAsync([FromRoute] Guid postId, [FromBody] AddEntityReactionModel model)
         {
-            return Ok(await _postReactionService.AddReactionAsync(model));
+            return Ok(await _postReactionService.AddReactionAsync(postId, model));
         }
 
         [HttpDelete]

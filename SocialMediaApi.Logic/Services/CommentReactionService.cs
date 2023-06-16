@@ -18,16 +18,16 @@ namespace SocialMediaApi.Logic.Services
             _userDetailsService = userDetailsService;
         }
 
-        public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
+        public async Task<EntityReactionViewModel> AddReactionAsync(Guid entityId, AddEntityReactionModel model)
         {
-            var entityReaction = await _entityDetailsService.AddReactionAsync(model);
+            var entityReaction = await _entityDetailsService.AddReactionAsync(entityId, model);
             var post = await _dbContext.Comments.FindAsync(entityReaction.EntityId);
             if (post != null)
             {
                 post.Reactions = entityReaction.Summary;
                 _dbContext.Comments.Update(post);
                 await _dbContext.SaveChangesAsync();
-                await _userDetailsService.AddCommentReactionAsync(model);
+                await _userDetailsService.AddCommentReactionAsync(entityId, model);
             }
 
             return entityReaction;

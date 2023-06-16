@@ -25,21 +25,21 @@ namespace SocialMediaApi.Logic.Services
             _publisher = publisher;
         }
 
-        public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
+        public async Task<EntityReactionViewModel> AddReactionAsync(Guid entityId, AddEntityReactionModel model)
         {
             if (string.IsNullOrEmpty(model?.Unicode))
             {
                 throw new SocialMediaException("Unicode is required.");
             }
             var authUser = await _authService.GetAuthorizedUser();
-            var entityReaction = await _dbContext.EntityDetails.FindAsync(model.EntityId);
+            var entityReaction = await _dbContext.EntityDetails.FindAsync(entityId);
             if (entityReaction == null)
             {
                 entityReaction = new EntityDetails
                 {
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
-                    EntityId = model.EntityId,
+                    EntityId = entityId,
                     Reactions = new List<Reaction>
                     {
                         new Reaction
