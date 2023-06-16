@@ -129,6 +129,22 @@ namespace SocialMediaApi.Data.Migrations
                     table.PrimaryKey("PK_UserDetails", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserPosts",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsFull = table.Column<bool>(type: "bit", nullable: false),
+                    Page = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Posts = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPosts", x => x.Id);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ActivePosts_ActionBasedDate",
                 table: "ActivePosts",
@@ -158,6 +174,11 @@ namespace SocialMediaApi.Data.Migrations
                 name: "IX_Posts_GroupId",
                 table: "Posts",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPosts_UserId",
+                table: "UserPosts",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -180,6 +201,9 @@ namespace SocialMediaApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserDetails");
+
+            migrationBuilder.DropTable(
+                name: "UserPosts");
         }
     }
 }

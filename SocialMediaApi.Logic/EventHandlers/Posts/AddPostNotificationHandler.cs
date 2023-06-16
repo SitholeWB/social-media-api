@@ -25,7 +25,7 @@ namespace SocialMediaApi.Logic.EventHandlers.Posts
                 {
                     CreatedDate = obj.Post!.CreatedDate,
                     EntityId = obj.Post!.Id,
-                    UserId = obj.Post!.Id,
+                    UserId = obj.Post!.Creator.Id,
                 });
                 await _newPostService.AddActivePostAsync(obj.Post!.GroupId, new AddActivePostModel
                 {

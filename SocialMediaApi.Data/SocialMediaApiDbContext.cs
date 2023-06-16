@@ -27,6 +27,8 @@ namespace SocialMediaApi.Data
                 });
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
 
+            modelBuilder.Entity<UserPost>().HasIndex(x => x.UserId);
+
             modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<Post>().HasIndex(x => x.GroupId);
 
@@ -112,6 +114,12 @@ namespace SocialMediaApi.Data
                 });
             modelBuilder.Entity<UserDetails>().OwnsMany(
                 post => post.CommentReactions, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                });
+            //UserPosts
+            modelBuilder.Entity<UserPost>().OwnsMany(
+                post => post.Posts, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                 });

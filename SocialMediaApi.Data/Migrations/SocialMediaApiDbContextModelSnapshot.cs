@@ -219,6 +219,30 @@ namespace SocialMediaApi.Data.Migrations
                     b.ToTable("UserDetails");
                 });
 
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.UserPost", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsFull")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Page")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPosts");
+                });
+
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActivePost", b =>
                 {
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
@@ -809,6 +833,36 @@ namespace SocialMediaApi.Data.Migrations
                     b.Navigation("CommentReactions");
 
                     b.Navigation("PostReactions");
+                });
+
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.UserPost", b =>
+                {
+                    b.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MiniEntity", "Posts", b1 =>
+                        {
+                            b1.Property<string>("UserPostId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<DateTimeOffset>("CreatedDate")
+                                .HasColumnType("datetimeoffset");
+
+                            b1.Property<Guid>("EntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("UserPostId", "Id");
+
+                            b1.ToTable("UserPosts");
+
+                            b1.ToJson("Posts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserPostId");
+                        });
+
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }
