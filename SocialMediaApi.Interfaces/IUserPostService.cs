@@ -1,15 +1,15 @@
 ﻿using Pagination.EntityFrameworkCore.Extensions;
+using SocialMediaApi.Domain.Entities.JsonEntities;
 using SocialMediaApi.Domain.Models.UserPosts;
-using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces
 {
     public interface IUserPostService
     {
-        public Task<UserPostViewModel> AddUserPostAsync(AddUserPostModel model);
+        public Task AddUserPostAsync(AddUserPostModel model);
 
-        public Task DeleteUserPostAsync(Guid entityId);
+        public Task DeleteUserPostAsync(Guid userId, Guid entityId);
 
-        public Task<Pagination<UserPostViewModel>> GetUserPostsAsync(Guid userId, int page);
+        public Task<Pagination<MiniEntity>> GetUserPostsAsync(Guid userId, int page, int limit);
     }
 }
