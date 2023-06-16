@@ -68,6 +68,23 @@ namespace SocialMediaApi.Data.Migrations
                     b.ToTable("ActiveGroupPosts");
                 });
 
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.EntityDetails", b =>
+                {
+                    b.Property<Guid>("EntityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("EntityId");
+
+                    b.ToTable("EntityDetails");
+                });
+
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
@@ -188,23 +205,6 @@ namespace SocialMediaApi.Data.Migrations
                     b.ToTable("GroupPostComments");
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.UserReaction", b =>
-                {
-                    b.Property<Guid>("EntityId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("EntityId");
-
-                    b.ToTable("UserReactions");
-                });
-
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActiveGroupPost", b =>
                 {
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
@@ -220,10 +220,6 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Role")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -341,6 +337,111 @@ namespace SocialMediaApi.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.EntityDetails", b =>
+                {
+                    b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.ReactionSummary", "Summary", b1 =>
+                        {
+                            b1.Property<Guid>("EntityDetailsEntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("ReactionsCount")
+                                .HasColumnType("int");
+
+                            b1.HasKey("EntityDetailsEntityId");
+
+                            b1.ToTable("EntityDetails");
+
+                            b1.ToJson("Summary");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EntityDetailsEntityId");
+
+                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Emoji", "Emojis", b2 =>
+                                {
+                                    b2.Property<Guid>("ReactionSummaryEntityDetailsEntityId")
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    b2.Property<int>("Count")
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("Unicode")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("ReactionSummaryEntityDetailsEntityId", "Id");
+
+                                    b2.ToTable("EntityDetails");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ReactionSummaryEntityDetailsEntityId");
+                                });
+
+                            b1.Navigation("Emojis");
+                        });
+
+                    b.OwnsMany("SocialMediaApi.Domain.JsonEntities.Reaction", "Reactions", b1 =>
+                        {
+                            b1.Property<Guid>("EntityDetailsEntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Unicode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("EntityDetailsEntityId", "Id");
+
+                            b1.ToTable("EntityDetails");
+
+                            b1.ToJson("Reactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EntityDetailsEntityId");
+
+                            b1.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b2 =>
+                                {
+                                    b2.Property<Guid>("ReactionEntityDetailsEntityId")
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<int>("ReactionId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<string>("ImageUrl")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("ReactionEntityDetailsEntityId", "ReactionId");
+
+                                    b2.ToTable("EntityDetails");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ReactionEntityDetailsEntityId", "ReactionId");
+                                });
+
+                            b1.Navigation("Creator")
+                                .IsRequired();
+                        });
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Summary")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.Group", b =>
                 {
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
@@ -356,10 +457,6 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Role")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -398,10 +495,6 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Role")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -545,10 +638,6 @@ namespace SocialMediaApi.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("Role")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.HasKey("GroupPostCommentId");
 
                             b1.ToTable("GroupPostComments");
@@ -662,115 +751,6 @@ namespace SocialMediaApi.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Reactions")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.UserReaction", b =>
-                {
-                    b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.ReactionSummary", "Summary", b1 =>
-                        {
-                            b1.Property<Guid>("UserReactionEntityId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("ReactionsCount")
-                                .HasColumnType("int");
-
-                            b1.HasKey("UserReactionEntityId");
-
-                            b1.ToTable("UserReactions");
-
-                            b1.ToJson("Summary");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserReactionEntityId");
-
-                            b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Emoji", "Emojis", b2 =>
-                                {
-                                    b2.Property<Guid>("ReactionSummaryUserReactionEntityId")
-                                        .HasColumnType("uniqueidentifier");
-
-                                    b2.Property<int>("Id")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("int");
-
-                                    b2.Property<int>("Count")
-                                        .HasColumnType("int");
-
-                                    b2.Property<string>("Unicode")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
-                                    b2.HasKey("ReactionSummaryUserReactionEntityId", "Id");
-
-                                    b2.ToTable("UserReactions");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("ReactionSummaryUserReactionEntityId");
-                                });
-
-                            b1.Navigation("Emojis");
-                        });
-
-                    b.OwnsMany("SocialMediaApi.Domain.JsonEntities.Reaction", "Reactions", b1 =>
-                        {
-                            b1.Property<Guid>("UserReactionEntityId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Unicode")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("UserReactionEntityId", "Id");
-
-                            b1.ToTable("UserReactions");
-
-                            b1.ToJson("Reactions");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserReactionEntityId");
-
-                            b1.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b2 =>
-                                {
-                                    b2.Property<Guid>("ReactionUserReactionEntityId")
-                                        .HasColumnType("uniqueidentifier");
-
-                                    b2.Property<int>("ReactionId")
-                                        .HasColumnType("int");
-
-                                    b2.Property<Guid>("Id")
-                                        .HasColumnType("uniqueidentifier");
-
-                                    b2.Property<string>("ImageUrl")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
-                                    b2.Property<string>("Name")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
-                                    b2.Property<string>("Role")
-                                        .IsRequired()
-                                        .HasColumnType("nvarchar(max)");
-
-                                    b2.HasKey("ReactionUserReactionEntityId", "ReactionId");
-
-                                    b2.ToTable("UserReactions");
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("ReactionUserReactionEntityId", "ReactionId");
-                                });
-
-                            b1.Navigation("Creator")
-                                .IsRequired();
-                        });
-
-                    b.Navigation("Reactions");
-
-                    b.Navigation("Summary")
                         .IsRequired();
                 });
 
