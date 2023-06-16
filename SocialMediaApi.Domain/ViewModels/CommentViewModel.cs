@@ -9,7 +9,6 @@ namespace SocialMediaApi.Domain.ViewModels
         public Guid PostId { get; set; }
         public BaseUser Creator { get; set; } = new BaseUser();
         public string Text { get; set; } = string.Empty;
-        public int Downloads { get; set; } = 0;
         public int Views { get; set; } = 0;
         public int Rank { get; set; } = 0;
         public int TotalComments { get; set; } = 0;

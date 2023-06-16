@@ -70,7 +70,6 @@ namespace SocialMediaApi.Domain.Mappers
                 Media = comment.Media,
                 Views = comment.Views,
                 TotalComments = comment.TotalComments,
-                Downloads = comment.Downloads,
                 PostId = comment.PostId,
                 Rank = comment.Rank,
                 Reactions = comment.Reactions,

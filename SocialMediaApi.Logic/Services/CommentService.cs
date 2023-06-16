@@ -50,7 +50,6 @@ namespace SocialMediaApi.Logic.Services
                 ActionBasedDate = DateTimeOffset.UtcNow.AddMinutes(entityPostConfig.PostDefaultExpireMinutes),
                 Creator = authUser,
                 Text = model!.Text,
-                Downloads = 0,
                 PostId = postId,
                 Reactions = new ReactionSummary
                 {
