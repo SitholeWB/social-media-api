@@ -11,7 +11,6 @@ namespace SocialMediaApi.Domain.Entities
         public BaseUser Creator { get; set; } = new BaseUser();
         public EntityStatus EntityStatus { get; set; }
         public string Text { get; set; } = string.Empty;
-        public int Downloads { get; set; } = 0;
         public int Views { get; set; } = 0;
         public int Rank { get; set; } = 0;
         public int TotalComments { get; set; } = 0;
