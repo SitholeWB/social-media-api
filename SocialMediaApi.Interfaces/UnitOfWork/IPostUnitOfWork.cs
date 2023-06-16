@@ -15,5 +15,7 @@
         public IEntityDetailsService EntityDetailsService { get; }
 
         public IUserDetailsService UserDetailsService { get; }
+
+        public IUserPostService UserPostService { get; }
     }
 }
