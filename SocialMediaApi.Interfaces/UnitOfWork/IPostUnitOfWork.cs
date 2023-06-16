@@ -13,5 +13,7 @@
         public ICommentReactionService CommentReactionService { get; }
 
         public IEntityDetailsService EntityDetailsService { get; }
+
+        public IUserDetailsService UserDetailsService { get; }
     }
 }
