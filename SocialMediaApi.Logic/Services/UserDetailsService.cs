@@ -134,12 +134,12 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<IList<MiniReaction>> GetCommentReactionsAsync(Guid entityId)
         {
-            return await _dbContext.UserDetails.Where(x => x.Id == entityId).Select(x => x.CommentReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
+            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == entityId).Select(x => x.CommentReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
         }
 
         public async Task<IList<MiniReaction>> GetPostReactionsAsync(Guid entityId)
         {
-            return await _dbContext.UserDetails.Where(x => x.Id == entityId).Select(x => x.PostReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
+            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == entityId).Select(x => x.PostReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
         }
     }
 }

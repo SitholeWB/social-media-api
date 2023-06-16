@@ -51,7 +51,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteGroupAsync(Guid id)
         {
-            var group = await _dbContext.Groups.FirstOrDefaultAsync(x => x.Id == id) ?? throw new SocialMediaException("No Group found for given Id.");
+            var group = await _dbContext.Groups.FindAsync(id) ?? throw new SocialMediaException("No Group found for given Id.");
             var authUser = await _authService.GetAuthorizedUser();
             if (!authUser.Id.Equals(group.Creator.Id))
             {
@@ -65,7 +65,7 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<GroupViewModel?> GetGroupAsync(Guid id)
         {
-            return GroupMapper.ToView(await _dbContext.Groups.FirstOrDefaultAsync(x => x.Id == id));
+            return GroupMapper.ToView(await _dbContext.Groups.FindAsync(id));
         }
 
         public async Task<Pagination<GroupViewModel>> GetGroupsAsync(int page = 1, int limit = 20)
