@@ -17,8 +17,8 @@ namespace SocialMediaApi.Controllers
 
         public GroupPostReactionsController(IPostUnitOfWork postUnitOfWork)
         {
-            _postReactionService = postUnitOfWork.IPostReactionService;
-            _entityDetailsService = postUnitOfWork.IEntityDetailsService;
+            _postReactionService = postUnitOfWork.PostReactionService;
+            _entityDetailsService = postUnitOfWork.EntityDetailsService;
         }
 
         [HttpGet]
