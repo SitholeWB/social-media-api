@@ -32,10 +32,10 @@ namespace SocialMediaApi.Logic.Services
                 throw new SocialMediaException("Unicode is required.");
             }
             var authUser = await _authService.GetAuthorizedUser();
-            var userReaction = await _dbContext.EntityDetails.FindAsync(model.EntityId);
-            if (userReaction == null)
+            var entityReaction = await _dbContext.EntityDetails.FindAsync(model.EntityId);
+            if (entityReaction == null)
             {
-                userReaction = new EntityDetails
+                entityReaction = new EntityDetails
                 {
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
@@ -61,40 +61,40 @@ namespace SocialMediaApi.Logic.Services
                         }
                     }
                 };
-                await _dbContext.AddAsync(userReaction);
+                await _dbContext.AddAsync(entityReaction);
             }
             else
             {
-                UpdateUserReaction(userReaction, authUser, model);
+                UpdateUserReaction(entityReaction, authUser, model);
             }
             await _dbContext.SaveChangesAsync();
-            return GroupPostMapper.ToView(userReaction)!;
+            return GroupPostMapper.ToView(entityReaction)!;
         }
 
         public async Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId)
         {
-            var userReaction = await _dbContext.EntityDetails.FindAsync(entityId);
-            if (userReaction != null)
+            var entityReaction = await _dbContext.EntityDetails.FindAsync(entityId);
+            if (entityReaction != null)
             {
                 var authUser = await _authService.GetAuthorizedUser();
-                var oldReaction = userReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
-                userReaction.Reactions = userReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
-                var oldEmoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
+                var oldReaction = entityReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
+                entityReaction.Reactions = entityReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
+                var oldEmoji = entityReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
                 if (oldEmoji != null)// Should never be null here but you will never know the future developer mind.
                 {
                     if (oldEmoji.Count <= 1)
                     {
-                        userReaction.Summary.Emojis = userReaction.Summary.Emojis.Where(x => x.Unicode != oldReaction?.Unicode).ToList();
+                        entityReaction.Summary.Emojis = entityReaction.Summary.Emojis.Where(x => x.Unicode != oldReaction?.Unicode).ToList();
                     }
                     else
                     {
                         oldEmoji.Count--;
                     }
                 }
-                _dbContext.Update(userReaction);
+                _dbContext.Update(entityReaction);
                 await _dbContext.SaveChangesAsync();
             }
-            return GroupPostMapper.ToView(userReaction);
+            return GroupPostMapper.ToView(entityReaction);
         }
 
         public async Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId)
@@ -102,16 +102,16 @@ namespace SocialMediaApi.Logic.Services
             return GroupPostMapper.ToView(await _dbContext.EntityDetails.FindAsync(entityId));
         }
 
-        private void UpdateUserReaction(EntityDetails userReaction, BaseUser authUser, AddEntityReactionModel model)
+        private void UpdateUserReaction(EntityDetails entityReaction, BaseUser authUser, AddEntityReactionModel model)
         {
-            var oldReaction = userReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
-            userReaction.Reactions = userReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
-            var oldEmoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
+            var oldReaction = entityReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
+            entityReaction.Reactions = entityReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction
+            var oldEmoji = entityReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == oldReaction?.Unicode);
             if (oldEmoji != null)
             {
                 if (oldEmoji.Count <= 1)
                 {
-                    userReaction.Summary.Emojis = userReaction.Summary.Emojis.Where(x => x.Unicode != oldReaction?.Unicode).ToList();
+                    entityReaction.Summary.Emojis = entityReaction.Summary.Emojis.Where(x => x.Unicode != oldReaction?.Unicode).ToList();
                 }
                 else
                 {
@@ -119,16 +119,16 @@ namespace SocialMediaApi.Logic.Services
                 }
             }
 
-            userReaction.Reactions.Add(new Reaction
+            entityReaction.Reactions.Add(new Reaction
             {
                 Creator = authUser,
                 Unicode = model.Unicode
             });
 
-            var emoji = userReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == model.Unicode);
+            var emoji = entityReaction.Summary.Emojis.FirstOrDefault(x => x.Unicode == model.Unicode);
             if (emoji == null)
             {
-                userReaction.Summary.Emojis.Add(new Emoji
+                entityReaction.Summary.Emojis.Add(new Emoji
                 {
                     Count = 1,
                     Unicode = model.Unicode,
@@ -138,9 +138,9 @@ namespace SocialMediaApi.Logic.Services
             {
                 emoji.Count++;
             }
-            userReaction.Summary.ReactionsCount = userReaction.Reactions.Count;
-            userReaction.LastModifiedDate = DateTimeOffset.UtcNow;
-            _dbContext.Update(userReaction);
+            entityReaction.Summary.ReactionsCount = entityReaction.Reactions.Count;
+            entityReaction.LastModifiedDate = DateTimeOffset.UtcNow;
+            _dbContext.Update(entityReaction);
         }
     }
 }

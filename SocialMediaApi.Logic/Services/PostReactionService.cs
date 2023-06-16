@@ -18,44 +18,44 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
         {
-            var userReaction = await _entityDetailsService.AddReactionAsync(model);
-            var post = await _dbContext.GroupPosts.FindAsync(userReaction.EntityId);
+            var entityReaction = await _entityDetailsService.AddReactionAsync(model);
+            var post = await _dbContext.GroupPosts.FindAsync(entityReaction.EntityId);
             if (post != null)
             {
-                post.Reactions = userReaction.Summary;
+                post.Reactions = entityReaction.Summary;
                 _dbContext.GroupPosts.Update(post);
-                var activePost = await _dbContext.ActiveGroupPosts.FindAsync(userReaction.EntityId);
+                var activePost = await _dbContext.ActiveGroupPosts.FindAsync(entityReaction.EntityId);
                 if (activePost != null)
                 {
-                    activePost.Reactions = userReaction.Summary;
+                    activePost.Reactions = entityReaction.Summary;
                     _dbContext.ActiveGroupPosts.Update(activePost);
                 }
                 await _dbContext.SaveChangesAsync();
             }
 
-            return userReaction;
+            return entityReaction;
         }
 
         public async Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId)
         {
-            var userReaction = await _entityDetailsService.DeleteReactionAsync(entityId);
-            if (userReaction != null)
+            var entityReaction = await _entityDetailsService.DeleteReactionAsync(entityId);
+            if (entityReaction != null)
             {
-                var post = await _dbContext.GroupPosts.FindAsync(userReaction.EntityId);
+                var post = await _dbContext.GroupPosts.FindAsync(entityReaction.EntityId);
                 if (post != null)
                 {
-                    post.Reactions = userReaction.Summary;
+                    post.Reactions = entityReaction.Summary;
                     _dbContext.GroupPosts.Update(post);
-                    var activePost = await _dbContext.ActiveGroupPosts.FindAsync(userReaction.EntityId);
+                    var activePost = await _dbContext.ActiveGroupPosts.FindAsync(entityReaction.EntityId);
                     if (activePost != null)
                     {
-                        activePost.Reactions = userReaction.Summary;
+                        activePost.Reactions = entityReaction.Summary;
                         _dbContext.ActiveGroupPosts.Update(activePost);
                     }
                     await _dbContext.SaveChangesAsync();
                 }
             }
-            return userReaction;
+            return entityReaction;
         }
     }
 }

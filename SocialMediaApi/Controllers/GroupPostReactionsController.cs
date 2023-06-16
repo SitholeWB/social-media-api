@@ -13,18 +13,18 @@ namespace SocialMediaApi.Controllers
     public class GroupPostReactionsController : ControllerBase
     {
         private readonly IPostReactionService _postReactionService;
-        private readonly IEntityDetailsService _userReactionService;
+        private readonly IEntityDetailsService _entityDetailsService;
 
         public GroupPostReactionsController(IPostUnitOfWork postUnitOfWork)
         {
             _postReactionService = postUnitOfWork.IPostReactionService;
-            _userReactionService = postUnitOfWork.IEntityDetailsService;
+            _entityDetailsService = postUnitOfWork.IEntityDetailsService;
         }
 
         [HttpGet]
         public async Task<ActionResult<EntityReactionViewModel>> GetReactionAsync([FromRoute] Guid postId)
         {
-            return Ok(await _userReactionService.GetReactionAsync(postId));
+            return Ok(await _entityDetailsService.GetReactionAsync(postId));
         }
 
         [HttpPost]
