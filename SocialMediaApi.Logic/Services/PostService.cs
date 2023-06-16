@@ -63,6 +63,7 @@ namespace SocialMediaApi.Logic.Services
             };
             var addedEntity = await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
+
             await _publisher.PublishAsync(new AddPostEvent { Post = addedEntity.Entity });
             return PostMapper.ToView(addedEntity.Entity)!;
         }
@@ -82,6 +83,7 @@ namespace SocialMediaApi.Logic.Services
             post.EntityStatus = EntityStatus.Deleted;
             _dbContext.Posts.Update(post);
             await _dbContext.SaveChangesAsync();
+
             await _publisher.PublishAsync(new DeletePostEvent { Post = post });
         }
 

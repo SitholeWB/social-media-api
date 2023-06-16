@@ -4,7 +4,6 @@
     {
         public Guid EntityId { get; set; }
         public Guid UserId { get; set; }
-
         public DateTimeOffset CreatedDate { get; set; }
     }
 }
