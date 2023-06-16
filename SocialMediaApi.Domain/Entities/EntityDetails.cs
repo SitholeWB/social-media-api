@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SocialMediaApi.Domain.Entities
 {
-    public class UserReaction
+    public class EntityDetails
     {
         [Key]
         public Guid EntityId { get; set; }

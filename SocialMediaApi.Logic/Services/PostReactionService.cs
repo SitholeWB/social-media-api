@@ -7,18 +7,18 @@ namespace SocialMediaApi.Logic.Services
 {
     public class PostReactionService : IPostReactionService
     {
-        private readonly IUserReactionService _reactionService;
+        private readonly IEntityDetailsService _entityDetailsService;
         private readonly SocialMediaApiDbContext _dbContext;
 
-        public PostReactionService(IUserReactionService reactionService, SocialMediaApiDbContext dbContext)
+        public PostReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext)
         {
-            _reactionService = reactionService;
+            _entityDetailsService = entityDetailsService;
             _dbContext = dbContext;
         }
 
-        public async Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model)
+        public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
         {
-            var userReaction = await _reactionService.AddReactionAsync(model);
+            var userReaction = await _entityDetailsService.AddReactionAsync(model);
             var post = await _dbContext.GroupPosts.FindAsync(userReaction.EntityId);
             if (post != null)
             {
@@ -36,9 +36,9 @@ namespace SocialMediaApi.Logic.Services
             return userReaction;
         }
 
-        public async Task<UserReactionViewModel?> DeleteReactionAsync(Guid entityId)
+        public async Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId)
         {
-            var userReaction = await _reactionService.DeleteReactionAsync(entityId);
+            var userReaction = await _entityDetailsService.DeleteReactionAsync(entityId);
             if (userReaction != null)
             {
                 var post = await _dbContext.GroupPosts.FindAsync(userReaction.EntityId);

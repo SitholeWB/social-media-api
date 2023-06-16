@@ -2,9 +2,9 @@
 
 namespace SocialMediaApi.Domain.ViewModels
 {
-    public class UserReactionViewModel : UserReaction
+    public class EntityReactionViewModel : EntityDetails
     {
-        public UserReactionViewModel() : base()
+        public EntityReactionViewModel() : base()
         {
         }
     }

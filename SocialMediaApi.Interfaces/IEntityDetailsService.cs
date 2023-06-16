@@ -3,10 +3,12 @@ using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces
 {
-    public interface IPostReactionService
+    public interface IEntityDetailsService
     {
         public Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model);
 
         public Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId);
+
+        public Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId);
     }
 }

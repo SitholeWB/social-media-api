@@ -79,13 +79,13 @@ namespace SocialMediaApi.Domain.Mappers
             };
         }
 
-        public static UserReactionViewModel? ToView(UserReaction? reaction)
+        public static EntityReactionViewModel? ToView(EntityDetails? reaction)
         {
             if (reaction == null)
             {
                 return default;
             }
-            return new UserReactionViewModel
+            return new EntityReactionViewModel
             {
                 CreatedDate = reaction.CreatedDate,
                 EntityId = reaction.EntityId,

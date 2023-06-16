@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Models.Reactions
 {
-    public class AddReactionModel
+    public class AddEntityReactionModel
     {
         [Required]
         public Guid EntityId { get; set; }

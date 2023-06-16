@@ -5,7 +5,7 @@ namespace SocialMediaApi.Interfaces
 {
     public interface IPostCommentReactionService
     {
-        public Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model);
+        public Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model);
 
         public Task DeleteReactionAsync(Guid entityId, Guid id);
     }

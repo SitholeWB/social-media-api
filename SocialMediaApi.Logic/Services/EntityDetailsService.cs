@@ -12,30 +12,30 @@ using SocialMediaApi.Logic.EventHandlers;
 
 namespace SocialMediaApi.Logic.Services
 {
-    public class UserReactionService : IUserReactionService
+    public class EntityDetailsService : IEntityDetailsService
     {
         private readonly SocialMediaApiDbContext _dbContext;
         private readonly IAuthService _authService;
         private readonly EventHandlerContainer _publisher;
 
-        public UserReactionService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher)
+        public EntityDetailsService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher)
         {
             _dbContext = dbContext;
             _authService = authService;
             _publisher = publisher;
         }
 
-        public async Task<UserReactionViewModel> AddReactionAsync(AddReactionModel model)
+        public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
         {
             if (string.IsNullOrEmpty(model?.Unicode))
             {
                 throw new SocialMediaException("Unicode is required.");
             }
             var authUser = await _authService.GetAuthorizedUser();
-            var userReaction = await _dbContext.UserReactions.FindAsync(model.EntityId);
+            var userReaction = await _dbContext.EntityDetails.FindAsync(model.EntityId);
             if (userReaction == null)
             {
-                userReaction = new UserReaction
+                userReaction = new EntityDetails
                 {
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
@@ -71,9 +71,9 @@ namespace SocialMediaApi.Logic.Services
             return GroupPostMapper.ToView(userReaction)!;
         }
 
-        public async Task<UserReactionViewModel?> DeleteReactionAsync(Guid entityId)
+        public async Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId)
         {
-            var userReaction = await _dbContext.UserReactions.FindAsync(entityId);
+            var userReaction = await _dbContext.EntityDetails.FindAsync(entityId);
             if (userReaction != null)
             {
                 var authUser = await _authService.GetAuthorizedUser();
@@ -97,12 +97,12 @@ namespace SocialMediaApi.Logic.Services
             return GroupPostMapper.ToView(userReaction);
         }
 
-        public async Task<UserReactionViewModel?> GetReactionAsync(Guid entityId)
+        public async Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId)
         {
-            return GroupPostMapper.ToView(await _dbContext.UserReactions.FindAsync(entityId));
+            return GroupPostMapper.ToView(await _dbContext.EntityDetails.FindAsync(entityId));
         }
 
-        private void UpdateUserReaction(UserReaction userReaction, BaseUser authUser, AddReactionModel model)
+        private void UpdateUserReaction(EntityDetails userReaction, BaseUser authUser, AddEntityReactionModel model)
         {
             var oldReaction = userReaction.Reactions.FirstOrDefault(x => x.Creator.Id == authUser.Id);
             userReaction.Reactions = userReaction.Reactions.Where(x => x.Creator.Id != authUser.Id).ToList();//Remove user reaction

@@ -14,7 +14,7 @@ namespace SocialMediaApi.Data
         public DbSet<ActiveGroupPost> ActiveGroupPosts { get; set; } = default!;
         public DbSet<GroupPost> GroupPosts { get; set; } = default!;
         public DbSet<GroupPostComment> GroupPostComments { get; set; } = default!;
-        public DbSet<UserReaction> UserReactions { get; set; } = default!;
+        public DbSet<EntityDetails> EntityDetails { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -87,13 +87,13 @@ namespace SocialMediaApi.Data
                 });
 
             //UserReaction
-            modelBuilder.Entity<UserReaction>().OwnsOne(
+            modelBuilder.Entity<EntityDetails>().OwnsOne(
                 groupPost => groupPost.Summary, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
-            modelBuilder.Entity<UserReaction>().OwnsMany(
+            modelBuilder.Entity<EntityDetails>().OwnsMany(
                 groupPost => groupPost.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
