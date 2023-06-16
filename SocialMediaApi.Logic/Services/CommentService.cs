@@ -38,7 +38,7 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Media explicit definition is required.");
             }
-            var post = await _dbContext.Posts.FindAsync(postId) ?? throw new SocialMediaException("No Post found for given Id.");
+
             var authUser = await _authService.GetAuthorizedUser();
             var entityPostConfig = await _configService.GetEntityPostConfigAsync();
             var entity = new Comment
@@ -60,12 +60,15 @@ namespace SocialMediaApi.Logic.Services
                 TotalComments = 0,
                 Rank = 0,
                 Views = 0,
-                Post = post,
                 Media = model!.Media
             };
             var addedEntity = await _dbContext.AddAsync(entity);
-            post.TotalComments += 1;
-            _dbContext.Update(post);
+            var post = await _dbContext.Posts.FindAsync(postId);
+            if (post != null)
+            {
+                post.TotalComments += 1;
+                _dbContext.Update(post);
+            }
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new AddCommentEvent
             {

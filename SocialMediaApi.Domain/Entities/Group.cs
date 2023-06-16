@@ -16,7 +16,5 @@ namespace SocialMediaApi.Domain.Entities
         public EntityStatus EntityStatus { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
-
-        public virtual ICollection<Post> Posts { get; set; } = default!;
     }
 }

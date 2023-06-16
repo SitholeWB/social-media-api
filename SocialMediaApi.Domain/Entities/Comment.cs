@@ -20,6 +20,5 @@ namespace SocialMediaApi.Domain.Entities
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public DateTimeOffset ActionBasedDate { get; set; }
-        public virtual Post Post { get; set; } = default!;
     }
 }

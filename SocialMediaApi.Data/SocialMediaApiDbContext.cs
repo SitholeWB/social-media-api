@@ -23,10 +23,13 @@ namespace SocialMediaApi.Data
                 {
                     ownedNavigationBuilder.ToJson();
                 });
-            modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
-            modelBuilder.Entity<Post>().HasMany(x => x.Comments).WithOne(x => x.Post).HasForeignKey(x => x.PostId);
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
+
             modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<Post>().HasIndex(x => x.GroupId);
+
+            modelBuilder.Entity<Comment>().HasIndex(x => x.PostId);
+
             modelBuilder.Entity<ActivePost>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActivePost>().HasIndex(x => x.GroupId);
             //Post
