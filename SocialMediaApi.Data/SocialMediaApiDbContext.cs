@@ -104,7 +104,7 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.OwnsOne(x => x.Creator);
                 });
             //UserDetails
-            modelBuilder.Entity<UserDetails>().OwnsOne(
+            modelBuilder.Entity<UserDetails>().OwnsMany(
                 post => post.PostReactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();

@@ -85,6 +85,7 @@ namespace SocialMediaApi.Logic.Services
                     EntityId = model.EntityId,
                     Unicode = model.Unicode,
                 });
+                _dbContext.Add(userDetails);
                 await _dbContext.SaveChangesAsync();
             }
             else

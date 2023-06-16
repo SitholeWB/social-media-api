@@ -780,15 +780,23 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasForeignKey("UserDetailsId");
                         });
 
-                    b.OwnsOne("System.Collections.Generic.List<SocialMediaApi.Domain.Entities.JsonEntities.MiniReaction>", "PostReactions", b1 =>
+                    b.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MiniReaction", "PostReactions", b1 =>
                         {
                             b1.Property<Guid>("UserDetailsId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<int>("Capacity")
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("int");
 
-                            b1.HasKey("UserDetailsId");
+                            b1.Property<Guid>("EntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Unicode")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("UserDetailsId", "Id");
 
                             b1.ToTable("UserDetails");
 
@@ -800,8 +808,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.Navigation("CommentReactions");
 
-                    b.Navigation("PostReactions")
-                        .IsRequired();
+                    b.Navigation("PostReactions");
                 });
 #pragma warning restore 612, 618
         }
