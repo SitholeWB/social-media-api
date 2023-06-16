@@ -1,10 +1,10 @@
-﻿using SocialMediaApi.Domain.Events.GroupPostComments;
-using SocialMediaApi.Domain.Events.GroupPosts;
-using SocialMediaApi.Domain.Events.Groups;
+﻿using SocialMediaApi.Domain.Events.Groups;
+using SocialMediaApi.Domain.Events.PostComments;
+using SocialMediaApi.Domain.Events.Posts;
 using SocialMediaApi.Logic.EventHandlers;
-using SocialMediaApi.Logic.EventHandlers.GroupPostComments;
-using SocialMediaApi.Logic.EventHandlers.GroupPosts;
 using SocialMediaApi.Logic.EventHandlers.Groups;
+using SocialMediaApi.Logic.EventHandlers.PostComments;
+using SocialMediaApi.Logic.EventHandlers.Posts;
 
 namespace SocialMediaApi
 {
@@ -17,12 +17,12 @@ namespace SocialMediaApi
             EventHandlerContainer.Subscribe<DeleteGroupEvent, DeleteGroupNotificationHandler>();
             EventHandlerContainer.Subscribe<UpdateGroupEvent, UpdateGroupNotificationHandler>();
             //Group Posts
-            EventHandlerContainer.Subscribe<AddGroupPostEvent, AddGroupPostNotificationHandler>();
-            EventHandlerContainer.Subscribe<DeleteGroupPostEvent, DeleteGroupPostNotificationHandler>();
-            EventHandlerContainer.Subscribe<UpdateGroupPostEvent, UpdateGroupPostNotificationHandler>();
+            EventHandlerContainer.Subscribe<AddPostEvent, AddPostNotificationHandler>();
+            EventHandlerContainer.Subscribe<DeletePostEvent, DeletePostNotificationHandler>();
+            EventHandlerContainer.Subscribe<UpdatePostEvent, UpdatePostNotificationHandler>();
             //Group Post Comments
-            EventHandlerContainer.Subscribe<AddGroupPostCommentEvent, AddGroupPostCommentNotificationHandler>();
-            EventHandlerContainer.Subscribe<DeleteGroupPostCommentEvent, DeleteGroupPostCommentNotificationHandler>();
+            EventHandlerContainer.Subscribe<AddPostCommentEvent, AddPostCommentNotificationHandler>();
+            EventHandlerContainer.Subscribe<DeletePostCommentEvent, DeletePostCommentNotificationHandler>();
             return services;
         }
     }

@@ -21,9 +21,9 @@ namespace SocialMediaApi.Logic.Services
             });
         }
 
-        public async Task<EntityGroupPostConfig> GetEntityGroupPostConfigAsync()
+        public async Task<EntityPostConfig> GetEntityPostConfigAsync()
         {
-            return await Task.FromResult(new EntityGroupPostConfig
+            return await Task.FromResult(new EntityPostConfig
             {
             });
         }

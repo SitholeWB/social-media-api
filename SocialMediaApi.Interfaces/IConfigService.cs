@@ -7,6 +7,6 @@ namespace SocialMediaApi.Interfaces
     {
         public Task<EntityActionConfig> GetActionConfigAsync(EntityActionType entityActionType);
 
-        public Task<EntityGroupPostConfig> GetEntityGroupPostConfigAsync();
+        public Task<EntityPostConfig> GetEntityPostConfigAsync();
     }
 }

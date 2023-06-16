@@ -19,11 +19,11 @@ namespace SocialMediaApi.Logic.Services
         public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
         {
             var entityReaction = await _entityDetailsService.AddReactionAsync(model);
-            var post = await _dbContext.GroupPostComments.FindAsync(entityReaction.EntityId);
+            var post = await _dbContext.PostComments.FindAsync(entityReaction.EntityId);
             if (post != null)
             {
                 post.Reactions = entityReaction.Summary;
-                _dbContext.GroupPostComments.Update(post);
+                _dbContext.PostComments.Update(post);
                 await _dbContext.SaveChangesAsync();
             }
 
@@ -35,11 +35,11 @@ namespace SocialMediaApi.Logic.Services
             var entityReaction = await _entityDetailsService.DeleteReactionAsync(entityId);
             if (entityReaction != null)
             {
-                var post = await _dbContext.GroupPostComments.FindAsync(entityReaction.EntityId);
+                var post = await _dbContext.PostComments.FindAsync(entityReaction.EntityId);
                 if (post != null)
                 {
                     post.Reactions = entityReaction.Summary;
-                    _dbContext.GroupPostComments.Update(post);
+                    _dbContext.PostComments.Update(post);
                     await _dbContext.SaveChangesAsync();
                 }
             }

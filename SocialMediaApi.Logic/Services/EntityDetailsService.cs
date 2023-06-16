@@ -68,7 +68,7 @@ namespace SocialMediaApi.Logic.Services
                 UpdateUserReaction(entityReaction, authUser, model);
             }
             await _dbContext.SaveChangesAsync();
-            return GroupPostMapper.ToView(entityReaction)!;
+            return PostMapper.ToView(entityReaction)!;
         }
 
         public async Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId)
@@ -94,12 +94,12 @@ namespace SocialMediaApi.Logic.Services
                 _dbContext.Update(entityReaction);
                 await _dbContext.SaveChangesAsync();
             }
-            return GroupPostMapper.ToView(entityReaction);
+            return PostMapper.ToView(entityReaction);
         }
 
         public async Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId)
         {
-            return GroupPostMapper.ToView(await _dbContext.EntityDetails.FindAsync(entityId));
+            return PostMapper.ToView(await _dbContext.EntityDetails.FindAsync(entityId));
         }
 
         private void UpdateUserReaction(EntityDetails entityReaction, BaseUser authUser, AddEntityReactionModel model)

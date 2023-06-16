@@ -11,9 +11,9 @@ namespace SocialMediaApi.Data
         }
 
         public DbSet<Group> Groups { get; set; } = default!;
-        public DbSet<ActiveGroupPost> ActiveGroupPosts { get; set; } = default!;
-        public DbSet<GroupPost> GroupPosts { get; set; } = default!;
-        public DbSet<GroupPostComment> GroupPostComments { get; set; } = default!;
+        public DbSet<ActivePost> ActivePosts { get; set; } = default!;
+        public DbSet<Post> Posts { get; set; } = default!;
+        public DbSet<PostComment> PostComments { get; set; } = default!;
         public DbSet<EntityDetails> EntityDetails { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,77 +24,77 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.ToJson();
                 });
             modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
-            modelBuilder.Entity<GroupPost>().HasMany(x => x.GroupPostComments).WithOne(x => x.GroupPost).HasForeignKey(x => x.GroupPostId);
+            modelBuilder.Entity<Post>().HasMany(x => x.PostComments).WithOne(x => x.Post).HasForeignKey(x => x.PostId);
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
-            modelBuilder.Entity<GroupPost>().HasIndex(x => x.ActionBasedDate);
-            modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.ActionBasedDate);
-            modelBuilder.Entity<ActiveGroupPost>().HasIndex(x => x.GroupId);
-            //GroupPost
-            modelBuilder.Entity<GroupPost>().OwnsOne(
-                groupPost => groupPost.Creator, ownedNavigationBuilder =>
+            modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<ActivePost>().HasIndex(x => x.ActionBasedDate);
+            modelBuilder.Entity<ActivePost>().HasIndex(x => x.GroupId);
+            //Post
+            modelBuilder.Entity<Post>().OwnsOne(
+                post => post.Creator, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                 });
-            modelBuilder.Entity<GroupPost>().OwnsOne(
-                groupPost => groupPost.Media, ownedNavigationBuilder =>
+            modelBuilder.Entity<Post>().OwnsOne(
+                post => post.Media, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
-            modelBuilder.Entity<GroupPost>().OwnsOne(
-                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+            modelBuilder.Entity<Post>().OwnsOne(
+                post => post.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
 
-            //ActiveGroupPost
-            modelBuilder.Entity<ActiveGroupPost>().OwnsOne(
-                groupPost => groupPost.Creator, ownedNavigationBuilder =>
+            //ActivePost
+            modelBuilder.Entity<ActivePost>().OwnsOne(
+                post => post.Creator, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                 });
-            modelBuilder.Entity<ActiveGroupPost>().OwnsOne(
-                groupPost => groupPost.Media, ownedNavigationBuilder =>
+            modelBuilder.Entity<ActivePost>().OwnsOne(
+                post => post.Media, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
-            modelBuilder.Entity<ActiveGroupPost>().OwnsOne(
-                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+            modelBuilder.Entity<ActivePost>().OwnsOne(
+                post => post.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
 
-            //GroupPostComment
-            modelBuilder.Entity<GroupPostComment>().OwnsOne(
-                groupPost => groupPost.Creator, ownedNavigationBuilder =>
+            //PostComment
+            modelBuilder.Entity<PostComment>().OwnsOne(
+                post => post.Creator, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                 });
-            modelBuilder.Entity<GroupPostComment>().OwnsOne(
-                groupPost => groupPost.Media, ownedNavigationBuilder =>
+            modelBuilder.Entity<PostComment>().OwnsOne(
+                post => post.Media, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
-            modelBuilder.Entity<GroupPostComment>().OwnsOne(
-                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+            modelBuilder.Entity<PostComment>().OwnsOne(
+                post => post.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
 
-            //UserReaction
+            //EntityDetails
             modelBuilder.Entity<EntityDetails>().OwnsOne(
-                groupPost => groupPost.Summary, ownedNavigationBuilder =>
+                post => post.Summary, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
             modelBuilder.Entity<EntityDetails>().OwnsMany(
-                groupPost => groupPost.Reactions, ownedNavigationBuilder =>
+                post => post.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsOne(x => x.Creator);

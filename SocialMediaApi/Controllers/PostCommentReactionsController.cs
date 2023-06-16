@@ -10,12 +10,12 @@ namespace SocialMediaApi.Controllers
 {
     [Route("api/v1/comment/{commentId}/reactions")]
     [ApiController]
-    public class GroupPostCommentReactionsController : ControllerBase
+    public class PostCommentReactionsController : ControllerBase
     {
         private readonly IPostCommentReactionService _postCommentReactionService;
         private readonly IEntityDetailsService _entityDetailsService;
 
-        public GroupPostCommentReactionsController(IPostUnitOfWork postUnitOfWork)
+        public PostCommentReactionsController(IPostUnitOfWork postUnitOfWork)
         {
             _postCommentReactionService = postUnitOfWork.PostCommentReactionService;
             _entityDetailsService = postUnitOfWork.EntityDetailsService;
@@ -28,13 +28,13 @@ namespace SocialMediaApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GroupPostCommentViewModel>> AddReactionAsync([FromRoute] Guid commentId, [FromBody] AddEntityReactionModel model)
+        public async Task<ActionResult<PostCommentViewModel>> AddReactionAsync([FromRoute] Guid commentId, [FromBody] AddEntityReactionModel model)
         {
             return Ok(await _postCommentReactionService.AddReactionAsync(model));
         }
 
         [HttpDelete]
-        public async Task<ActionResult<GroupPostCommentViewModel>> DeleteReactionAsync([FromRoute] Guid commentId)
+        public async Task<ActionResult<PostCommentViewModel>> DeleteReactionAsync([FromRoute] Guid commentId)
         {
             return Ok(await _postCommentReactionService.DeleteReactionAsync(commentId));
         }

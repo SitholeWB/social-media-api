@@ -12,7 +12,7 @@ namespace SocialMediaApi.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ActiveGroupPosts",
+                name: "ActivePosts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -32,7 +32,7 @@ namespace SocialMediaApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActiveGroupPosts", x => x.Id);
+                    table.PrimaryKey("PK_ActivePosts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +68,7 @@ namespace SocialMediaApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupPosts",
+                name: "Posts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -88,9 +88,9 @@ namespace SocialMediaApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupPosts", x => x.Id);
+                    table.PrimaryKey("PK_Posts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroupPosts_Groups_GroupId",
+                        name: "FK_Posts_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
@@ -98,11 +98,11 @@ namespace SocialMediaApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupPostComments",
+                name: "PostComments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Downloads = table.Column<int>(type: "int", nullable: false),
@@ -118,38 +118,38 @@ namespace SocialMediaApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupPostComments", x => x.Id);
+                    table.PrimaryKey("PK_PostComments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroupPostComments_GroupPosts_GroupPostId",
-                        column: x => x.GroupPostId,
-                        principalTable: "GroupPosts",
+                        name: "FK_PostComments_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActiveGroupPosts_ActionBasedDate",
-                table: "ActiveGroupPosts",
+                name: "IX_ActivePosts_ActionBasedDate",
+                table: "ActivePosts",
                 column: "ActionBasedDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActiveGroupPosts_GroupId",
-                table: "ActiveGroupPosts",
+                name: "IX_ActivePosts_GroupId",
+                table: "ActivePosts",
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupPostComments_GroupPostId",
-                table: "GroupPostComments",
-                column: "GroupPostId");
+                name: "IX_PostComments_PostId",
+                table: "PostComments",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupPosts_ActionBasedDate",
-                table: "GroupPosts",
+                name: "IX_Posts_ActionBasedDate",
+                table: "Posts",
                 column: "ActionBasedDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupPosts_GroupId",
-                table: "GroupPosts",
+                name: "IX_Posts_GroupId",
+                table: "Posts",
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
@@ -162,16 +162,16 @@ namespace SocialMediaApi.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActiveGroupPosts");
+                name: "ActivePosts");
 
             migrationBuilder.DropTable(
                 name: "EntityDetails");
 
             migrationBuilder.DropTable(
-                name: "GroupPostComments");
+                name: "PostComments");
 
             migrationBuilder.DropTable(
-                name: "GroupPosts");
+                name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "Groups");

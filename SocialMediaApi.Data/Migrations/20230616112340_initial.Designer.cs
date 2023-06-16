@@ -25,7 +25,7 @@ namespace SocialMediaApi.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActiveGroupPost", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActivePost", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +68,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("ActiveGroupPosts");
+                    b.ToTable("ActivePosts");
                 });
 
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.EntityDetails", b =>
@@ -118,7 +118,7 @@ namespace SocialMediaApi.Data.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.GroupPost", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,10 +161,10 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupPosts");
+                    b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.GroupPostComment", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.PostComment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -182,7 +182,7 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GroupPostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
@@ -203,16 +203,16 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupPostId");
+                    b.HasIndex("PostId");
 
-                    b.ToTable("GroupPostComments");
+                    b.ToTable("PostComments");
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActiveGroupPost", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.ActivePost", b =>
                 {
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
                         {
-                            b1.Property<Guid>("ActiveGroupPostId")
+                            b1.Property<Guid>("ActivePostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<Guid>("Id")
@@ -226,37 +226,37 @@ namespace SocialMediaApi.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("ActiveGroupPostId");
+                            b1.HasKey("ActivePostId");
 
-                            b1.ToTable("ActiveGroupPosts");
+                            b1.ToTable("ActivePosts");
 
                             b1.ToJson("Creator");
 
                             b1.WithOwner()
-                                .HasForeignKey("ActiveGroupPostId");
+                                .HasForeignKey("ActivePostId");
                         });
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.Media", "Media", b1 =>
                         {
-                            b1.Property<Guid>("ActiveGroupPostId")
+                            b1.Property<Guid>("ActivePostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("MediaType")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("ActiveGroupPostId");
+                            b1.HasKey("ActivePostId");
 
-                            b1.ToTable("ActiveGroupPosts");
+                            b1.ToTable("ActivePosts");
 
                             b1.ToJson("Media");
 
                             b1.WithOwner()
-                                .HasForeignKey("ActiveGroupPostId");
+                                .HasForeignKey("ActivePostId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MediaContent", "Content", b2 =>
                                 {
-                                    b2.Property<Guid>("MediaActiveGroupPostId")
+                                    b2.Property<Guid>("MediaActivePostId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -275,12 +275,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("MediaActiveGroupPostId", "Id");
+                                    b2.HasKey("MediaActivePostId", "Id");
 
-                                    b2.ToTable("ActiveGroupPosts");
+                                    b2.ToTable("ActivePosts");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("MediaActiveGroupPostId");
+                                        .HasForeignKey("MediaActivePostId");
                                 });
 
                             b1.Navigation("Content");
@@ -288,24 +288,24 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.ReactionSummary", "Reactions", b1 =>
                         {
-                            b1.Property<Guid>("ActiveGroupPostId")
+                            b1.Property<Guid>("ActivePostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("ReactionsCount")
                                 .HasColumnType("int");
 
-                            b1.HasKey("ActiveGroupPostId");
+                            b1.HasKey("ActivePostId");
 
-                            b1.ToTable("ActiveGroupPosts");
+                            b1.ToTable("ActivePosts");
 
                             b1.ToJson("Reactions");
 
                             b1.WithOwner()
-                                .HasForeignKey("ActiveGroupPostId");
+                                .HasForeignKey("ActivePostId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Emoji", "Emojis", b2 =>
                                 {
-                                    b2.Property<Guid>("ReactionSummaryActiveGroupPostId")
+                                    b2.Property<Guid>("ReactionSummaryActivePostId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -319,12 +319,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("ReactionSummaryActiveGroupPostId", "Id");
+                                    b2.HasKey("ReactionSummaryActivePostId", "Id");
 
-                                    b2.ToTable("ActiveGroupPosts");
+                                    b2.ToTable("ActivePosts");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("ReactionSummaryActiveGroupPostId");
+                                        .HasForeignKey("ReactionSummaryActivePostId");
                                 });
 
                             b1.Navigation("Emojis");
@@ -477,7 +477,7 @@ namespace SocialMediaApi.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.GroupPost", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.Post", b =>
                 {
                     b.HasOne("SocialMediaApi.Domain.Entities.Group", "Group")
                         .WithMany("Posts")
@@ -487,7 +487,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostId")
+                            b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<Guid>("Id")
@@ -501,37 +501,37 @@ namespace SocialMediaApi.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("GroupPostId");
+                            b1.HasKey("PostId");
 
-                            b1.ToTable("GroupPosts");
+                            b1.ToTable("Posts");
 
                             b1.ToJson("Creator");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostId");
+                                .HasForeignKey("PostId");
                         });
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.Media", "Media", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostId")
+                            b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("MediaType")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("GroupPostId");
+                            b1.HasKey("PostId");
 
-                            b1.ToTable("GroupPosts");
+                            b1.ToTable("Posts");
 
                             b1.ToJson("Media");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostId");
+                                .HasForeignKey("PostId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MediaContent", "Content", b2 =>
                                 {
-                                    b2.Property<Guid>("MediaGroupPostId")
+                                    b2.Property<Guid>("MediaPostId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -550,12 +550,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("MediaGroupPostId", "Id");
+                                    b2.HasKey("MediaPostId", "Id");
 
-                                    b2.ToTable("GroupPosts");
+                                    b2.ToTable("Posts");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("MediaGroupPostId");
+                                        .HasForeignKey("MediaPostId");
                                 });
 
                             b1.Navigation("Content");
@@ -563,24 +563,24 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.ReactionSummary", "Reactions", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostId")
+                            b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("ReactionsCount")
                                 .HasColumnType("int");
 
-                            b1.HasKey("GroupPostId");
+                            b1.HasKey("PostId");
 
-                            b1.ToTable("GroupPosts");
+                            b1.ToTable("Posts");
 
                             b1.ToJson("Reactions");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostId");
+                                .HasForeignKey("PostId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Emoji", "Emojis", b2 =>
                                 {
-                                    b2.Property<Guid>("ReactionSummaryGroupPostId")
+                                    b2.Property<Guid>("ReactionSummaryPostId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -594,12 +594,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("ReactionSummaryGroupPostId", "Id");
+                                    b2.HasKey("ReactionSummaryPostId", "Id");
 
-                                    b2.ToTable("GroupPosts");
+                                    b2.ToTable("Posts");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("ReactionSummaryGroupPostId");
+                                        .HasForeignKey("ReactionSummaryPostId");
                                 });
 
                             b1.Navigation("Emojis");
@@ -617,17 +617,17 @@ namespace SocialMediaApi.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.GroupPostComment", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.PostComment", b =>
                 {
-                    b.HasOne("SocialMediaApi.Domain.Entities.GroupPost", "GroupPost")
-                        .WithMany("GroupPostComments")
-                        .HasForeignKey("GroupPostId")
+                    b.HasOne("SocialMediaApi.Domain.Entities.Post", "Post")
+                        .WithMany("PostComments")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.Base.BaseUser", "Creator", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostCommentId")
+                            b1.Property<Guid>("PostCommentId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<Guid>("Id")
@@ -641,37 +641,37 @@ namespace SocialMediaApi.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("GroupPostCommentId");
+                            b1.HasKey("PostCommentId");
 
-                            b1.ToTable("GroupPostComments");
+                            b1.ToTable("PostComments");
 
                             b1.ToJson("Creator");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostCommentId");
+                                .HasForeignKey("PostCommentId");
                         });
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.Media", "Media", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostCommentId")
+                            b1.Property<Guid>("PostCommentId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("MediaType")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("GroupPostCommentId");
+                            b1.HasKey("PostCommentId");
 
-                            b1.ToTable("GroupPostComments");
+                            b1.ToTable("PostComments");
 
                             b1.ToJson("Media");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostCommentId");
+                                .HasForeignKey("PostCommentId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MediaContent", "Content", b2 =>
                                 {
-                                    b2.Property<Guid>("MediaGroupPostCommentId")
+                                    b2.Property<Guid>("MediaPostCommentId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -690,12 +690,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("MediaGroupPostCommentId", "Id");
+                                    b2.HasKey("MediaPostCommentId", "Id");
 
-                                    b2.ToTable("GroupPostComments");
+                                    b2.ToTable("PostComments");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("MediaGroupPostCommentId");
+                                        .HasForeignKey("MediaPostCommentId");
                                 });
 
                             b1.Navigation("Content");
@@ -703,24 +703,24 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.OwnsOne("SocialMediaApi.Domain.Entities.JsonEntities.ReactionSummary", "Reactions", b1 =>
                         {
-                            b1.Property<Guid>("GroupPostCommentId")
+                            b1.Property<Guid>("PostCommentId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("ReactionsCount")
                                 .HasColumnType("int");
 
-                            b1.HasKey("GroupPostCommentId");
+                            b1.HasKey("PostCommentId");
 
-                            b1.ToTable("GroupPostComments");
+                            b1.ToTable("PostComments");
 
                             b1.ToJson("Reactions");
 
                             b1.WithOwner()
-                                .HasForeignKey("GroupPostCommentId");
+                                .HasForeignKey("PostCommentId");
 
                             b1.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.Emoji", "Emojis", b2 =>
                                 {
-                                    b2.Property<Guid>("ReactionSummaryGroupPostCommentId")
+                                    b2.Property<Guid>("ReactionSummaryPostCommentId")
                                         .HasColumnType("uniqueidentifier");
 
                                     b2.Property<int>("Id")
@@ -734,12 +734,12 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("ReactionSummaryGroupPostCommentId", "Id");
+                                    b2.HasKey("ReactionSummaryPostCommentId", "Id");
 
-                                    b2.ToTable("GroupPostComments");
+                                    b2.ToTable("PostComments");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("ReactionSummaryGroupPostCommentId");
+                                        .HasForeignKey("ReactionSummaryPostCommentId");
                                 });
 
                             b1.Navigation("Emojis");
@@ -748,7 +748,7 @@ namespace SocialMediaApi.Data.Migrations
                     b.Navigation("Creator")
                         .IsRequired();
 
-                    b.Navigation("GroupPost");
+                    b.Navigation("Post");
 
                     b.Navigation("Media")
                         .IsRequired();
@@ -762,9 +762,9 @@ namespace SocialMediaApi.Data.Migrations
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("SocialMediaApi.Domain.Entities.GroupPost", b =>
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.Post", b =>
                 {
-                    b.Navigation("GroupPostComments");
+                    b.Navigation("PostComments");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,11 +2,11 @@
 {
     public interface IPostUnitOfWork
     {
-        public IActiveGroupPostService ActiveGroupPostService { get; }
+        public IActivePostService ActivePostService { get; }
 
-        public IGroupPostService GroupPostService { get; }
+        public IPostService PostService { get; }
 
-        public IGroupPostCommentService GroupPostCommentService { get; }
+        public IPostCommentService PostCommentService { get; }
 
         public IPostReactionService PostReactionService { get; }
 
