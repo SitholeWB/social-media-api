@@ -15,6 +15,7 @@ namespace SocialMediaApi.Data
         public DbSet<Post> Posts { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; } = default!;
         public DbSet<EntityDetails> EntityDetails { get; set; } = default!;
+        public DbSet<UserDetails> UserDetails { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
