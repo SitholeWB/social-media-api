@@ -103,6 +103,17 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsOne(x => x.Creator);
                 });
+            //UserDetails
+            modelBuilder.Entity<UserDetails>().OwnsOne(
+                post => post.PostReactions, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                });
+            modelBuilder.Entity<UserDetails>().OwnsMany(
+                post => post.CommentReactions, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                });
         }
     }
 }
