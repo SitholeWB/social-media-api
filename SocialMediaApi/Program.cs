@@ -29,6 +29,7 @@ namespace SocialMediaApi
             builder.Services.AddScoped<IActiveGroupPostService, ActiveGroupPostService>();
             builder.Services.AddScoped<IEntityDetailsService, EntityDetailsService>();
             builder.Services.AddScoped<IPostReactionService, PostReactionService>();
+            builder.Services.AddScoped<IPostCommentReactionService, PostCommentReactionService>();
             builder.Services.AddScoped<IPostUnitOfWork, PostUnitOfWork>();
             builder.Services.AddNotificationHandlers();
             builder.Services.AddEventSubscriptions();
