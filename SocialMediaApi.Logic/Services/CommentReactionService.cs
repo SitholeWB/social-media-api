@@ -8,12 +8,14 @@ namespace SocialMediaApi.Logic.Services
     public class CommentReactionService : ICommentReactionService
     {
         private readonly IEntityDetailsService _entityDetailsService;
+        private readonly IUserDetailsService _userDetailsService;
         private readonly SocialMediaApiDbContext _dbContext;
 
-        public CommentReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext)
+        public CommentReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext, IUserDetailsService userDetailsService)
         {
             _entityDetailsService = entityDetailsService;
             _dbContext = dbContext;
+            _userDetailsService = userDetailsService;
         }
 
         public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
@@ -25,6 +27,7 @@ namespace SocialMediaApi.Logic.Services
                 post.Reactions = entityReaction.Summary;
                 _dbContext.Comments.Update(post);
                 await _dbContext.SaveChangesAsync();
+                await _userDetailsService.AddCommentReactionAsync(model);
             }
 
             return entityReaction;
@@ -42,6 +45,7 @@ namespace SocialMediaApi.Logic.Services
                     _dbContext.Comments.Update(post);
                     await _dbContext.SaveChangesAsync();
                 }
+                await _userDetailsService.DeleteCommentReactionAsync(entityId);
             }
             return entityReaction;
         }

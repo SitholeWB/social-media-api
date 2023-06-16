@@ -8,12 +8,14 @@ namespace SocialMediaApi.Logic.Services
     public class PostReactionService : IPostReactionService
     {
         private readonly IEntityDetailsService _entityDetailsService;
+        private readonly IUserDetailsService _userDetailsService;
         private readonly SocialMediaApiDbContext _dbContext;
 
-        public PostReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext)
+        public PostReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext, IUserDetailsService userDetailsService)
         {
             _entityDetailsService = entityDetailsService;
             _dbContext = dbContext;
+            _userDetailsService = userDetailsService;
         }
 
         public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
@@ -31,6 +33,7 @@ namespace SocialMediaApi.Logic.Services
                     _dbContext.ActivePosts.Update(activePost);
                 }
                 await _dbContext.SaveChangesAsync();
+                await _userDetailsService.AddPostReactionAsync(model);
             }
 
             return entityReaction;
@@ -54,6 +57,7 @@ namespace SocialMediaApi.Logic.Services
                     }
                     await _dbContext.SaveChangesAsync();
                 }
+                await _userDetailsService.DeletePostReactionAsync(entityId);
             }
             return entityReaction;
         }
