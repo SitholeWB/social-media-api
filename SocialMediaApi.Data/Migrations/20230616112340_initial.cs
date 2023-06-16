@@ -98,7 +98,7 @@ namespace SocialMediaApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PostComments",
+                name: "Comments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -118,9 +118,9 @@ namespace SocialMediaApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostComments", x => x.Id);
+                    table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PostComments_Posts_PostId",
+                        name: "FK_Comments_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "Id",
@@ -138,8 +138,8 @@ namespace SocialMediaApi.Data.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostComments_PostId",
-                table: "PostComments",
+                name: "IX_Comments_PostId",
+                table: "Comments",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
@@ -168,7 +168,7 @@ namespace SocialMediaApi.Data.Migrations
                 name: "EntityDetails");
 
             migrationBuilder.DropTable(
-                name: "PostComments");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Posts");

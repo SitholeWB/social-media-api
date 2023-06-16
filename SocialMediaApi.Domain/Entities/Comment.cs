@@ -4,7 +4,7 @@ using SocialMediaApi.Domain.Enums;
 
 namespace SocialMediaApi.Domain.Entities
 {
-    public class PostComment
+    public class Comment
     {
         public Guid Id { get; set; }
         public Guid PostId { get; set; }

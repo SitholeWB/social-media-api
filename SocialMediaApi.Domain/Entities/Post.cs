@@ -6,6 +6,6 @@ namespace SocialMediaApi.Domain.Entities
     {
         public Guid GroupId { get; set; }
         public virtual Group Group { get; set; } = default!;
-        public virtual ICollection<PostComment> PostComments { get; set; } = new List<PostComment>();
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

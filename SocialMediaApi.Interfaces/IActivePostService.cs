@@ -13,7 +13,7 @@ namespace SocialMediaApi.Interfaces
 
         public Task UpdateActivePostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType);
 
-        public Task UpdateActivePostCommentCountAsync(Guid groupId, Guid id, bool increment);
+        public Task UpdateActiveCommentCountAsync(Guid groupId, Guid id, bool increment);
 
         public Task DeleteActivePostAsync(Guid groupId, Guid id);
 

@@ -13,7 +13,7 @@ namespace SocialMediaApi.Data
         public DbSet<Group> Groups { get; set; } = default!;
         public DbSet<ActivePost> ActivePosts { get; set; } = default!;
         public DbSet<Post> Posts { get; set; } = default!;
-        public DbSet<PostComment> PostComments { get; set; } = default!;
+        public DbSet<Comment> Comments { get; set; } = default!;
         public DbSet<EntityDetails> EntityDetails { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.ToJson();
                 });
             modelBuilder.Entity<Group>().HasMany(x => x.Posts).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
-            modelBuilder.Entity<Post>().HasMany(x => x.PostComments).WithOne(x => x.Post).HasForeignKey(x => x.PostId);
+            modelBuilder.Entity<Post>().HasMany(x => x.Comments).WithOne(x => x.Post).HasForeignKey(x => x.PostId);
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
             modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);
             modelBuilder.Entity<ActivePost>().HasIndex(x => x.ActionBasedDate);
@@ -67,19 +67,19 @@ namespace SocialMediaApi.Data
                     ownedNavigationBuilder.OwnsMany(x => x.Emojis);
                 });
 
-            //PostComment
-            modelBuilder.Entity<PostComment>().OwnsOne(
+            //Comment
+            modelBuilder.Entity<Comment>().OwnsOne(
                 post => post.Creator, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                 });
-            modelBuilder.Entity<PostComment>().OwnsOne(
+            modelBuilder.Entity<Comment>().OwnsOne(
                 post => post.Media, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();
                     ownedNavigationBuilder.OwnsMany(media => media.Content);
                 });
-            modelBuilder.Entity<PostComment>().OwnsOne(
+            modelBuilder.Entity<Comment>().OwnsOne(
                 post => post.Reactions, ownedNavigationBuilder =>
                 {
                     ownedNavigationBuilder.ToJson();

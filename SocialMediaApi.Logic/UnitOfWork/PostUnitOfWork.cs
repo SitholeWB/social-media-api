@@ -6,32 +6,32 @@ namespace SocialMediaApi.Logic.UnitOfWork
     public class PostUnitOfWork : IPostUnitOfWork
     {
         private readonly IActivePostService _activePostService;
-        private readonly IPostService _groupPostService;
-        private readonly IPostCommentService _postCommentService;
+        private readonly IPostService _postService;
+        private readonly ICommentService _commentService;
         private readonly IEntityDetailsService _entityDetailsService;
         private readonly IPostReactionService _postReactionService;
-        private readonly IPostCommentReactionService _postCommentReactionService;
+        private readonly ICommentReactionService _commentReactionService;
 
-        public PostUnitOfWork(IActivePostService activePostService, IPostService groupPostService, IPostCommentService postCommentService, IEntityDetailsService entityDetailsService, IPostReactionService postReactionService, IPostCommentReactionService postCommentReactionService)
+        public PostUnitOfWork(IActivePostService activePostService, IPostService groupPostService, ICommentService commentService, IEntityDetailsService entityDetailsService, IPostReactionService postReactionService, ICommentReactionService commentReactionService)
         {
             _activePostService = activePostService;
-            _groupPostService = groupPostService;
-            _postCommentService = postCommentService;
+            _postService = groupPostService;
+            _commentService = commentService;
             _entityDetailsService = entityDetailsService;
             _postReactionService = postReactionService;
-            _postCommentReactionService = postCommentReactionService;
+            _commentReactionService = commentReactionService;
         }
 
         public IActivePostService ActivePostService => _activePostService;
 
-        public IPostService PostService => _groupPostService;
+        public IPostService PostService => _postService;
 
-        public IPostCommentService PostCommentService => _postCommentService;
+        public ICommentService CommentService => _commentService;
 
         public IEntityDetailsService EntityDetailsService => _entityDetailsService;
 
         public IPostReactionService PostReactionService => _postReactionService;
 
-        public IPostCommentReactionService PostCommentReactionService => _postCommentReactionService;
+        public ICommentReactionService CommentReactionService => _commentReactionService;
     }
 }

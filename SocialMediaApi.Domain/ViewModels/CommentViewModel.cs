@@ -3,7 +3,7 @@ using SocialMediaApi.Domain.Entities.JsonEntities;
 
 namespace SocialMediaApi.Domain.ViewModels
 {
-    public class PostCommentViewModel
+    public class CommentViewModel
     {
         public Guid Id { get; set; }
         public Guid PostId { get; set; }

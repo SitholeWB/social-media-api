@@ -3,24 +3,24 @@ using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.JsonEntities;
 using SocialMediaApi.Domain.Enums;
-using SocialMediaApi.Domain.Events.PostComments;
+using SocialMediaApi.Domain.Events.Comments;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Mappers;
-using SocialMediaApi.Domain.Models.PostComments;
+using SocialMediaApi.Domain.Models.Comments;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Logic.EventHandlers;
 
 namespace SocialMediaApi.Logic.Services
 {
-    public class PostCommentService : IPostCommentService
+    public class CommentService : ICommentService
     {
         private readonly SocialMediaApiDbContext _dbContext;
         private readonly IAuthService _authService;
         private readonly EventHandlerContainer _publisher;
         private readonly IConfigService _configService;
 
-        public PostCommentService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService)
+        public CommentService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService)
         {
             _dbContext = dbContext;
             _authService = authService;
@@ -28,7 +28,7 @@ namespace SocialMediaApi.Logic.Services
             _configService = configService;
         }
 
-        public async Task<PostCommentViewModel> AddPostCommentAsync(Guid postId, AddPostCommentModel model)
+        public async Task<CommentViewModel> AddCommentAsync(Guid postId, AddCommentModel model)
         {
             if (string.IsNullOrEmpty(model?.Text))
             {
@@ -41,7 +41,7 @@ namespace SocialMediaApi.Logic.Services
             var post = await _dbContext.Posts.FindAsync(postId) ?? throw new SocialMediaException("No Post found for given Id.");
             var authUser = await _authService.GetAuthorizedUser();
             var entityPostConfig = await _configService.GetEntityPostConfigAsync();
-            var entity = new PostComment
+            var entity = new Comment
             {
                 CreatedDate = DateTimeOffset.UtcNow,
                 Id = Guid.NewGuid(),
@@ -67,87 +67,87 @@ namespace SocialMediaApi.Logic.Services
             post.TotalComments += 1;
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new AddPostCommentEvent
+            await _publisher.PublishAsync(new AddCommentEvent
             {
-                PostComment = addedEntity.Entity,
+                Comment = addedEntity.Entity,
                 Post = post,
             });
             return PostMapper.ToView(addedEntity.Entity)!;
         }
 
-        public async Task DeletePostCommentAsync(Guid postId, Guid id)
+        public async Task DeleteCommentAsync(Guid postId, Guid id)
         {
-            var postComment = await _dbContext.PostComments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
-            if (!postComment.PostId.Equals(postId))
+            var comment = await _dbContext.Comments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
+            if (!comment.PostId.Equals(postId))
             {
                 throw new SocialMediaException("No Post Comment found for given Id & postId.");
             }
             var post = await _dbContext.Posts.FindAsync(postId) ?? throw new SocialMediaException("No Post found for given Id.");
 
             var authUser = await _authService.GetAuthorizedUser();
-            if (!authUser.Id.Equals(postComment.Creator.Id))
+            if (!authUser.Id.Equals(comment.Creator.Id))
             {
                 throw new SocialMediaException("Post Comment can only be deleted by the creator.");
             }
-            postComment.EntityStatus = EntityStatus.Deleted;
-            _dbContext.PostComments.Update(postComment);
+            comment.EntityStatus = EntityStatus.Deleted;
+            _dbContext.Comments.Update(comment);
             post.TotalComments -= 1;
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new DeletePostCommentEvent
+            await _publisher.PublishAsync(new DeleteCommentEvent
             {
                 Post = post,
-                PostComment = postComment
+                Comment = comment
             });
         }
 
-        public async Task<Pagination<PostCommentViewModel>> GetPostCommentsAsync(Guid postId, int page = 1, int limit = 20)
+        public async Task<Pagination<CommentViewModel>> GetCommentsAsync(Guid postId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<PostComment, PostCommentViewModel>(page, limit, x => x.PostId == postId, PostMapper.ToView!, sortColumn: nameof(PostComment.ActionBasedDate), orderByDescending: true);
+            return await _dbContext.AsPaginationAsync<Comment, CommentViewModel>(page, limit, x => x.PostId == postId, PostMapper.ToView!, sortColumn: nameof(Comment.ActionBasedDate), orderByDescending: true);
         }
 
-        public async Task<PostCommentViewModel> UpdatePostCommentAsync(Guid postId, Guid id, UpdatePostCommentModel model)
+        public async Task<CommentViewModel> UpdateCommentAsync(Guid postId, Guid id, UpdateCommentModel model)
         {
             if (string.IsNullOrEmpty(model?.Text))
             {
                 throw new SocialMediaException("Text is required.");
             }
-            var postComment = await _dbContext.PostComments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
-            if (!postComment.PostId.Equals(postId))
+            var comment = await _dbContext.Comments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
+            if (!comment.PostId.Equals(postId))
             {
                 throw new SocialMediaException("No Post Comment found for given Id & groupId.");
             }
             var authUser = await _authService.GetAuthorizedUser();
-            if (!authUser.Id.Equals(postComment.Creator.Id))
+            if (!authUser.Id.Equals(comment.Creator.Id))
             {
                 throw new SocialMediaException("Post Comment can only be updated by the creator.");
             }
             var post = await _dbContext.Posts.FindAsync(postId) ?? throw new SocialMediaException("No Post found for given Id.");
 
-            postComment.Text = model.Text;
-            postComment.Media = model.Media;
-            postComment.LastModifiedDate = DateTimeOffset.UtcNow;
-            _dbContext.Update(postComment);
+            comment.Text = model.Text;
+            comment.Media = model.Media;
+            comment.LastModifiedDate = DateTimeOffset.UtcNow;
+            _dbContext.Update(comment);
             await _dbContext.SaveChangesAsync();
-            await _publisher.PublishAsync(new UpdatePostCommentEvent
+            await _publisher.PublishAsync(new UpdateCommentEvent
             {
                 Post = post,
-                PostComment = postComment
+                Comment = comment
             });
-            return PostMapper.ToView(postComment)!;
+            return PostMapper.ToView(comment)!;
         }
 
-        public async Task UpdatePostCommentExpireDateAsync(Guid postId, Guid id, EntityActionType entityActionType)
+        public async Task UpdateCommentExpireDateAsync(Guid postId, Guid id, EntityActionType entityActionType)
         {
-            var postComment = await _dbContext.PostComments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
-            if (!postComment.PostId.Equals(postId))
+            var comment = await _dbContext.Comments.FindAsync(id) ?? throw new SocialMediaException("No Post Comment found for given Id & groupId.");
+            if (!comment.PostId.Equals(postId))
             {
                 throw new SocialMediaException("No Post Comment found for given Id & groupId.");
             }
             var entityActionConfig = await _configService.GetActionConfigAsync(entityActionType);
-            postComment.ActionBasedDate = postComment.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
-            postComment.Rank += entityActionConfig.RankIncrement;
-            _dbContext.Update(postComment);
+            comment.ActionBasedDate = comment.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
+            comment.Rank += entityActionConfig.RankIncrement;
+            _dbContext.Update(comment);
             await _dbContext.SaveChangesAsync();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.EventHandlers.Comments;
 using SocialMediaApi.Logic.EventHandlers.Groups;
-using SocialMediaApi.Logic.EventHandlers.PostComments;
 using SocialMediaApi.Logic.EventHandlers.Posts;
 
 namespace SocialMediaApi
@@ -14,13 +14,13 @@ namespace SocialMediaApi
             services.AddScoped<AddGroupNotificationHandler>();
             services.AddScoped<UpdateGroupNotificationHandler>();
             services.AddScoped<DeleteGroupNotificationHandler>();
-            //Group Posts
+            //Posts
             services.AddScoped<AddPostNotificationHandler>();
             services.AddScoped<UpdatePostNotificationHandler>();
             services.AddScoped<DeletePostNotificationHandler>();
-            //Group Post Comments
-            services.AddScoped<AddPostCommentNotificationHandler>();
-            services.AddScoped<DeletePostCommentNotificationHandler>();
+            //Comments
+            services.AddScoped<AddCommentNotificationHandler>();
+            services.AddScoped<DeleteCommentNotificationHandler>();
             return services;
         }
     }

@@ -89,7 +89,7 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateActivePostCommentCountAsync(Guid groupId, Guid id, bool increment)
+        public async Task UpdateActiveCommentCountAsync(Guid groupId, Guid id, bool increment)
         {
             var post = await _dbContext.ActivePosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
             if (!post.GroupId.Equals(groupId))

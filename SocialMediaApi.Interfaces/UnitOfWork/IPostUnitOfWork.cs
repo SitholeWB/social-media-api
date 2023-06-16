@@ -6,11 +6,11 @@
 
         public IPostService PostService { get; }
 
-        public IPostCommentService PostCommentService { get; }
+        public ICommentService CommentService { get; }
 
         public IPostReactionService PostReactionService { get; }
 
-        public IPostCommentReactionService PostCommentReactionService { get; }
+        public ICommentReactionService CommentReactionService { get; }
 
         public IEntityDetailsService EntityDetailsService { get; }
     }

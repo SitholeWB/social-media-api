@@ -1,9 +1,9 @@
 ﻿using SocialMediaApi.Domain.Entities.JsonEntities;
 using System.ComponentModel.DataAnnotations;
 
-namespace SocialMediaApi.Domain.Models.PostComments
+namespace SocialMediaApi.Domain.Models.Comments
 {
-    public class UpdatePostCommentModel
+    public class UpdateCommentModel
     {
         [Required]
         public string Text { get; set; } = string.Empty;

@@ -3,7 +3,7 @@ using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces
 {
-    public interface IPostCommentReactionService
+    public interface ICommentReactionService
     {
         public Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model);
 

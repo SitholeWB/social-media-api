@@ -55,27 +55,27 @@ namespace SocialMediaApi.Domain.Mappers
             };
         }
 
-        public static PostCommentViewModel? ToView(PostComment? postComment)
+        public static CommentViewModel? ToView(Comment? comment)
         {
-            if (postComment == null)
+            if (comment == null)
             {
                 return default;
             }
-            return new PostCommentViewModel
+            return new CommentViewModel
             {
-                CreatedDate = postComment.CreatedDate,
-                Creator = postComment.Creator,
-                Id = postComment.Id,
-                LastModifiedDate = postComment.LastModifiedDate,
-                Media = postComment.Media,
-                Views = postComment.Views,
-                TotalComments = postComment.TotalComments,
-                Downloads = postComment.Downloads,
-                PostId = postComment.PostId,
-                Rank = postComment.Rank,
-                Reactions = postComment.Reactions,
-                Text = postComment.Text,
-                ActionBasedDate = postComment.ActionBasedDate,
+                CreatedDate = comment.CreatedDate,
+                Creator = comment.Creator,
+                Id = comment.Id,
+                LastModifiedDate = comment.LastModifiedDate,
+                Media = comment.Media,
+                Views = comment.Views,
+                TotalComments = comment.TotalComments,
+                Downloads = comment.Downloads,
+                PostId = comment.PostId,
+                Rank = comment.Rank,
+                Reactions = comment.Reactions,
+                Text = comment.Text,
+                ActionBasedDate = comment.ActionBasedDate,
             };
         }
 

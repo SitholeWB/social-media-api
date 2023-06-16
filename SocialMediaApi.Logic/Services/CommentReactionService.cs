@@ -5,12 +5,12 @@ using SocialMediaApi.Interfaces;
 
 namespace SocialMediaApi.Logic.Services
 {
-    public class PostCommentReactionService : IPostCommentReactionService
+    public class CommentReactionService : ICommentReactionService
     {
         private readonly IEntityDetailsService _entityDetailsService;
         private readonly SocialMediaApiDbContext _dbContext;
 
-        public PostCommentReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext)
+        public CommentReactionService(IEntityDetailsService entityDetailsService, SocialMediaApiDbContext dbContext)
         {
             _entityDetailsService = entityDetailsService;
             _dbContext = dbContext;
@@ -19,11 +19,11 @@ namespace SocialMediaApi.Logic.Services
         public async Task<EntityReactionViewModel> AddReactionAsync(AddEntityReactionModel model)
         {
             var entityReaction = await _entityDetailsService.AddReactionAsync(model);
-            var post = await _dbContext.PostComments.FindAsync(entityReaction.EntityId);
+            var post = await _dbContext.Comments.FindAsync(entityReaction.EntityId);
             if (post != null)
             {
                 post.Reactions = entityReaction.Summary;
-                _dbContext.PostComments.Update(post);
+                _dbContext.Comments.Update(post);
                 await _dbContext.SaveChangesAsync();
             }
 
@@ -35,11 +35,11 @@ namespace SocialMediaApi.Logic.Services
             var entityReaction = await _entityDetailsService.DeleteReactionAsync(entityId);
             if (entityReaction != null)
             {
-                var post = await _dbContext.PostComments.FindAsync(entityReaction.EntityId);
+                var post = await _dbContext.Comments.FindAsync(entityReaction.EntityId);
                 if (post != null)
                 {
                     post.Reactions = entityReaction.Summary;
-                    _dbContext.PostComments.Update(post);
+                    _dbContext.Comments.Update(post);
                     await _dbContext.SaveChangesAsync();
                 }
             }

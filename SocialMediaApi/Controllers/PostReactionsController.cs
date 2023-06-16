@@ -28,13 +28,13 @@ namespace SocialMediaApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PostCommentViewModel>> AddReactionAsync([FromRoute] Guid postId, [FromBody] AddEntityReactionModel model)
+        public async Task<ActionResult<CommentViewModel>> AddReactionAsync([FromRoute] Guid postId, [FromBody] AddEntityReactionModel model)
         {
             return Ok(await _postReactionService.AddReactionAsync(model));
         }
 
         [HttpDelete]
-        public async Task<ActionResult<PostCommentViewModel>> DeleteReactionAsync([FromRoute] Guid postId)
+        public async Task<ActionResult<CommentViewModel>> DeleteReactionAsync([FromRoute] Guid postId)
         {
             return Ok(await _postReactionService.DeleteReactionAsync(postId));
         }
