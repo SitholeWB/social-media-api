@@ -4,7 +4,9 @@ using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Common;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.JsonEntities;
+using SocialMediaApi.Domain.Mappers;
 using SocialMediaApi.Domain.Models.UserPosts;
+using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 
 namespace SocialMediaApi.Logic.Services
@@ -69,7 +71,8 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteUserPostAsync(Guid userId, Guid entityId)
         {
-            var userPost = await _dbContext.UserPosts.FirstOrDefaultAsync(x => x.UserId == userId && x.Posts.Any(a => a.EntityId == entityId));
+            var userPosts = await _dbContext.UserPosts.Where(x => x.UserId == userId).ToListAsync();
+            var userPost = userPosts.FirstOrDefault(x => x.Posts.Any(a => a.EntityId == entityId));
             if (userPost != null)
             {
                 userPost.Posts = userPost.Posts.Where(x => x.EntityId != entityId).ToList();
@@ -78,18 +81,40 @@ namespace SocialMediaApi.Logic.Services
             }
         }
 
-        public async Task<Pagination<MiniEntity>> GetUserPostsAsync(Guid userId, int page, int limit)
+        public async Task<Pagination<PostViewModel>> GetUserPostsAsync(Guid userId, int page)
         {
-            var finalPage = ((page * limit) / 100) + 1;
+            var limit = 20;
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            var totalItems = page * limit;
+            var userPosts = await PrivateGetUserPostsAsync(userId, page, limit);
+            if (userPosts.Count == 0)
+            {
+                return new Pagination<PostViewModel>(new List<PostViewModel> { }, 0, page, limit);
+            }
+            if (userPosts.Count == limit)
+            {
+                totalItems++;
+            }
+            var ids = userPosts.Select(x => x.EntityId);
+            var posts = await _dbContext.Posts.Where(x => ids.Contains(x.Id)).ToListAsync();
+            return Pagination<PostViewModel>.GetPagination<Post, PostViewModel>(posts, totalItems, PostMapper.ToView!, page, limit, true);
+        }
+
+        private async Task<IList<MiniEntity>> PrivateGetUserPostsAsync(Guid userId, int page, int limit)
+        {
+            var finalPage = (int)Math.Ceiling(decimal.Divide((page * limit), 100));
             var userPost = await _dbContext.UserPosts.FindAsync(GenerateKeys.GetUserPostId(userId, finalPage, "POST"));
 
             if (userPost != null)
             {
                 _dbContext.Entry(userPost).State = EntityState.Detached;
-                var skip = (page * limit) % 100;
-                return new Pagination<MiniEntity>(userPost.Posts.Skip(skip).Take(limit), userPost.Posts.Count + 1, page, limit);
+                var skip = ((page - 1) * limit) % 100;
+                return userPost.Posts.OrderByDescending(x => x.CreatedDate).Skip(skip).Take(limit).ToList();
             }
-            return new Pagination<MiniEntity>(new List<MiniEntity> { }, 0, page, limit);
+            return new List<MiniEntity> { };
         }
     }
 }

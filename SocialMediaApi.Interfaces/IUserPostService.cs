@@ -1,6 +1,6 @@
 ﻿using Pagination.EntityFrameworkCore.Extensions;
-using SocialMediaApi.Domain.Entities.JsonEntities;
 using SocialMediaApi.Domain.Models.UserPosts;
+using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces
 {
@@ -10,6 +10,6 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeleteUserPostAsync(Guid userId, Guid entityId);
 
-        public Task<Pagination<MiniEntity>> GetUserPostsAsync(Guid userId, int page, int limit);
+        public Task<Pagination<PostViewModel>> GetUserPostsAsync(Guid userId, int page);
     }
 }
