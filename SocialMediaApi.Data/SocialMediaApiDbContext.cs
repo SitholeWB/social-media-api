@@ -17,6 +17,7 @@ namespace SocialMediaApi.Data
         public DbSet<EntityDetails> EntityDetails { get; set; } = default!;
         public DbSet<UserDetails> UserDetails { get; set; } = default!;
         public DbSet<UserPost> UserPosts { get; set; } = default!;
+        public DbSet<User> Users { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
