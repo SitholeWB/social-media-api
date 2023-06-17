@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SocialMediaApi.Domain.Entities
 {
@@ -18,7 +19,10 @@ namespace SocialMediaApi.Domain.Entities
         public string Email { get; set; } = string.Empty;
         public bool IsApproved { get; set; } = false;
         public string ImageUrl { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public string Password { get; set; } = string.Empty;
+
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
     }
