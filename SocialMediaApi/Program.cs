@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Exceptions;
+using SocialMediaApi.Domain.Settings;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Interfaces.UnitOfWork;
 using SocialMediaApi.Logic.Services;
 using SocialMediaApi.Logic.UnitOfWork;
+using System.Text;
 using System.Text.Json;
 
 namespace SocialMediaApi
@@ -30,9 +34,27 @@ namespace SocialMediaApi
                     });
             });
 
+            var bindJwtSettings = new JwtConfig();
+            builder.Configuration.Bind("JwtConfig", bindJwtSettings);
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = bindJwtSettings.ValidIssuer,
+                    ValidAudience = bindJwtSettings.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(bindJwtSettings.IssuerSigningKey))
+                };
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
@@ -73,6 +95,7 @@ namespace SocialMediaApi
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
