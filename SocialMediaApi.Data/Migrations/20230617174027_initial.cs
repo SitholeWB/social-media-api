@@ -145,6 +145,27 @@ namespace SocialMediaApi.Data.Migrations
                     table.PrimaryKey("PK_UserPosts", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AboutMe = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ActivePosts_ActionBasedDate",
                 table: "ActivePosts",
@@ -179,6 +200,16 @@ namespace SocialMediaApi.Data.Migrations
                 name: "IX_UserPosts_UserId",
                 table: "UserPosts",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserName",
+                table: "Users",
+                column: "UserName");
         }
 
         /// <inheritdoc />
@@ -204,6 +235,9 @@ namespace SocialMediaApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserPosts");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

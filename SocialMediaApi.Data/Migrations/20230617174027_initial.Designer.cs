@@ -12,7 +12,7 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230616195243_initial")]
+    [Migration("20230617174027_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -205,6 +205,58 @@ namespace SocialMediaApi.Data.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("SocialMediaApi.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AboutMe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("UserName");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("SocialMediaApi.Domain.Entities.UserDetails", b =>
                 {
                     b.Property<Guid>("Id")
@@ -257,6 +309,10 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("InstallationId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -389,6 +445,10 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("InstallationId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -593,6 +653,10 @@ namespace SocialMediaApi.Data.Migrations
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
+                                    b2.Property<string>("InstallationId")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
                                     b2.Property<string>("Name")
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
@@ -629,6 +693,10 @@ namespace SocialMediaApi.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
+                            b1.Property<string>("InstallationId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
                             b1.Property<string>("Name")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
@@ -658,6 +726,10 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("InstallationId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
