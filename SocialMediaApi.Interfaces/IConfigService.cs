@@ -8,5 +8,7 @@ namespace SocialMediaApi.Interfaces
         public Task<EntityActionConfig> GetActionConfigAsync(EntityActionType entityActionType);
 
         public Task<EntityPostConfig> GetEntityPostConfigAsync();
+
+        public Task<JwtConfig> GetJwtConfigAsync();
     }
 }

@@ -1,6 +1,8 @@
 ﻿// Ignore Spelling: Auth
 
+using SocialMediaApi.Domain.DTOs;
 using SocialMediaApi.Domain.Entities.Base;
+using SocialMediaApi.Domain.Models.JwtTokens;
 
 namespace SocialMediaApi.Interfaces
 {
@@ -11,5 +13,7 @@ namespace SocialMediaApi.Interfaces
         public Task<BaseUser> GetAuthorizedUser();
 
         public Task<BaseUser> GetImpersonatingUser();
+
+        Task<TokenDto> BuildToken(AddJwtTokenModel model);
     }
 }

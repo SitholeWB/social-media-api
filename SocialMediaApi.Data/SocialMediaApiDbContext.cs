@@ -28,6 +28,9 @@ namespace SocialMediaApi.Data
                 });
             modelBuilder.Entity<Group>().HasIndex(x => x.EntityStatus);
 
+            modelBuilder.Entity<User>().HasIndex(x => x.Email);
+            modelBuilder.Entity<User>().HasIndex(x => x.UserName);
+
             modelBuilder.Entity<UserPost>().HasIndex(x => x.UserId);
 
             modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);

@@ -16,6 +16,12 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeleteUserAsync(Guid id);
 
+        public Task<UserViewModel?> GetUserAsync(Guid id);
+
+        public Task<UserViewModel?> GetUserByEmailAsync(string email);
+
+        public Task<UserViewModel?> GetUserByUserNameAsync(string userName);
+
         public Task<Pagination<UserViewModel>> GetUsersAsync(int page = 1, int limit = 20);
     }
 }

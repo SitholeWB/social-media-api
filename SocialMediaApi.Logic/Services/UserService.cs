@@ -79,6 +79,21 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<UserViewModel?> GetUserAsync(Guid id)
+        {
+            return UserMapper.ToView(await _dbContext.Users.FindAsync(id));
+        }
+
+        public async Task<UserViewModel?> GetUserByEmailAsync(string email)
+        {
+            return UserMapper.ToView(await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email.Trim()));
+        }
+
+        public async Task<UserViewModel?> GetUserByUserNameAsync(string userName)
+        {
+            return UserMapper.ToView(await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName.Trim()));
+        }
+
         public async Task<Pagination<UserViewModel>> GetUsersAsync(int page = 1, int limit = 20)
         {
             return await _dbContext.AsPaginationAsync<User, UserViewModel>(page, limit, UserMapper.ToView!);

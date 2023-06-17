@@ -27,5 +27,12 @@ namespace SocialMediaApi.Logic.Services
             {
             });
         }
+
+        public async Task<JwtConfig> GetJwtConfigAsync()
+        {
+            return await Task.FromResult(new JwtConfig
+            {
+            });
+        }
     }
 }
