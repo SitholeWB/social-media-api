@@ -18,6 +18,18 @@ namespace SocialMediaApi
             builder.Services.AddDbContext<SocialMediaApiDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("WebApiContext") ?? throw new InvalidOperationException("Connection string 'WebApiContext' not found.")));
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -42,7 +54,7 @@ namespace SocialMediaApi
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-
+            app.UseCors("AllowAll");
             app.UseSwagger();
             app.UseSwaggerUI();
 
