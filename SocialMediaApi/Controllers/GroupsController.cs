@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.Groups;
 using SocialMediaApi.Domain.ViewModels;
@@ -8,6 +9,7 @@ using SocialMediaApi.Interfaces;
 
 namespace SocialMediaApi.Controllers
 {
+    [Authorize]
     [Route("api/v1/groups")]
     [ApiController]
     public class GroupsController : ControllerBase
@@ -19,12 +21,14 @@ namespace SocialMediaApi.Controllers
             _groupService = groupService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Pagination<GroupViewModel>>> GetGroupsAsync(int page = 1)
         {
             return Ok(await _groupService.GetGroupsAsync(page, 20));
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<GroupViewModel>> GetGroupAsync(Guid id)
         {

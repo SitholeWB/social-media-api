@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
@@ -8,6 +9,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {
+    [Authorize]
     [Route("api/v1/users/{userId}/posts")]
     [ApiController]
     public class UserPostsController : ControllerBase
@@ -19,6 +21,7 @@ namespace SocialMediaApi.Controllers
             _postService = postUnitOfWork.UserPostService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync([FromRoute] Guid userId, int page = 1)
         {

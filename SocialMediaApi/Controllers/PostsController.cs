@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.Posts;
 using SocialMediaApi.Domain.ViewModels;
@@ -9,6 +10,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {
+    [Authorize]
     [Route("api/v1/groups/{groupId}/posts")]
     [ApiController]
     public class PostsController : ControllerBase
@@ -22,6 +24,7 @@ namespace SocialMediaApi.Controllers
             _activePostService = postUnitOfWork.ActivePostService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync([FromRoute] Guid groupId, int page = 1, int limit = 20, bool skipActivePosts = false)
         {
@@ -41,6 +44,7 @@ namespace SocialMediaApi.Controllers
             return Ok(pageResult);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<PostViewModel>> GetPostAsync([FromRoute] Guid groupId, [FromRoute] Guid id)
         {

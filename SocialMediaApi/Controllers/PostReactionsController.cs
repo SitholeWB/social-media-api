@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SocialMediaApi.Domain.Models.Reactions;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
@@ -8,6 +9,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {
+    [Authorize]
     [Route("api/v1/post/{postId}/reactions")]
     [ApiController]
     public class PostReactionsController : ControllerBase
@@ -21,6 +23,7 @@ namespace SocialMediaApi.Controllers
             _entityDetailsService = postUnitOfWork.EntityDetailsService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<EntityReactionViewModel>> GetReactionAsync([FromRoute] Guid postId)
         {

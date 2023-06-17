@@ -41,7 +41,7 @@ namespace SocialMediaApi
             {
                 opt.TokenValidationParameters = new()
                 {
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,

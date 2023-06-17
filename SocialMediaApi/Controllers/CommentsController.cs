@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.Comments;
 using SocialMediaApi.Domain.ViewModels;
@@ -9,6 +10,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {
+    [Authorize]
     [Route("api/v1/post/{postId}/comments")]
     [ApiController]
     public class CommentsController : ControllerBase
@@ -20,6 +22,7 @@ namespace SocialMediaApi.Controllers
             _postService = postUnitOfWork.CommentService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Pagination<CommentViewModel>>> GetCommentsAsync([FromRoute] Guid postId, int page = 1, int limit = 20)
         {
