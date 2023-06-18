@@ -84,9 +84,8 @@ namespace SocialMediaApi.Logic.Services
         public async Task<BaseUser> GetAuthorizedUser()
         {
             var isAuthenticated = _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
-            var userIdFromDevice = GetUserId();
             var installationId = GetInstallationId();
-            if (!isAuthenticated && !string.IsNullOrWhiteSpace(userIdFromDevice))
+            if (!isAuthenticated)
             {
                 return await Task.FromResult(new BaseUser
                 {
