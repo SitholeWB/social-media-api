@@ -40,11 +40,11 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
@@ -63,7 +63,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("ActionBasedDate");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("ActivePosts");
                 });
@@ -174,11 +174,11 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
@@ -197,7 +197,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("ActionBasedDate");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Posts");
                 });

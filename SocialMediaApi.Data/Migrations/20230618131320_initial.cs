@@ -16,7 +16,7 @@ namespace SocialMediaApi.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Downloads = table.Column<int>(type: "int", nullable: false),
@@ -95,7 +95,7 @@ namespace SocialMediaApi.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EntityStatus = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Downloads = table.Column<int>(type: "int", nullable: false),
@@ -172,9 +172,9 @@ namespace SocialMediaApi.Data.Migrations
                 column: "ActionBasedDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActivePosts_GroupId",
+                name: "IX_ActivePosts_OwnerId",
                 table: "ActivePosts",
-                column: "GroupId");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_PostId",
@@ -192,9 +192,9 @@ namespace SocialMediaApi.Data.Migrations
                 column: "ActionBasedDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_GroupId",
+                name: "IX_Posts_OwnerId",
                 table: "Posts",
-                column: "GroupId");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserPosts_UserId",

@@ -12,7 +12,7 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230617174027_initial")]
+    [Migration("20230618131320_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -43,11 +43,11 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
@@ -66,7 +66,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("ActionBasedDate");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("ActivePosts");
                 });
@@ -177,11 +177,11 @@ namespace SocialMediaApi.Data.Migrations
                     b.Property<int>("EntityStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
@@ -200,7 +200,7 @@ namespace SocialMediaApi.Data.Migrations
 
                     b.HasIndex("ActionBasedDate");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Posts");
                 });
