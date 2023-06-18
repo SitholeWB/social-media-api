@@ -85,13 +85,14 @@ namespace SocialMediaApi.Logic.Services
         {
             var isAuthenticated = _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
             var userIdFromDevice = GetUserId();
+            var installationId = GetInstallationId();
             if (!isAuthenticated && !string.IsNullOrWhiteSpace(userIdFromDevice))
             {
                 return await Task.FromResult(new BaseUser
                 {
                     Id = Guid.Empty,
                     Name = GetAnonymousName(),
-                    InstallationId = userIdFromDevice
+                    InstallationId = installationId
                 });
             }
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString();
@@ -102,7 +103,7 @@ namespace SocialMediaApi.Logic.Services
             {
                 Id = userIdValue,
                 Name = $"{name} {surname}",
-                InstallationId = userIdFromDevice
+                InstallationId = installationId
             });
         }
 
@@ -123,6 +124,11 @@ namespace SocialMediaApi.Logic.Services
         public string GetUserId()
         {
             return _httpContextAccessor?.HttpContext?.Request?.Headers["x-user-id-header"] ?? string.Empty;
+        }
+
+        public string GetInstallationId()
+        {
+            return _httpContextAccessor?.HttpContext?.Request?.Headers["x-installation-id-header"] ?? string.Empty;
         }
     }
 }
