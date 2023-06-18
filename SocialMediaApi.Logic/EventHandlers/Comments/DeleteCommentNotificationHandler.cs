@@ -17,7 +17,7 @@ namespace SocialMediaApi.Logic.EventHandlers.Comments
         {
             if (obj?.Post != null && obj?.Comment != null)
             {
-                await _newPostService.UpdateActiveCommentCountAsync(obj.Comment!.PostId, obj.Post!.GroupId, false);
+                await _newPostService.UpdateActiveCommentCountAsync(obj.Comment!.PostId, obj.Post!.OwnerId, false);
             }
         }
     }

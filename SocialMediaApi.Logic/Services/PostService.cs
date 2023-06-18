@@ -28,7 +28,7 @@ namespace SocialMediaApi.Logic.Services
             _configService = configService;
         }
 
-        public async Task<PostViewModel> AddPostAsync(Guid groupId, AddPostModel model)
+        public async Task<PostViewModel> AddPostAsync(Guid ownerId, AddPostModel model)
         {
             if (string.IsNullOrEmpty(model?.Text))
             {
@@ -50,7 +50,7 @@ namespace SocialMediaApi.Logic.Services
                 Creator = authUser,
                 Text = model!.Text,
                 Downloads = 0,
-                GroupId = groupId,
+                OwnerId = ownerId,
                 Reactions = new ReactionSummary
                 {
                     Emojis = new List<Emoji>(),
@@ -68,10 +68,10 @@ namespace SocialMediaApi.Logic.Services
             return PostMapper.ToView(addedEntity.Entity)!;
         }
 
-        public async Task DeletePostAsync(Guid groupId, Guid id)
+        public async Task DeletePostAsync(Guid ownerId, Guid id)
         {
             var post = await _dbContext.Posts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
@@ -87,20 +87,20 @@ namespace SocialMediaApi.Logic.Services
             await _publisher.PublishAsync(new DeletePostEvent { Post = post });
         }
 
-        public async Task<PostViewModel?> GetPostAsync(Guid groupId, Guid id)
+        public async Task<PostViewModel?> GetPostAsync(Guid ownerId, Guid id)
         {
             return PostMapper.ToView(await _dbContext.Posts.FindAsync(id));
         }
 
-        public async Task<Pagination<PostViewModel>> GetPostsAsync(Guid groupId, int page = 1, int limit = 20)
+        public async Task<Pagination<PostViewModel>> GetPostsAsync(Guid ownerId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<Post, PostViewModel>(page, limit, x => x.GroupId == groupId, PostMapper.ToView!, sortColumn: nameof(Post.ActionBasedDate), orderByDescending: true);
+            return await _dbContext.AsPaginationAsync<Post, PostViewModel>(page, limit, x => x.OwnerId == ownerId, PostMapper.ToView!, sortColumn: nameof(Post.ActionBasedDate), orderByDescending: true);
         }
 
-        public async Task UpdatePostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
+        public async Task UpdatePostExpireDateAsync(Guid ownerId, Guid id, EntityActionType entityActionType)
         {
             var post = await _dbContext.Posts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
@@ -111,14 +111,14 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<PostViewModel> UpdatePostAsync(Guid groupId, Guid id, UpdatePostModel model)
+        public async Task<PostViewModel> UpdatePostAsync(Guid ownerId, Guid id, UpdatePostModel model)
         {
             if (string.IsNullOrEmpty(model?.Text))
             {
                 throw new SocialMediaException("Text is required.");
             }
             var post = await _dbContext.Posts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }

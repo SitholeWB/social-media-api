@@ -20,7 +20,7 @@ namespace SocialMediaApi.Logic.EventHandlers.Posts
             if (obj?.Post != null)
             {
                 await _userPostService.DeleteUserPostAsync(obj.Post!.Creator.Id, obj.Post!.Id);
-                await _newPostService.DeleteActivePostAsync(obj.Post!.GroupId, obj.Post.Id);
+                await _newPostService.DeleteActivePostAsync(obj.Post!.OwnerId, obj.Post.Id);
             }
         }
     }

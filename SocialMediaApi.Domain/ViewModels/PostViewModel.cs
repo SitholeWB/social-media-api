@@ -5,7 +5,7 @@ namespace SocialMediaApi.Domain.ViewModels
 {
     public class PostViewModel : BasePost
     {
-        public Guid GroupId { get; set; }
+        public Guid OwnerId { get; set; }
         public EntityOrigin EntityOrigin { get; set; }
     }
 }

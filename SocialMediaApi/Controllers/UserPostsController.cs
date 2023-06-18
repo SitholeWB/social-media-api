@@ -12,11 +12,11 @@ namespace SocialMediaApi.Controllers
     [Authorize]
     [Route("api/v1/users/{userId}/posts")]
     [ApiController]
-    public class UserPostsController : ControllerBase
+    public class UserPostsController : BasePostsController
     {
         private readonly IUserPostService _postService;
 
-        public UserPostsController(IPostUnitOfWork postUnitOfWork)
+        public UserPostsController(IPostUnitOfWork postUnitOfWork) : base(postUnitOfWork)
         {
             _postService = postUnitOfWork.UserPostService;
         }
@@ -26,13 +26,6 @@ namespace SocialMediaApi.Controllers
         public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync([FromRoute] Guid userId, int page = 1)
         {
             return Ok(await _postService.GetUserPostsAsync(userId, page));
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePostAsync([FromRoute] Guid userId, [FromRoute] Guid id)
-        {
-            await _postService.DeleteUserPostAsync(userId, id);
-            return Ok();
         }
     }
 }

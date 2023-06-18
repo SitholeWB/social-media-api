@@ -14,7 +14,7 @@ namespace SocialMediaApi.Domain.Mappers
             {
                 return default;
             }
-            viewPost.GroupId = post!.GroupId;
+            viewPost.OwnerId = post!.OwnerId;
             viewPost.EntityOrigin = EntityOrigin.None;
             return viewPost;
         }
@@ -26,7 +26,7 @@ namespace SocialMediaApi.Domain.Mappers
             {
                 return default;
             }
-            viewPost.GroupId = post!.GroupId;
+            viewPost.OwnerId = post!.OwnerId;
             viewPost.EntityOrigin = EntityOrigin.Active;
 
             return viewPost;

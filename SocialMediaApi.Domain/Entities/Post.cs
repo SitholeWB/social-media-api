@@ -4,6 +4,6 @@ namespace SocialMediaApi.Domain.Entities
 {
     public class Post : BasePost
     {
-        public Guid GroupId { get; set; }
+        public Guid OwnerId { get; set; }
     }
 }

@@ -1,24 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
-using SocialMediaApi.Domain.Models.Posts;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Interfaces.UnitOfWork;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SocialMediaApi.Controllers
 {
     [Authorize]
     [Route("api/v1/groups/{groupId}/posts")]
     [ApiController]
-    public class PostsController : ControllerBase
+    public class GroupPostsController : BasePostsController
     {
         private readonly IPostService _postService;
         private readonly IActivePostService _activePostService;
-
-        public PostsController(IPostUnitOfWork postUnitOfWork)
+        public GroupPostsController(IPostUnitOfWork postUnitOfWork) : base(postUnitOfWork)
         {
             _postService = postUnitOfWork.PostService;
             _activePostService = postUnitOfWork.ActivePostService;
@@ -42,32 +38,6 @@ namespace SocialMediaApi.Controllers
                 pageResult = await _postService.GetPostsAsync(groupId, page, limit);
             }
             return Ok(pageResult);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PostViewModel>> GetPostAsync([FromRoute] Guid groupId, [FromRoute] Guid id)
-        {
-            return Ok(await _postService.GetPostAsync(groupId, id));
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<PostViewModel>> AddPostAsync([FromRoute] Guid groupId, [FromBody] AddPostModel model)
-        {
-            return Ok(await _postService.AddPostAsync(groupId, model));
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<PostViewModel>> UpdatePostAsync([FromRoute] Guid groupId, [FromRoute] Guid id, [FromBody] UpdatePostModel model)
-        {
-            return Ok(await _postService.UpdatePostAsync(groupId, id, model));
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePostAsync([FromRoute] Guid groupId, [FromRoute] Guid id)
-        {
-            await _postService.DeletePostAsync(groupId, id);
-            return Ok();
         }
     }
 }

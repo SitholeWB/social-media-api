@@ -23,7 +23,7 @@ namespace SocialMediaApi.Logic.Services
             _configService = configService;
         }
 
-        public async Task AddActivePostAsync(Guid groupId, AddActivePostModel model)
+        public async Task AddActivePostAsync(Guid ownerId, AddActivePostModel model)
         {
             if (model?.Post == null)
             {
@@ -31,12 +31,12 @@ namespace SocialMediaApi.Logic.Services
             }
 
             var entity = BasePost.GetChild<ActivePost>(model.Post);
-            entity.GroupId = groupId;
+            entity.OwnerId = ownerId;
             await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteActivePostAsync(Guid groupId, Guid id)
+        public async Task DeleteActivePostAsync(Guid ownerId, Guid id)
         {
             var post = await _dbContext.ActivePosts.FindAsync(id);
             if (post != null)
@@ -60,24 +60,24 @@ namespace SocialMediaApi.Logic.Services
             } while (hasNext);
         }
 
-        public async Task<PostViewModel?> GetActivePostAsync(Guid groupId, Guid id)
+        public async Task<PostViewModel?> GetActivePostAsync(Guid ownerId, Guid id)
         {
             return PostMapper.ToView(await _dbContext.ActivePosts.FindAsync(id));
         }
 
-        public async Task<Pagination<PostViewModel>> GetActivePostsAsync(Guid groupId, int page = 1, int limit = 20)
+        public async Task<Pagination<PostViewModel>> GetActivePostsAsync(Guid ownerId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<ActivePost, PostViewModel>(page, limit, x => x.GroupId == groupId, PostMapper.ToView!, sortColumn: nameof(ActivePost.ActionBasedDate), orderByDescending: true);
+            return await _dbContext.AsPaginationAsync<ActivePost, PostViewModel>(page, limit, x => x.OwnerId == ownerId, PostMapper.ToView!, sortColumn: nameof(ActivePost.ActionBasedDate), orderByDescending: true);
         }
 
-        public async Task UpdateActivePostAsync(Guid groupId, Guid id, UpdateActivePostModel model)
+        public async Task UpdateActivePostAsync(Guid ownerId, Guid id, UpdateActivePostModel model)
         {
             if (model?.Post == null)
             {
                 throw new SocialMediaException("Post is required.");
             }
             var post = await _dbContext.ActivePosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
@@ -89,10 +89,10 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateActiveCommentCountAsync(Guid groupId, Guid id, bool increment)
+        public async Task UpdateActiveCommentCountAsync(Guid ownerId, Guid id, bool increment)
         {
             var post = await _dbContext.ActivePosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }
@@ -108,10 +108,10 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateActivePostExpireDateAsync(Guid groupId, Guid id, EntityActionType entityActionType)
+        public async Task UpdateActivePostExpireDateAsync(Guid ownerId, Guid id, EntityActionType entityActionType)
         {
             var post = await _dbContext.ActivePosts.FindAsync(id) ?? throw new SocialMediaException("No Post found for given Id & groupId.");
-            if (!post.GroupId.Equals(groupId))
+            if (!post.OwnerId.Equals(ownerId))
             {
                 throw new SocialMediaException("No Post found for given Id & groupId.");
             }

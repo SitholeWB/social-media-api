@@ -34,12 +34,12 @@ namespace SocialMediaApi.Data
             modelBuilder.Entity<UserPost>().HasIndex(x => x.UserId);
 
             modelBuilder.Entity<Post>().HasIndex(x => x.ActionBasedDate);
-            modelBuilder.Entity<Post>().HasIndex(x => x.GroupId);
+            modelBuilder.Entity<Post>().HasIndex(x => x.OwnerId);
 
             modelBuilder.Entity<Comment>().HasIndex(x => x.PostId);
 
             modelBuilder.Entity<ActivePost>().HasIndex(x => x.ActionBasedDate);
-            modelBuilder.Entity<ActivePost>().HasIndex(x => x.GroupId);
+            modelBuilder.Entity<ActivePost>().HasIndex(x => x.OwnerId);
             //Post
             modelBuilder.Entity<Post>().OwnsOne(
                 post => post.Creator, ownedNavigationBuilder =>

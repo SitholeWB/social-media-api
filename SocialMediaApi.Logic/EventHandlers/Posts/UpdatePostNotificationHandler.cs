@@ -18,7 +18,7 @@ namespace SocialMediaApi.Logic.EventHandlers.Posts
         {
             if (obj?.Post != null)
             {
-                await _newPostService.UpdateActivePostAsync(obj.Post!.GroupId, obj.Post.Id, new UpdateActivePostModel
+                await _newPostService.UpdateActivePostAsync(obj.Post!.OwnerId, obj.Post.Id, new UpdateActivePostModel
                 {
                     Post = obj.Post
                 });

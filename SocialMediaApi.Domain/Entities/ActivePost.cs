@@ -4,7 +4,7 @@ namespace SocialMediaApi.Domain.Entities
 {
     public class ActivePost : BasePost
     {
-        public Guid GroupId { get; set; }
+        public Guid OwnerId { get; set; }
         //public List<MiniComment> Comments { get; set; } = new List<MiniComment>();
     }
 }
