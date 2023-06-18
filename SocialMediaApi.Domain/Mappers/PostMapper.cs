@@ -1,13 +1,15 @@
-﻿using SocialMediaApi.Domain.Entities;
+﻿using SocialMediaApi.Domain.DTOs;
+using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.Base;
+using SocialMediaApi.Domain.Entities.JsonEntities;
 using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Domain.Mappers
 {
-    public struct PostMapper
+    public class PostMapper
     {
-        public static PostViewModel? ToView(Post? post)
+        public static PostViewModel? ToView(Post? post, IList<MiniReaction> reactions)
         {
             var viewPost = BaseToView(post);
             if (viewPost == null)
@@ -16,10 +18,19 @@ namespace SocialMediaApi.Domain.Mappers
             }
             viewPost.OwnerId = post!.OwnerId;
             viewPost.EntityOrigin = EntityOrigin.None;
+            var reaction = reactions.FirstOrDefault(x => x.EntityId == post.Id);
+            if (reaction != null)
+            {
+                viewPost.Reaction = new ReactionDto
+                {
+                    Reacted = true,
+                    Unicode = reaction.Unicode,
+                };
+            }
             return viewPost;
         }
 
-        public static PostViewModel? ToView(ActivePost? post)
+        public static PostViewModel? ToView(ActivePost? post, IList<MiniReaction> reactions)
         {
             var viewPost = BaseToView(post);
             if (viewPost == null)
@@ -28,7 +39,15 @@ namespace SocialMediaApi.Domain.Mappers
             }
             viewPost.OwnerId = post!.OwnerId;
             viewPost.EntityOrigin = EntityOrigin.Active;
-
+            var reaction = reactions.FirstOrDefault(x => x.EntityId == post.Id);
+            if (reaction != null)
+            {
+                viewPost.Reaction = new ReactionDto
+                {
+                    Reacted = true,
+                    Unicode = reaction.Unicode,
+                };
+            }
             return viewPost;
         }
 

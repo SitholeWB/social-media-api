@@ -11,10 +11,12 @@ namespace SocialMediaApi.Logic.Services
     public class UserDetailsService : IUserDetailsService
     {
         private readonly SocialMediaApiDbContext _dbContext;
+        private readonly IAuthService _authService;
 
-        public UserDetailsService(SocialMediaApiDbContext dbContext)
+        public UserDetailsService(SocialMediaApiDbContext dbContext, IAuthService authService)
         {
             _dbContext = dbContext;
+            _authService = authService;
         }
 
         public async Task AddCommentReactionAsync(Guid entityId, AddEntityReactionModel model)
@@ -23,12 +25,13 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Unicode is required.");
             }
-            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
+            var authUser = await _authService.GetAuthorizedUser();
+            var userDetails = await _dbContext.UserDetails.FindAsync(authUser.Id);
             if (userDetails == null)
             {
                 userDetails = new UserDetails
                 {
-                    Id = entityId,
+                    Id = authUser.Id,
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
                     CommentReactions = new List<MiniReaction>(),
@@ -69,12 +72,13 @@ namespace SocialMediaApi.Logic.Services
             {
                 throw new SocialMediaException("Unicode is required.");
             }
-            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
+            var authUser = await _authService.GetAuthorizedUser();
+            var userDetails = await _dbContext.UserDetails.FindAsync(authUser.Id);
             if (userDetails == null)
             {
                 userDetails = new UserDetails
                 {
-                    Id = entityId,
+                    Id = authUser.Id,
                     CreatedDate = DateTimeOffset.UtcNow,
                     LastModifiedDate = DateTimeOffset.UtcNow,
                     CommentReactions = new List<MiniReaction>(),
@@ -112,7 +116,8 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeleteCommentReactionAsync(Guid entityId)
         {
-            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
+            var authUser = await _authService.GetAuthorizedUser();
+            var userDetails = await _dbContext.UserDetails.FindAsync(authUser.Id);
             if (userDetails != null)
             {
                 userDetails.CommentReactions = userDetails.CommentReactions.Where(x => x.EntityId != entityId).ToList();
@@ -123,7 +128,8 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task DeletePostReactionAsync(Guid entityId)
         {
-            var userDetails = await _dbContext.UserDetails.FindAsync(entityId);
+            var authUser = await _authService.GetAuthorizedUser();
+            var userDetails = await _dbContext.UserDetails.FindAsync(authUser.Id);
             if (userDetails != null)
             {
                 userDetails.PostReactions = userDetails.PostReactions.Where(x => x.EntityId != entityId).ToList();
@@ -132,14 +138,16 @@ namespace SocialMediaApi.Logic.Services
             }
         }
 
-        public async Task<IList<MiniReaction>> GetCommentReactionsAsync(Guid entityId)
+        public async Task<IList<MiniReaction>> GetCommentReactionsAsync()
         {
-            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == entityId).Select(x => x.CommentReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
+            var authUser = await _authService.GetAuthorizedUser();
+            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == authUser.Id).Select(x => x.CommentReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
         }
 
-        public async Task<IList<MiniReaction>> GetPostReactionsAsync(Guid entityId)
+        public async Task<IList<MiniReaction>> GetPostReactionsAsync()
         {
-            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == entityId).Select(x => x.PostReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
+            var authUser = await _authService.GetAuthorizedUser();
+            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == authUser.Id).Select(x => x.PostReactions).FirstOrDefaultAsync() ?? new List<MiniReaction>();
         }
     }
 }

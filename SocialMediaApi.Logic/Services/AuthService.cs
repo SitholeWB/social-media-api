@@ -129,5 +129,10 @@ namespace SocialMediaApi.Logic.Services
         {
             return (_httpContextAccessor?.HttpContext?.Request?.Headers["x-installation-id-header"] ?? string.Empty)!;
         }
+
+        public async Task<bool> IsAuthenticated()
+        {
+            return await Task.FromResult(_httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false);
+        }
     }
 }

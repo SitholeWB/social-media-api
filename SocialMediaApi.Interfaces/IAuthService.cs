@@ -14,6 +14,8 @@ namespace SocialMediaApi.Interfaces
 
         public Task<BaseUser> GetImpersonatingUser();
 
+        public Task<bool> IsAuthenticated();
+
         Task<TokenDto> BuildToken(AddJwtTokenModel model);
     }
 }

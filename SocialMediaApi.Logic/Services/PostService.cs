@@ -19,13 +19,15 @@ namespace SocialMediaApi.Logic.Services
         private readonly IAuthService _authService;
         private readonly EventHandlerContainer _publisher;
         private readonly IConfigService _configService;
+        private readonly IUserDetailsService _userDetailsService;
 
-        public PostService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService)
+        public PostService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService, IUserDetailsService userDetailsService)
         {
             _dbContext = dbContext;
             _authService = authService;
             _publisher = publisher;
             _configService = configService;
+            _userDetailsService = userDetailsService;
         }
 
         public async Task<PostViewModel> AddPostAsync(Guid ownerId, AddPostModel model)
@@ -65,7 +67,8 @@ namespace SocialMediaApi.Logic.Services
             await _dbContext.SaveChangesAsync();
 
             await _publisher.PublishAsync(new AddPostEvent { Post = addedEntity.Entity });
-            return PostMapper.ToView(addedEntity.Entity)!;
+
+            return PostMapper.ToView(addedEntity.Entity, new List<MiniReaction> { })!;
         }
 
         public async Task DeletePostAsync(Guid ownerId, Guid id)
@@ -89,12 +92,14 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<PostViewModel?> GetPostAsync(Guid ownerId, Guid id)
         {
-            return PostMapper.ToView(await _dbContext.Posts.FindAsync(id));
+            var reactions = await GetPostReactionsAsync();
+            return PostMapper.ToView(await _dbContext.Posts.FindAsync(id), reactions);
         }
 
         public async Task<Pagination<PostViewModel>> GetPostsAsync(Guid ownerId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<Post, PostViewModel>(page, limit, x => x.OwnerId == ownerId, PostMapper.ToView!, sortColumn: nameof(Post.ActionBasedDate), orderByDescending: true);
+            var reactions = await GetPostReactionsAsync();
+            return await _dbContext.AsPaginationAsync<Post, PostViewModel>(page, limit, x => x.OwnerId == ownerId, p => PostMapper.ToView(p, reactions)!, sortColumn: nameof(Post.ActionBasedDate), orderByDescending: true);
         }
 
         public async Task UpdatePostExpireDateAsync(Guid ownerId, Guid id, EntityActionType entityActionType)
@@ -133,7 +138,24 @@ namespace SocialMediaApi.Logic.Services
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new UpdatePostEvent { Post = post });
-            return PostMapper.ToView(post)!;
+            var reactions = await GetPostReactionsAsync();
+            return PostMapper.ToView(post, reactions)!;
+        }
+
+        private async Task<IList<MiniReaction>> GetPostReactionsAsync()
+        {
+            var isAuthenticated = await _authService.IsAuthenticated();
+            var reactions = default(IList<MiniReaction>);
+            if (isAuthenticated)
+            {
+                reactions = await _userDetailsService.GetPostReactionsAsync();
+            }
+            else
+            {
+                reactions = new List<MiniReaction>();
+            }
+
+            return reactions ?? new List<MiniReaction>();
         }
     }
 }

@@ -13,8 +13,8 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeletePostReactionAsync(Guid entityId);
 
-        public Task<IList<MiniReaction>> GetCommentReactionsAsync(Guid entityId);
+        public Task<IList<MiniReaction>> GetCommentReactionsAsync();
 
-        public Task<IList<MiniReaction>> GetPostReactionsAsync(Guid entityId);
+        public Task<IList<MiniReaction>> GetPostReactionsAsync();
     }
 }

@@ -14,10 +14,14 @@ namespace SocialMediaApi.Logic.Services
     public class UserPostService : IUserPostService
     {
         private readonly SocialMediaApiDbContext _dbContext;
+        private readonly IAuthService _authService;
+        private readonly IUserDetailsService _userDetailsService;
 
-        public UserPostService(SocialMediaApiDbContext dbContext)
+        public UserPostService(SocialMediaApiDbContext dbContext, IUserDetailsService userDetailsService, IAuthService authService)
         {
             _dbContext = dbContext;
+            _userDetailsService = userDetailsService;
+            _authService = authService;
         }
 
         public async Task AddUserPostAsync(AddUserPostModel model)
@@ -100,7 +104,8 @@ namespace SocialMediaApi.Logic.Services
             }
             var ids = userPosts.Select(x => x.EntityId);
             var posts = await _dbContext.Posts.Where(x => ids.Contains(x.Id)).ToListAsync();
-            return Pagination<PostViewModel>.GetPagination<Post, PostViewModel>(posts, totalItems, PostMapper.ToView!, page, limit, true);
+            var reactions = await GetPostReactionsAsync();
+            return Pagination<PostViewModel>.GetPagination<Post, PostViewModel>(posts, totalItems, p => PostMapper.ToView(p, reactions)!, page, limit, true);
         }
 
         private async Task<IList<MiniEntity>> PrivateGetUserPostsAsync(Guid userId, int page, int limit)
@@ -115,6 +120,22 @@ namespace SocialMediaApi.Logic.Services
                 return userPost.Posts.OrderByDescending(x => x.CreatedDate).Skip(skip).Take(limit).ToList();
             }
             return new List<MiniEntity> { };
+        }
+
+        private async Task<IList<MiniReaction>> GetPostReactionsAsync()
+        {
+            var isAuthenticated = await _authService.IsAuthenticated();
+            var reactions = default(IList<MiniReaction>);
+            if (isAuthenticated)
+            {
+                reactions = await _userDetailsService.GetPostReactionsAsync();
+            }
+            else
+            {
+                reactions = new List<MiniReaction>();
+            }
+
+            return reactions ?? new List<MiniReaction>();
         }
     }
 }
