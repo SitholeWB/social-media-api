@@ -7,7 +7,6 @@ namespace SocialMediaApi.Data
     {
         public SocialMediaApiDbContext(DbContextOptions<SocialMediaApiDbContext> options) : base(options)
         {
-            Database.Migrate();
         }
 
         public DbSet<Group> Groups { get; set; } = default!;

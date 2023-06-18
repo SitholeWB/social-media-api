@@ -80,6 +80,10 @@ namespace SocialMediaApi
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            using var scope = app.Services.CreateScope();
+            using var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaApiDbContext>();
+            dbContext.Database.Migrate();
+
             app.UseExceptionHandler(a => a.Run(async context =>
             {
                 var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();

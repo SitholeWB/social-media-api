@@ -19,27 +19,27 @@ namespace SocialMediaApi.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostViewModel>> GetPostAsync([FromRoute] Guid groupId, [FromRoute] Guid id)
+        public async Task<ActionResult<PostViewModel>> GetPostAsync([FromRoute] Guid ownerId, [FromRoute] Guid id)
         {
-            return Ok(await _postService.GetPostAsync(groupId, id));
+            return Ok(await _postService.GetPostAsync(ownerId, id));
         }
 
         [HttpPost]
-        public async Task<ActionResult<PostViewModel>> AddPostAsync([FromRoute] Guid groupId, [FromBody] AddPostModel model)
+        public async Task<ActionResult<PostViewModel>> AddPostAsync([FromRoute] Guid ownerId, [FromBody] AddPostModel model)
         {
-            return Ok(await _postService.AddPostAsync(groupId, model));
+            return Ok(await _postService.AddPostAsync(ownerId, model));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<PostViewModel>> UpdatePostAsync([FromRoute] Guid groupId, [FromRoute] Guid id, [FromBody] UpdatePostModel model)
+        public async Task<ActionResult<PostViewModel>> UpdatePostAsync([FromRoute] Guid ownerId, [FromRoute] Guid id, [FromBody] UpdatePostModel model)
         {
-            return Ok(await _postService.UpdatePostAsync(groupId, id, model));
+            return Ok(await _postService.UpdatePostAsync(ownerId, id, model));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePostAsync([FromRoute] Guid groupId, [FromRoute] Guid id)
+        public async Task<IActionResult> DeletePostAsync([FromRoute] Guid ownerId, [FromRoute] Guid id)
         {
-            await _postService.DeletePostAsync(groupId, id);
+            await _postService.DeletePostAsync(ownerId, id);
             return Ok();
         }
     }

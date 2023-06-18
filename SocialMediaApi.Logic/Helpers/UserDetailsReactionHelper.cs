@@ -3,7 +3,7 @@ using SocialMediaApi.Interfaces;
 
 namespace SocialMediaApi.Logic.Helpers
 {
-    public static class UserDetailsReactionHelper
+    public struct UserDetailsReactionHelper
     {
         public static async Task<IList<MiniReaction>> GetPostReactionsAsync(IAuthService _authService, IUserDetailsService _userDetailsService)
         {
