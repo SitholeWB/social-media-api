@@ -117,17 +117,17 @@ namespace SocialMediaApi.Logic.Services
 
         public string GetAnonymousName()
         {
-            return _httpContextAccessor?.HttpContext?.Request?.Headers["x-anonymous-name"] ?? "Anonymous";
+            return (_httpContextAccessor?.HttpContext?.Request?.Headers["x-anonymous-name"] ?? "Anonymous")!;
         }
 
         public string GetUserId()
         {
-            return _httpContextAccessor?.HttpContext?.Request?.Headers["x-user-id-header"] ?? string.Empty;
+            return (_httpContextAccessor?.HttpContext?.Request?.Headers["x-user-id-header"] ?? string.Empty)!;
         }
 
         public string GetInstallationId()
         {
-            return _httpContextAccessor?.HttpContext?.Request?.Headers["x-installation-id-header"] ?? string.Empty;
+            return (_httpContextAccessor?.HttpContext?.Request?.Headers["x-installation-id-header"] ?? string.Empty)!;
         }
     }
 }
