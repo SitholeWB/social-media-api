@@ -3,13 +3,13 @@ using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.Base;
-using SocialMediaApi.Domain.Entities.JsonEntities;
 using SocialMediaApi.Domain.Enums;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Mappers;
 using SocialMediaApi.Domain.Models.ActivePosts;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
+using SocialMediaApi.Logic.Helpers;
 
 namespace SocialMediaApi.Logic.Services
 {
@@ -67,13 +67,13 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<PostViewModel?> GetActivePostAsync(Guid ownerId, Guid id)
         {
-            var reactions = await GetPostReactionsAsync();
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             return PostMapper.ToView(await _dbContext.ActivePosts.FindAsync(id), reactions);
         }
 
         public async Task<Pagination<PostViewModel>> GetActivePostsAsync(Guid ownerId, int page = 1, int limit = 20)
         {
-            var reactions = await GetPostReactionsAsync();
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             return await _dbContext.AsPaginationAsync<ActivePost, PostViewModel>(page, limit, x => x.OwnerId == ownerId, p => PostMapper.ToView(p, reactions)!, sortColumn: nameof(ActivePost.ActionBasedDate), orderByDescending: true);
         }
 
@@ -126,22 +126,6 @@ namespace SocialMediaApi.Logic.Services
             post.ActionBasedDate = post.ActionBasedDate.AddMinutes(entityActionConfig.ExpireDateMinutes);
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
-        }
-
-        private async Task<IList<MiniReaction>> GetPostReactionsAsync()
-        {
-            var isAuthenticated = await _authService.IsAuthenticated();
-            var reactions = default(IList<MiniReaction>);
-            if (isAuthenticated)
-            {
-                reactions = await _userDetailsService.GetPostReactionsAsync();
-            }
-            else
-            {
-                reactions = new List<MiniReaction>();
-            }
-
-            return reactions ?? new List<MiniReaction>();
         }
     }
 }

@@ -10,6 +10,7 @@ using SocialMediaApi.Domain.Models.Comments;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.Helpers;
 
 namespace SocialMediaApi.Logic.Services
 {
@@ -19,13 +20,15 @@ namespace SocialMediaApi.Logic.Services
         private readonly IAuthService _authService;
         private readonly EventHandlerContainer _publisher;
         private readonly IConfigService _configService;
+        private readonly IUserDetailsService _userDetailsService;
 
-        public CommentService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService)
+        public CommentService(SocialMediaApiDbContext dbContext, IAuthService authService, EventHandlerContainer publisher, IConfigService configService, IUserDetailsService userDetailsService)
         {
             _dbContext = dbContext;
             _authService = authService;
             _publisher = publisher;
             _configService = configService;
+            _userDetailsService = userDetailsService;
         }
 
         public async Task<CommentViewModel> AddCommentAsync(Guid postId, AddCommentModel model)
@@ -74,7 +77,7 @@ namespace SocialMediaApi.Logic.Services
                 Comment = addedEntity.Entity,
                 Post = post,
             });
-            return PostMapper.ToView(addedEntity.Entity)!;
+            return PostMapper.ToView(addedEntity.Entity, new List<MiniReaction>())!;
         }
 
         public async Task DeleteCommentAsync(Guid postId, Guid id)
@@ -105,7 +108,8 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<CommentViewModel>> GetCommentsAsync(Guid postId, int page = 1, int limit = 20)
         {
-            return await _dbContext.AsPaginationAsync<Comment, CommentViewModel>(page, limit, x => x.PostId == postId, PostMapper.ToView!, sortColumn: nameof(Comment.ActionBasedDate), orderByDescending: true);
+            var reactions = await UserDetailsReactionHelper.GetCommentReactionsAsync(_authService, _userDetailsService);
+            return await _dbContext.AsPaginationAsync<Comment, CommentViewModel>(page, limit, x => x.PostId == postId, p => PostMapper.ToView(p, reactions)!, sortColumn: nameof(Comment.ActionBasedDate), orderByDescending: true);
         }
 
         public async Task<CommentViewModel> UpdateCommentAsync(Guid postId, Guid id, UpdateCommentModel model)
@@ -136,7 +140,8 @@ namespace SocialMediaApi.Logic.Services
                 Post = post,
                 Comment = comment
             });
-            return PostMapper.ToView(comment)!;
+            var reactions = await UserDetailsReactionHelper.GetCommentReactionsAsync(_authService, _userDetailsService);
+            return PostMapper.ToView(comment, reactions)!;
         }
 
         public async Task UpdateCommentExpireDateAsync(Guid postId, Guid id, EntityActionType entityActionType)

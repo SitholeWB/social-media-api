@@ -10,6 +10,7 @@ using SocialMediaApi.Domain.Models.Posts;
 using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.Helpers;
 
 namespace SocialMediaApi.Logic.Services
 {
@@ -92,13 +93,13 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<PostViewModel?> GetPostAsync(Guid ownerId, Guid id)
         {
-            var reactions = await GetPostReactionsAsync();
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             return PostMapper.ToView(await _dbContext.Posts.FindAsync(id), reactions);
         }
 
         public async Task<Pagination<PostViewModel>> GetPostsAsync(Guid ownerId, int page = 1, int limit = 20)
         {
-            var reactions = await GetPostReactionsAsync();
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             return await _dbContext.AsPaginationAsync<Post, PostViewModel>(page, limit, x => x.OwnerId == ownerId, p => PostMapper.ToView(p, reactions)!, sortColumn: nameof(Post.ActionBasedDate), orderByDescending: true);
         }
 
@@ -138,24 +139,8 @@ namespace SocialMediaApi.Logic.Services
             _dbContext.Update(post);
             await _dbContext.SaveChangesAsync();
             await _publisher.PublishAsync(new UpdatePostEvent { Post = post });
-            var reactions = await GetPostReactionsAsync();
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             return PostMapper.ToView(post, reactions)!;
-        }
-
-        private async Task<IList<MiniReaction>> GetPostReactionsAsync()
-        {
-            var isAuthenticated = await _authService.IsAuthenticated();
-            var reactions = default(IList<MiniReaction>);
-            if (isAuthenticated)
-            {
-                reactions = await _userDetailsService.GetPostReactionsAsync();
-            }
-            else
-            {
-                reactions = new List<MiniReaction>();
-            }
-
-            return reactions ?? new List<MiniReaction>();
         }
     }
 }

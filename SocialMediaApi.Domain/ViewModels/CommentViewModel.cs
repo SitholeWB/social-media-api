@@ -1,4 +1,5 @@
-﻿using SocialMediaApi.Domain.Entities.Base;
+﻿using SocialMediaApi.Domain.DTOs;
+using SocialMediaApi.Domain.Entities.Base;
 using SocialMediaApi.Domain.Entities.JsonEntities;
 
 namespace SocialMediaApi.Domain.ViewModels
@@ -14,6 +15,7 @@ namespace SocialMediaApi.Domain.ViewModels
         public int TotalComments { get; set; } = 0;
         public ReactionSummary Reactions { get; set; } = new ReactionSummary { };
         public Media Media { get; set; } = new Media { };
+        public ReactionDto Reaction { get; set; } = new ReactionDto();
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public DateTimeOffset ActionBasedDate { get; set; }

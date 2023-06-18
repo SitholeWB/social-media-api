@@ -74,12 +74,20 @@ namespace SocialMediaApi.Domain.Mappers
             };
         }
 
-        public static CommentViewModel? ToView(Comment? comment)
+        public static CommentViewModel? ToView(Comment? comment, IList<MiniReaction> reactions)
         {
             if (comment == null)
             {
                 return default;
             }
+            var reaction = reactions.FirstOrDefault(x => x.EntityId == comment.Id);
+            var reactionDto = new ReactionDto();
+            if (reaction != null)
+            {
+                reactionDto.Reacted = true;
+                reactionDto.Unicode = reaction.Unicode;
+            }
+
             return new CommentViewModel
             {
                 CreatedDate = comment.CreatedDate,
@@ -94,6 +102,7 @@ namespace SocialMediaApi.Domain.Mappers
                 Reactions = comment.Reactions,
                 Text = comment.Text,
                 ActionBasedDate = comment.ActionBasedDate,
+                Reaction = reactionDto
             };
         }
 
