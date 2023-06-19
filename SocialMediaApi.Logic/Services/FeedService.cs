@@ -39,8 +39,9 @@ namespace SocialMediaApi.Logic.Services
 
         public async Task<Pagination<PostViewModel>> GetTrendingPostsAsync(int page, int limit)
         {
+            var date = DateTimeOffset.UtcNow.AddDays(-2);
             var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
-            var posts = await _dbContext.ActivePosts.OrderByDescending(x => x.Rank).Skip((page - 1) * limit).ToListAsync();
+            var posts = await _dbContext.Posts.Where(x => x.ActionBasedDate > date).OrderByDescending(x => x.Rank).Skip((page - 1) * limit).ToListAsync();
             var totalItems = (posts.Count == page) ? page + 1 : posts.Count;
             return Pagination<PostViewModel>.GetPagination(posts, totalItems, x => PostMapper.ToView(x, reactions), 1, posts.Count)!;
         }
