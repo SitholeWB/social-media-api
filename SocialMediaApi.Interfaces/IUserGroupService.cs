@@ -1,5 +1,6 @@
-﻿using SocialMediaApi.Domain.Entities.JsonEntities;
+﻿using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.UserGroups;
+using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Interfaces
 {
@@ -9,6 +10,6 @@ namespace SocialMediaApi.Interfaces
 
         public Task DeleteUserGroupAsync(Guid entityId);
 
-        public Task<IList<MiniEntity>> GetUserGroupsAsync();
+        public Task<Pagination<GroupViewModel>> GetUserGroupsAsync();
     }
 }

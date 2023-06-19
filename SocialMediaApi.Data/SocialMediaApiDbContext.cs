@@ -120,6 +120,11 @@ namespace SocialMediaApi.Data
                 {
                     ownedNavigationBuilder.ToJson();
                 });
+            modelBuilder.Entity<UserDetails>().OwnsMany(
+                post => post.Groups, ownedNavigationBuilder =>
+                {
+                    ownedNavigationBuilder.ToJson();
+                });
             //UserPosts
             modelBuilder.Entity<UserPost>().OwnsMany(
                 post => post.Posts, ownedNavigationBuilder =>

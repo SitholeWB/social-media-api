@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Entities;
 using SocialMediaApi.Domain.Entities.JsonEntities;
+using SocialMediaApi.Domain.Mappers;
 using SocialMediaApi.Domain.Models.UserGroups;
+using SocialMediaApi.Domain.ViewModels;
 using SocialMediaApi.Interfaces;
 
 namespace SocialMediaApi.Logic.Services
@@ -74,10 +77,18 @@ namespace SocialMediaApi.Logic.Services
             }
         }
 
-        public async Task<IList<MiniEntity>> GetUserGroupsAsync()
+        public async Task<Pagination<GroupViewModel>> GetUserGroupsAsync()
         {
+            if (!(await _authService.IsAuthenticated()))
+            {
+                return new Pagination<GroupViewModel>(new List<GroupViewModel>(), 0, 1, 1);
+            }
             var authUser = await _authService.GetAuthorizedUser();
-            return await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == authUser.Id).Select(x => x.Groups).FirstOrDefaultAsync() ?? new List<MiniEntity>();
+
+            var miniGroups = await _dbContext.UserDetails.AsNoTracking().Where(x => x.Id == authUser.Id).Select(x => x.Groups).FirstOrDefaultAsync() ?? new List<MiniEntity>();
+            var ids = miniGroups.Select(x => x.EntityId);
+            var groups = await _dbContext.Groups.Where(x => ids.Contains(x.Id)).ToListAsync();
+            return Pagination<GroupViewModel>.GetPagination(groups, groups.Count, GroupMapper.ToView, 1, groups.Count)!;
         }
     }
 }

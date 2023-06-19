@@ -25,7 +25,7 @@ namespace SocialMediaApi.Logic.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<TokenDto> BuildToken(AddJwtTokenModel model)
+        public async Task<TokenDto> BuildToken(JwtTokenModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Email))
             {

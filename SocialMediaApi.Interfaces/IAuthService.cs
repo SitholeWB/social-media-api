@@ -16,6 +16,6 @@ namespace SocialMediaApi.Interfaces
 
         public Task<bool> IsAuthenticated();
 
-        Task<TokenDto> BuildToken(AddJwtTokenModel model);
+        Task<TokenDto> BuildToken(JwtTokenModel model);
     }
 }
