@@ -12,7 +12,7 @@ using SocialMediaApi.Data;
 namespace SocialMediaApi.Data.Migrations
 {
     [DbContext(typeof(SocialMediaApiDbContext))]
-    [Migration("20230618131320_initial")]
+    [Migration("20230619185931_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -879,6 +879,31 @@ namespace SocialMediaApi.Data.Migrations
                                 .HasForeignKey("UserDetailsId");
                         });
 
+                    b.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MiniEntity", "Groups", b1 =>
+                        {
+                            b1.Property<Guid>("UserDetailsId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<DateTimeOffset>("CreatedDate")
+                                .HasColumnType("datetimeoffset");
+
+                            b1.Property<Guid>("EntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("UserDetailsId", "Id");
+
+                            b1.ToTable("UserDetails");
+
+                            b1.ToJson("Groups");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserDetailsId");
+                        });
+
                     b.OwnsMany("SocialMediaApi.Domain.Entities.JsonEntities.MiniReaction", "PostReactions", b1 =>
                         {
                             b1.Property<Guid>("UserDetailsId")
@@ -906,6 +931,8 @@ namespace SocialMediaApi.Data.Migrations
                         });
 
                     b.Navigation("CommentReactions");
+
+                    b.Navigation("Groups");
 
                     b.Navigation("PostReactions");
                 });

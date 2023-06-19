@@ -122,6 +122,7 @@ namespace SocialMediaApi.Data.Migrations
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CommentReactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Groups = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostReactions = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
