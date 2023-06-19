@@ -10,7 +10,7 @@ using SocialMediaApi.Interfaces.UnitOfWork;
 namespace SocialMediaApi.Controllers
 {
     [Authorize]
-    [Route("api/v1/users/{userId}/posts")]
+    [Route("api/v1/users/{userId}/created-posts")]
     [ApiController]
     public class UserPostsController : BasePostsController
     {
