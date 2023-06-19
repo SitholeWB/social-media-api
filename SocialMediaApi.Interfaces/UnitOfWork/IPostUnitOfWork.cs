@@ -17,5 +17,7 @@
         public IUserDetailsService UserDetailsService { get; }
 
         public IUserPostService UserPostService { get; }
+
+        public IUserGroupService UserGroupService { get; }
     }
 }
