@@ -2,7 +2,7 @@
 participant User
 
 User -> API: React to Post
-activate API #FFBBBBu
+activate API #FFBBBB
 
 API -> API: Update Post reaction stats.
 activate API #DarkSalmon
