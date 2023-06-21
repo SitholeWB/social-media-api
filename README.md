@@ -9,3 +9,6 @@
 ## User react to post
 ![User React to Post](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-post-reaction.puml)
 
+## User react to comment
+![User React to Comment](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-comment-reaction.puml)
+
