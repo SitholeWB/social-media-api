@@ -1,0 +1,20 @@
+@startuml
+participant User
+
+User -> API: Add Comment
+activate API #FFBBBB
+
+API -> API: Saved to Comments DB table
+activate API #DarkSalmon
+
+API -> API: Increment Entity(Post or other) TotalComments count.
+
+API -> API: Increment Active-Post TotalComments count if exist.
+
+API -> API: Increment ranking of the Entity based on configured value for comment.
+
+deactivate API
+API -> User: Done
+deactivate API
+@enduml
+
