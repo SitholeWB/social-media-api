@@ -12,3 +12,6 @@
 ## User react to comment
 ![User React to Comment](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-comment-reaction.puml)
 
+## User add group
+![User Add Group](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-group.puml)
+
