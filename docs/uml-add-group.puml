@@ -1,0 +1,13 @@
+@startuml
+participant User
+
+User -> API: Add Group
+activate API #FFBBBB
+
+API -> API: Save Group to database groups table
+activate API #DarkSalmon
+
+deactivate API
+API -> User: Done
+deactivate API
+@enduml
