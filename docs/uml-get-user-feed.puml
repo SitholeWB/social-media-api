@@ -1,0 +1,15 @@
+@startuml
+participant User
+
+User -> API: Get Feed (Posts) for User
+activate API #FFBBBB
+
+API -> API: Get Groups linked to the user from the UserDetails table
+activate API #DarkSalmon
+
+API -> API: Get recent Posts for linked Groups, with pagination limit.
+
+deactivate API
+API -> User: Done
+deactivate API
+@enduml
