@@ -15,3 +15,5 @@
 ## User add group
 ![User Add Group](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-group.puml)
 
+## User join group
+![User Add Group](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-user-group.puml)
