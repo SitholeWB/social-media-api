@@ -1,0 +1,20 @@
+@startuml
+participant User
+
+User -> API: React to Post
+activate API #FFBBBB
+
+API -> API: Update Post reaction stats.
+activate API #DarkSalmon
+
+API -> API: Update Active-Post reaction stats.
+
+API -> API: Add reaction details to EntityDetails table.
+
+API -> API: Add reaction details to the UserDetails table.
+
+deactivate API
+API -> User: Done
+deactivate API
+@enduml
+
