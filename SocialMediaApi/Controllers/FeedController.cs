@@ -21,9 +21,9 @@ namespace SocialMediaApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync(int page = 1, int limit = 20)
+        public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync(int page = 1, int limit = 20, bool skipActivePosts = false)
         {
-            return Ok(await _feedService.GetPostsAsync(page, limit));
+            return Ok(await _feedService.GetPostsAsync(page, limit, skipActivePosts));
         }
 
         [AllowAnonymous]
