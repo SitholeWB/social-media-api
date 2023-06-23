@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
     <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.4.3" />
+    <PackageReference Include="PlantUml.Net" Version="1.4.80" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
