@@ -5,7 +5,7 @@ using PlantUml.Net;
 
 namespace SocialMediaApi.Controllers.docs
 {
-    [Route("api/v1/docs/feed")]
+    [Route("api/docs/v1/feed")]
     [ApiController]
     public class FeedDocsController : ControllerBase
     {
@@ -19,31 +19,6 @@ namespace SocialMediaApi.Controllers.docs
 
             var bytes = await renderer.RenderAsync("Bob -> Alice : Hello", OutputFormat.Png);
             return File(bytes, "image/png");
-        }
-
-        // GET api/<FeedController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<FeedController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<FeedController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<FeedController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
