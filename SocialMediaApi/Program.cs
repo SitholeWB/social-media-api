@@ -76,6 +76,7 @@ namespace SocialMediaApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
             app.UseCors("AllowAll");
@@ -103,6 +104,8 @@ namespace SocialMediaApi
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
+            app.MapRazorPages();
 
             app.MapControllers();
 
