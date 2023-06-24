@@ -20,6 +20,7 @@ namespace SocialMediaApi.Controllers
             _feedService = feedService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Pagination<PostViewModel>>> GetPostsAsync(int page = 1, int limit = 20, bool skipActivePosts = false)
         {

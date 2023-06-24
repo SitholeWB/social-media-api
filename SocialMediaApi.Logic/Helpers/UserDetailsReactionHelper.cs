@@ -8,33 +8,27 @@ namespace SocialMediaApi.Logic.Helpers
         public static async Task<IList<MiniReaction>> GetPostReactionsAsync(IAuthService _authService, IUserDetailsService _userDetailsService)
         {
             var isAuthenticated = await _authService.IsAuthenticated();
-            var reactions = default(IList<MiniReaction>);
             if (isAuthenticated)
             {
-                reactions = await _userDetailsService.GetPostReactionsAsync();
+                return await _userDetailsService.GetPostReactionsAsync();
             }
             else
             {
-                reactions = new List<MiniReaction>();
+                return new List<MiniReaction>();
             }
-
-            return reactions ?? new List<MiniReaction>();
         }
 
         public static async Task<IList<MiniReaction>> GetCommentReactionsAsync(IAuthService _authService, IUserDetailsService _userDetailsService)
         {
             var isAuthenticated = await _authService.IsAuthenticated();
-            var reactions = default(IList<MiniReaction>);
             if (isAuthenticated)
             {
-                reactions = await _userDetailsService.GetCommentReactionsAsync();
+                return await _userDetailsService.GetCommentReactionsAsync();
             }
             else
             {
-                reactions = new List<MiniReaction>();
+                return new List<MiniReaction>();
             }
-
-            return reactions ?? new List<MiniReaction>();
         }
     }
 }

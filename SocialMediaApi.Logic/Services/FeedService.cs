@@ -23,8 +23,30 @@ namespace SocialMediaApi.Logic.Services
             _dbContext = dbContext;
         }
 
+        public async Task<Pagination<PostViewModel>> GetAnonymousPostsAsync(int page, int limit, bool skipActivePosts)
+        {
+            var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
+            if (!skipActivePosts)
+            {
+                var activePosts = await _dbContext.ActivePosts.OrderByDescending(x => x.ActionBasedDate).Skip((page - 1) * limit).Take(limit).ToListAsync();
+                if (activePosts.Count >= (limit / 2))
+                {
+                    return Pagination<PostViewModel>.GetPagination(activePosts, limit + 1, x => PostMapper.ToView(x, reactions), 1, activePosts.Count)!;
+                }
+            }
+
+            var posts = await _dbContext.Posts.OrderByDescending(x => x.ActionBasedDate).Skip((page - 1) * limit).Take(limit).ToListAsync();
+            var totalItems = (posts.Count == page) ? page + 1 : posts.Count;
+            return Pagination<PostViewModel>.GetPagination(posts, totalItems, x => PostMapper.ToView(x, reactions), 1, posts.Count)!;
+        }
+
         public async Task<Pagination<PostViewModel>> GetPostsAsync(int page, int limit, bool skipActivePosts)
         {
+            var isAuthenticated = await _authService.IsAuthenticated();
+            if (!isAuthenticated)
+            {
+                return await GetAnonymousPostsAsync(page, limit, skipActivePosts);
+            }
             var groups = await _userGroupService.GetUserGroupsAsync();
             if (!groups.Results.Any())
             {
