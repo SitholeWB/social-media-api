@@ -50,7 +50,7 @@ namespace SocialMediaApi.Logic.Services
             var groups = await _userGroupService.GetUserGroupsAsync();
             if (!groups.Results.Any())
             {
-                return new Pagination<PostViewModel>(new List<PostViewModel>(), 0, 1, 1);
+                return await GetAnonymousPostsAsync(page, limit, skipActivePosts);
             }
             var reactions = await UserDetailsReactionHelper.GetPostReactionsAsync(_authService, _userDetailsService);
             var ids = groups.Results.Select(x => x.Id);
@@ -64,6 +64,13 @@ namespace SocialMediaApi.Logic.Services
             }
 
             var posts = await _dbContext.Posts.OrderByDescending(x => x.ActionBasedDate).Skip((page - 1) * limit).Take(limit).Where(x => ids.Contains(x.OwnerId)).ToListAsync();
+            if (posts.Count < (limit / 4))
+            {
+                //Too little post found for user, add Anonymous Posts
+                var anonymousPosts = await _dbContext.Posts.OrderByDescending(x => x.ActionBasedDate).Skip((page - 1) * limit).Take(limit).ToListAsync();
+                posts.AddRange(anonymousPosts);
+            }
+
             var totalItems = (posts.Count == page) ? page + 1 : posts.Count;
             return Pagination<PostViewModel>.GetPagination(posts, totalItems, x => PostMapper.ToView(x, reactions), 1, posts.Count)!;
         }
