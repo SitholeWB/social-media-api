@@ -32,9 +32,11 @@ namespace SocialMediaApi.Logic.Tests
                 Description = "This is test group",
                 Name = "Test Group 1"
             });
-
-            Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
-            Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
+                Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+            });
         }
 
         [Test]
@@ -45,9 +47,26 @@ namespace SocialMediaApi.Logic.Tests
                 Description = string.Empty,
                 Name = "Test Group 1"
             });
+            Assert.Multiple(() =>
+            {
+                Assert.That(addedGroup.Description, Is.EqualTo(string.Empty));
+                Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+            });
+        }
 
-            Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
-            Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+        [Test]
+        public async Task AddGroupAsync_GivenValidNullDescription_ShouldAddGroup()
+        {
+            var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+            {
+                Description = null,
+                Name = "Test Group 1"
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(addedGroup.Description, Is.EqualTo(string.Empty));
+                Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+            });
         }
 
         [Test]

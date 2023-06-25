@@ -37,7 +37,7 @@ namespace SocialMediaApi.Logic.Services
             {
                 Name = model.Name,
                 CreatedDate = DateTimeOffset.UtcNow,
-                Description = model.Description,
+                Description = model.Description ?? string.Empty,
                 Id = Guid.NewGuid(),
                 EntityStatus = EntityStatus.Ready,
                 LastModifiedDate = DateTimeOffset.UtcNow,
