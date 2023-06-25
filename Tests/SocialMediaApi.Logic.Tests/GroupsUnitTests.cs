@@ -21,6 +21,9 @@ namespace SocialMediaApi.Logic.Tests
             var _authService = Substitute.For<IAuthService>();
             var _serviceProvider = Substitute.For<IServiceProvider>();
             var _publisher = new EventHandlerContainer(_serviceProvider);
+
+            //_authService.GetAuthorizedUser().Returns(x => DbContextHelper._creator);
+
             _groupService = new GroupService(_context, _authService, _publisher);
         }
 
