@@ -1,5 +1,6 @@
 using NSubstitute;
 using SocialMediaApi.Data;
+using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Models.Groups;
 using SocialMediaApi.Interfaces;
 using SocialMediaApi.Logic.EventHandlers;
@@ -34,6 +35,16 @@ namespace SocialMediaApi.Logic.Tests
 
             Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
             Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+        }
+
+        [Test]
+        public void AddGroupAsync_GivenValidEmptyName_ShouldThrowException()
+        {
+            Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(new AddGroupModel
+            {
+                Description = "This is test group",
+                Name = ""
+            }));
         }
     }
 }
