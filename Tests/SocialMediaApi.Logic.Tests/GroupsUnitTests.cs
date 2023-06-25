@@ -38,12 +38,25 @@ namespace SocialMediaApi.Logic.Tests
         }
 
         [Test]
+        public async Task AddGroupAsync_GivenValidEmptyDescription_ShouldAddGroup()
+        {
+            var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+            {
+                Description = string.Empty,
+                Name = "Test Group 1"
+            });
+
+            Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
+            Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
+        }
+
+        [Test]
         public void AddGroupAsync_GivenValidEmptyName_ShouldThrowException()
         {
             Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(new AddGroupModel
             {
                 Description = "This is test group",
-                Name = ""
+                Name = string.Empty
             }));
         }
 
