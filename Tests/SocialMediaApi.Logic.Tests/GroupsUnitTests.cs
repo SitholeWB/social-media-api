@@ -1,22 +1,39 @@
+using NSubstitute;
 using SocialMediaApi.Data;
+using SocialMediaApi.Domain.Models.Groups;
+using SocialMediaApi.Interfaces;
+using SocialMediaApi.Logic.EventHandlers;
+using SocialMediaApi.Logic.Services;
 
 namespace SocialMediaApi.Logic.Tests
 {
     public class Tests
     {
         private SocialMediaApiDbContext _context;
+        private IGroupService _groupService;
 
         [SetUp]
         public async Task Setup()
         {
             _context = DbContextHelper.GetDatabaseContext();
             await _context.BasicSetup();
+            var _authService = Substitute.For<IAuthService>();
+            var _serviceProvider = Substitute.For<IServiceProvider>();
+            var _publisher = new EventHandlerContainer(_serviceProvider);
+            _groupService = new GroupService(_context, _authService, _publisher);
         }
 
         [Test]
-        public async Task Test1()
+        public async Task AddGroupAsync_GivenValidInput_ShouldAddGroup()
         {
-            Assert.Pass();
+            var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+            {
+                Description = "This is test group",
+                Name = "Test Group 1"
+            });
+
+            Assert.That(addedGroup.Description, Is.EqualTo("This is test group"));
+            Assert.That(addedGroup.Name, Is.EqualTo("Test Group 1"));
         }
     }
 }

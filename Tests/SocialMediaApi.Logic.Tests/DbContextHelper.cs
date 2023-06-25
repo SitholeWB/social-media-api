@@ -78,7 +78,7 @@ namespace SocialMediaApi.Logic.Tests
             await dbContext.SaveChangesAsync();
         }
 
-        private static Post CreatePostHelper(Guid ownerId, Guid id, string text)
+        public static Post CreatePostHelper(Guid ownerId, Guid id, string text)
         {
             return new Post
             {
@@ -103,7 +103,7 @@ namespace SocialMediaApi.Logic.Tests
             };
         }
 
-        private static Group CreateGroupHelper(Guid id, string name, string description)
+        public static Group CreateGroupHelper(Guid id, string name, string description)
         {
             return new Group
             {

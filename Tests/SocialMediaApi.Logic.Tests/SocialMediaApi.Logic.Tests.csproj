@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SocialMediaApi.Data\SocialMediaApi.Data.csproj" />
+    <ProjectReference Include="..\..\SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj" />
+    <ProjectReference Include="..\..\SocialMediaApi.Logic\SocialMediaApi.Logic.csproj" />
   </ItemGroup>
 
 </Project>
