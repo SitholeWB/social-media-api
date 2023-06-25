@@ -46,5 +46,15 @@ namespace SocialMediaApi.Logic.Tests
                 Name = ""
             }));
         }
+
+        [Test]
+        public void AddGroupAsync_GivenValidNullName_ShouldThrowException()
+        {
+            Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(new AddGroupModel
+            {
+                Description = "This is test group",
+                Name = null
+            }));
+        }
     }
 }
