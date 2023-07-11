@@ -11,9 +11,9 @@ namespace SocialMediaApi.Domain.Common
             combined.Append(userId.ToString().ToLowerInvariant());
             combined.Append('_');
             combined.Append(inputString);
-            using var SHA256 = SHA512.Create();
+            using var sha512 = SHA512.Create();
             using var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(combined.ToString()));
-            return BitConverter.ToString(SHA256.ComputeHash(fileStream)).Replace("-", "");
+            return BitConverter.ToString(sha512.ComputeHash(fileStream)).Replace("-", "");
         }
     }
 }
