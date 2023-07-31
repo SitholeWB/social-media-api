@@ -5,10 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using SocialMediaApi.Data;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Settings;
-using SocialMediaApi.Interfaces;
-using SocialMediaApi.Interfaces.UnitOfWork;
-using SocialMediaApi.Logic.Services;
-using SocialMediaApi.Logic.UnitOfWork;
+using SocialMediaApi.Domain.Interfaces;
+using SocialMediaApi.Domain.Interfaces.UnitOfWork;
+using SocialMediaApi.Domain.Logic.Services;
+using SocialMediaApi.Domain.Logic.UnitOfWork;
 using System.Text;
 using System.Text.Json;
 

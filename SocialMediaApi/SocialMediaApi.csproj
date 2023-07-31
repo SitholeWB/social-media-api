@@ -26,8 +26,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SocialMediaApi.Data\SocialMediaApi.Data.csproj" />
     <ProjectReference Include="..\SocialMediaApi.Domain\SocialMediaApi.Domain.csproj" />
-    <ProjectReference Include="..\SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj" />
-    <ProjectReference Include="..\SocialMediaApi.Logic\SocialMediaApi.Logic.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Domain.Interfaces\SocialMediaApi.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Domain.Logic\SocialMediaApi.Domain.Logic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

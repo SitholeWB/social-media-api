@@ -5,9 +5,9 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi", "SocialMediaApi\SocialMediaApi.csproj", "{855D5B67-2265-473B-8605-8B4C5F5F7081}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Logic", "SocialMediaApi.Logic\SocialMediaApi.Logic.csproj", "{531C741C-57F3-4ECD-8742-9A981B9EB0B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Domain.Logic", "SocialMediaApi.Domain.Logic\SocialMediaApi.Domain.Logic.csproj", "{531C741C-57F3-4ECD-8742-9A981B9EB0B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Interfaces", "SocialMediaApi.Interfaces\SocialMediaApi.Interfaces.csproj", "{DDEF53A0-B8FA-43E6-99B2-F2A0793D6883}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Domain.Interfaces", "SocialMediaApi.Domain.Interfaces\SocialMediaApi.Domain.Interfaces.csproj", "{DDEF53A0-B8FA-43E6-99B2-F2A0793D6883}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Domain", "SocialMediaApi.Domain\SocialMediaApi.Domain.csproj", "{31193B31-F4C3-488A-8899-CB1700525DA2}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialMediaApi.Data", "Soci
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60D49F98-A6DF-4468-ACAB-A09708C25B06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Logic.Tests", "Tests\SocialMediaApi.Logic.Tests\SocialMediaApi.Logic.Tests.csproj", "{C292D695-FE48-4F54-AF95-91D3A792EE2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialMediaApi.Domain.Logic.Tests", "Tests\SocialMediaApi.Domain.Logic.Tests\SocialMediaApi.Domain.Logic.Tests.csproj", "{C292D695-FE48-4F54-AF95-91D3A792EE2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

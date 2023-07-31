@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
+    <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.4.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SocialMediaApi.Data\SocialMediaApi.Data.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Domain\SocialMediaApi.Domain.csproj" />
+    <ProjectReference Include="..\SocialMediaApi.Domain.Interfaces\SocialMediaApi.Domain.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

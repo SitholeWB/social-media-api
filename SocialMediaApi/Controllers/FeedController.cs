@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.ViewModels;
-using SocialMediaApi.Interfaces;
+using SocialMediaApi.Domain.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

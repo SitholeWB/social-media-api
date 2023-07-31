@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Pagination.EntityFrameworkCore.Extensions;
 using SocialMediaApi.Domain.Models.Comments;
 using SocialMediaApi.Domain.ViewModels;
-using SocialMediaApi.Interfaces;
-using SocialMediaApi.Interfaces.UnitOfWork;
+using SocialMediaApi.Domain.Interfaces;
+using SocialMediaApi.Domain.Interfaces.UnitOfWork;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

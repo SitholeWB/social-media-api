@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialMediaApi.Domain.Models.Posts;
 using SocialMediaApi.Domain.ViewModels;
-using SocialMediaApi.Interfaces;
-using SocialMediaApi.Interfaces.UnitOfWork;
+using SocialMediaApi.Domain.Interfaces;
+using SocialMediaApi.Domain.Interfaces.UnitOfWork;
 
 namespace SocialMediaApi.Controllers
 {

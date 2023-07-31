@@ -1,10 +1,10 @@
 ﻿using SocialMediaApi.Domain.Events.Comments;
 using SocialMediaApi.Domain.Events.Groups;
 using SocialMediaApi.Domain.Events.Posts;
-using SocialMediaApi.Logic.EventHandlers;
-using SocialMediaApi.Logic.EventHandlers.Comments;
-using SocialMediaApi.Logic.EventHandlers.Groups;
-using SocialMediaApi.Logic.EventHandlers.Posts;
+using SocialMediaApi.Domain.Logic.EventHandlers;
+using SocialMediaApi.Domain.Logic.EventHandlers.Comments;
+using SocialMediaApi.Domain.Logic.EventHandlers.Groups;
+using SocialMediaApi.Domain.Logic.EventHandlers.Posts;
 
 namespace SocialMediaApi
 {
