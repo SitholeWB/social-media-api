@@ -1,10 +1,12 @@
 using NSubstitute;
 using SocialMediaApi.Data;
+using SocialMediaApi.Domain.Entities.Base;
 using SocialMediaApi.Domain.Exceptions;
 using SocialMediaApi.Domain.Interfaces;
 using SocialMediaApi.Domain.Logic.EventHandlers;
 using SocialMediaApi.Domain.Logic.Services;
 using SocialMediaApi.Domain.Models.Groups;
+using SocialMediaApi.Domain.Models.Security;
 
 namespace SocialMediaApi.Domain.Logic.Tests
 {
@@ -12,10 +14,16 @@ namespace SocialMediaApi.Domain.Logic.Tests
 	{
 		private SocialMediaApiDbContext _context;
 		private IGroupService _groupService;
+		private AuthUser _authUser;
 
 		[SetUp]
 		public async Task Setup()
 		{
+			_authUser = new AuthUser
+			{
+				AuthorizedUser = new BaseUser { },
+				AuthenticatedUser = new BaseUser { }
+			};
 			_context = DbContextHelper.GetDatabaseContext();
 			await _context.BasicSetup();
 			var _authService = Substitute.For<IAuthService>();
@@ -24,7 +32,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 
 			//_authService.GetAuthorizedUser().Returns(x => DbContextHelper._creator);
 
-			_groupService = new GroupService(_context, _authService, _publisher);
+			_groupService = new GroupService(_context, _publisher);
 		}
 
 		[TearDown]
@@ -36,7 +44,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		[Test]
 		public async Task AddGroupAsync_GivenValidInput_ShouldAddGroup()
 		{
-			var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+			var addedGroup = await _groupService.AddGroupAsync(_authUser, new AddGroupModel
 			{
 				Description = "This is test group",
 				Name = "Test Group 1"
@@ -51,7 +59,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		[Test]
 		public async Task AddGroupAsync_GivenValidEmptyDescription_ShouldAddGroup()
 		{
-			var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+			var addedGroup = await _groupService.AddGroupAsync(_authUser, new AddGroupModel
 			{
 				Description = string.Empty,
 				Name = "Test Group 1"
@@ -66,7 +74,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		[Test]
 		public async Task AddGroupAsync_GivenValidNullDescription_ShouldAddGroup()
 		{
-			var addedGroup = await _groupService.AddGroupAsync(new AddGroupModel
+			var addedGroup = await _groupService.AddGroupAsync(_authUser, new AddGroupModel
 			{
 				Description = null,
 				Name = "Test Group 1"
@@ -81,7 +89,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		[Test]
 		public void AddGroupAsync_GivenValidEmptyName_ShouldThrowException()
 		{
-			Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(new AddGroupModel
+			Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(_authUser, new AddGroupModel
 			{
 				Description = "This is test group",
 				Name = string.Empty
@@ -91,7 +99,7 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		[Test]
 		public void AddGroupAsync_GivenValidNullName_ShouldThrowException()
 		{
-			Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(new AddGroupModel
+			Assert.ThrowsAsync<SocialMediaException>(async () => await _groupService.AddGroupAsync(_authUser, new AddGroupModel
 			{
 				Description = "This is test group",
 				Name = null

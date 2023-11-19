@@ -1,14 +1,15 @@
 ﻿using SocialMediaApi.Domain.Models.Reactions;
+using SocialMediaApi.Domain.Models.Security;
 using SocialMediaApi.Domain.ViewModels;
 
 namespace SocialMediaApi.Domain.Interfaces
 {
-    public interface IEntityDetailsService
-    {
-        public Task<EntityReactionViewModel> AddReactionAsync(Guid entityId, AddEntityReactionModel model);
+	public interface IEntityDetailsService
+	{
+		public Task<EntityReactionViewModel> AddReactionAsync(AuthUser authUser, Guid entityId, AddEntityReactionModel model);
 
-        public Task<EntityReactionViewModel?> DeleteReactionAsync(Guid entityId);
+		public Task<EntityReactionViewModel?> DeleteReactionAsync(AuthUser authUser, Guid entityId);
 
-        public Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId);
-    }
+		public Task<EntityReactionViewModel?> GetReactionAsync(Guid entityId);
+	}
 }
