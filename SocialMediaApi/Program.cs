@@ -36,6 +36,7 @@ namespace SocialMediaApi
 
 			var bindJwtSettings = new JwtConfig();
 			builder.Configuration.Bind("JwtConfig", bindJwtSettings);
+			builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 			builder.Services.AddAuthorization();
 			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 			{

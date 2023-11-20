@@ -21,16 +21,12 @@ namespace SocialMediaApi.Domain.Logic.Tests
 		{
 			_authUser = new AuthUser
 			{
-				AuthorizedUser = new BaseUser { },
-				AuthenticatedUser = new BaseUser { }
+				AuthorizedUser = new BaseUser { }
 			};
 			_context = DbContextHelper.GetDatabaseContext();
 			await _context.BasicSetup();
-			var _authService = Substitute.For<IAuthService>();
 			var _serviceProvider = Substitute.For<IServiceProvider>();
 			var _publisher = new EventHandlerContainer(_serviceProvider);
-
-			//_authService.GetAuthorizedUser().Returns(x => DbContextHelper._creator);
 
 			_groupService = new GroupService(_context, _publisher);
 		}
