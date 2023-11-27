@@ -12,7 +12,7 @@ namespace SocialMediaApi.Extensions
 			var userIdString = httpRequest?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			var name = httpRequest?.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
 			var surname = httpRequest?.HttpContext?.User?.FindFirst(ClaimTypes.Surname)?.Value ?? "";
-			var installationId = httpRequest?.HttpContext?.User?.FindFirst("x-installation-id-header")?.Value ?? "";
+			var installationId = httpRequest?.HttpContext?.Request?.Headers["x-installation-id-header"].ToString() ?? "";
 			return new AuthUser
 			{
 				IsAuthenticated = httpRequest?.HttpContext?.User?.Identity?.IsAuthenticated ?? false,
