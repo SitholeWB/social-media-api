@@ -1,10 +1,11 @@
 ﻿using SocialMediaApi.Domain.Events.Posts;
 using SocialMediaApi.Domain.Interfaces;
 using SocialMediaApi.Domain.Interfaces.UnitOfWork;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi.Domain.Logic.EventHandlers.Posts
 {
-    public class DeletePostNotificationHandler : IEventHandler<DeletePostEvent>
+    public class DeletePostNotificationHandler : IHangfireEventHandler<DeletePostEvent>
     {
         private readonly IActivePostService _newPostService;
         private readonly IUserPostService _userPostService;

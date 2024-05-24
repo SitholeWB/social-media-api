@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Events.Groups
 {
-    public class DeleteGroupEvent : EventBase
+    public class DeleteGroupEvent
     {
         public Group? Group { get; set; }
     }

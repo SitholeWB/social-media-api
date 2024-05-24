@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Events.Comments
 {
-    public class UpdateCommentEvent : EventBase
+    public class UpdateCommentEvent
     {
         public Comment? Comment { get; set; }
         public Post? Post { get; set; }

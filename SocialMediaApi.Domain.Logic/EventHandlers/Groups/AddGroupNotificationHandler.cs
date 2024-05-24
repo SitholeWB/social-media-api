@@ -1,9 +1,9 @@
 ﻿using SocialMediaApi.Domain.Events.Groups;
-using SocialMediaApi.Domain.Interfaces;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi.Domain.Logic.EventHandlers.Groups
 {
-    public class AddGroupNotificationHandler : IEventHandler<AddGroupEvent>
+    public class AddGroupNotificationHandler : IHangfireEventHandler<AddGroupEvent>
     {
         public async Task RunAsync(AddGroupEvent obj)
         {

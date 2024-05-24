@@ -1,10 +1,10 @@
 ﻿using SocialMediaApi.Domain.Events.Comments;
 using SocialMediaApi.Domain.Events.Groups;
 using SocialMediaApi.Domain.Events.Posts;
-using SocialMediaApi.Domain.Logic.EventHandlers;
 using SocialMediaApi.Domain.Logic.EventHandlers.Comments;
 using SocialMediaApi.Domain.Logic.EventHandlers.Groups;
 using SocialMediaApi.Domain.Logic.EventHandlers.Posts;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi
 {
@@ -13,16 +13,16 @@ namespace SocialMediaApi
         public static IServiceCollection AddEventSubscriptions(this IServiceCollection services)
         {
             //Groups
-            EventHandlerContainer.Subscribe<AddGroupEvent, AddGroupNotificationHandler>();
-            EventHandlerContainer.Subscribe<DeleteGroupEvent, DeleteGroupNotificationHandler>();
-            EventHandlerContainer.Subscribe<UpdateGroupEvent, UpdateGroupNotificationHandler>();
+            services.AddHangfireSubPub<AddGroupEvent>().Subscribe<AddGroupNotificationHandler>();
+            services.AddHangfireSubPub<DeleteGroupEvent>().Subscribe<DeleteGroupNotificationHandler>();
+            services.AddHangfireSubPub<UpdateGroupEvent>().Subscribe<UpdateGroupNotificationHandler>();
             //Posts
-            EventHandlerContainer.Subscribe<AddPostEvent, AddPostNotificationHandler>();
-            EventHandlerContainer.Subscribe<DeletePostEvent, DeletePostNotificationHandler>();
-            EventHandlerContainer.Subscribe<UpdatePostEvent, UpdatePostNotificationHandler>();
+            services.AddHangfireSubPub<AddPostEvent>().Subscribe<AddPostNotificationHandler>();
+            services.AddHangfireSubPub<DeletePostEvent>().Subscribe<DeletePostNotificationHandler>();
+            services.AddHangfireSubPub<UpdatePostEvent>().Subscribe<UpdatePostNotificationHandler>();
             //Comments
-            EventHandlerContainer.Subscribe<AddCommentEvent, AddCommentNotificationHandler>();
-            EventHandlerContainer.Subscribe<DeleteCommentEvent, DeleteCommentNotificationHandler>();
+            services.AddHangfireSubPub<DeleteCommentEvent>().Subscribe<DeleteCommentNotificationHandler>();
+            services.AddHangfireSubPub<AddCommentEvent>().Subscribe<AddCommentNotificationHandler>();
             return services;
         }
     }

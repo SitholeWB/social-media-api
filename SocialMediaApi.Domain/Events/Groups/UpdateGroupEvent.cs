@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Events.Groups
 {
-    public class UpdateGroupEvent : EventBase
+    public class UpdateGroupEvent
     {
         public Group? Group { get; set; }
     }

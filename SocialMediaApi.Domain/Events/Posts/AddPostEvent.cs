@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Events.Posts
 {
-    public class AddPostEvent : EventBase
+    public class AddPostEvent
     {
         public Post? Post { get; set; }
     }

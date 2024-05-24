@@ -2,7 +2,7 @@
 
 namespace SocialMediaApi.Domain.Events.Posts
 {
-    public class DeletePostEvent : EventBase
+    public class DeletePostEvent
     {
         public Post? Post { get; set; }
     }

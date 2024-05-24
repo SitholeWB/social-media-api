@@ -1,12 +1,13 @@
 ﻿using SocialMediaApi.Domain.Events.Posts;
-using SocialMediaApi.Domain.Models.ActivePosts;
-using SocialMediaApi.Domain.Models.UserPosts;
 using SocialMediaApi.Domain.Interfaces;
 using SocialMediaApi.Domain.Interfaces.UnitOfWork;
+using SocialMediaApi.Domain.Models.ActivePosts;
+using SocialMediaApi.Domain.Models.UserPosts;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi.Domain.Logic.EventHandlers.Posts
 {
-    public class AddPostNotificationHandler : IEventHandler<AddPostEvent>
+    public class AddPostNotificationHandler : IHangfireEventHandler<AddPostEvent>
     {
         private readonly IActivePostService _newPostService;
         private readonly IUserPostService _userPostService;

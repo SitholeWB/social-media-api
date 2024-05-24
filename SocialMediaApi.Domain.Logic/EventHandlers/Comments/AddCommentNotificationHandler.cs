@@ -1,10 +1,11 @@
 ﻿using SocialMediaApi.Domain.Events.Comments;
 using SocialMediaApi.Domain.Interfaces;
 using SocialMediaApi.Domain.Interfaces.UnitOfWork;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi.Domain.Logic.EventHandlers.Comments
 {
-    public class AddCommentNotificationHandler : IEventHandler<AddCommentEvent>
+    public class AddCommentNotificationHandler : IHangfireEventHandler<AddCommentEvent>
     {
         private readonly IActivePostService _newPostService;
 

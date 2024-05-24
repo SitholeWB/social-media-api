@@ -1,10 +1,11 @@
 ﻿using SocialMediaApi.Domain.Events.Comments;
 using SocialMediaApi.Domain.Interfaces;
 using SocialMediaApi.Domain.Interfaces.UnitOfWork;
+using SubPub.Hangfire;
 
 namespace SocialMediaApi.Domain.Logic.EventHandlers.Comments
 {
-    public class DeleteCommentNotificationHandler : IEventHandler<DeleteCommentEvent>
+    public class DeleteCommentNotificationHandler : IHangfireEventHandler<DeleteCommentEvent>
     {
         private readonly IActivePostService _newPostService;
 
