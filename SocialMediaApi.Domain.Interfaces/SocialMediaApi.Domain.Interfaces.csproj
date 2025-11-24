@@ -8,7 +8,7 @@
     <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.5.6" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
     <ProjectReference Include="..\SocialMediaApi.Domain\SocialMediaApi.Domain.csproj" />
   </ItemGroup>
 </Project>
