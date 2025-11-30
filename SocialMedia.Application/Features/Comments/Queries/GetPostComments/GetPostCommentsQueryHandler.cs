@@ -29,7 +29,7 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
             AuthorName = c.AuthorName,
             AuthorProfilePicUrl = c.AuthorProfilePicUrl,
             CreatedAt = c.CreatedAt,
-            LikeCount = c.LikeCount,
+            LikeCount = c.Stats.LikeCount,
             Reactions = c.Reactions
         }).ToList();
 

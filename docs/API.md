@@ -1,6 +1,6 @@
 # API Documentation
 
-The MediaService API is a RESTful interface built with ASP.NET Core. It uses standard HTTP methods and status codes.
+The SocialMedia API is a RESTful interface built with ASP.NET Core. It uses standard HTTP methods and status codes.
 
 ## Controllers Overview
 

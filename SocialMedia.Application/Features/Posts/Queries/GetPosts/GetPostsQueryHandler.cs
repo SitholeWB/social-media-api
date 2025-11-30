@@ -26,8 +26,8 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             AuthorName = p.AuthorName,
             CreatedAt = p.CreatedAt,
             FileUrl = p.FileUrl,
-            LikeCount = p.LikeCount,
-            CommentCount = p.CommentCount
+            LikeCount = p.Stats.LikeCount,
+            CommentCount = p.Stats.CommentCount
         }).ToList();
 
         // Get total count for pagination

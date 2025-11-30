@@ -13,7 +13,7 @@ namespace SocialMedia.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<SocialMediaDbContext>(options =>
-                options.UseInMemoryDatabase("MediaServiceDb"));
+                options.UseInMemoryDatabase("SocialMediaDb"));
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IPostRepository, PostRepository>();

@@ -41,7 +41,7 @@ public class InMemoryPostReadRepository : IPostReadRepository
         }
 
         var items = query
-            .OrderByDescending(p => p.TrendingScore)
+            .OrderByDescending(p => p.Stats.TrendingScore)
             .ThenByDescending(p => p.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

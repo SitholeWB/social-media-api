@@ -6,30 +6,30 @@ This project follows **Clean Architecture** principles, emphasizing separation o
 
 The solution is divided into four main layers:
 
-### 1. MediaService.Domain
+### 1. SocialMedia.Domain
 - **Role**: The core of the application. Contains enterprise logic and entities.
 - **Dependencies**: None.
 - **Contents**: Entities, Value Objects, Domain Events, Repository Interfaces.
 
-### 2. MediaService.Application
+### 2. SocialMedia.Application
 - **Role**: Orchestrates business logic and use cases.
-- **Dependencies**: MediaService.Domain.
+- **Dependencies**: SocialMedia.Domain.
 - **Contents**: 
     - **Features**: CQRS Commands and Queries (e.g., `CreatePostCommand`, `GetPostsQuery`).
     - **DTOs**: Data Transfer Objects.
     - **Interfaces**: Abstractions for infrastructure (e.g., `IEmailService`).
     - **Validators**: FluentValidation rules.
 
-### 3. MediaService.Infrastructure
+### 3. SocialMedia.Infrastructure
 - **Role**: Implements interfaces defined in Application and Domain.
-- **Dependencies**: MediaService.Application, MediaService.Domain.
+- **Dependencies**: SocialMedia.Application, SocialMedia.Domain.
 - **Contents**: 
     - **Persistence**: Entity Framework Core `DbContext` and Repository implementations.
     - **Services**: External service implementations (e.g., Blockchain, File Storage).
 
-### 4. MediaService.API
+### 4. SocialMedia.API
 - **Role**: The entry point for the application.
-- **Dependencies**: MediaService.Application, MediaService.Infrastructure.
+- **Dependencies**: SocialMedia.Application, SocialMedia.Infrastructure.
 - **Contents**: Controllers, Middleware, Program.cs configuration.
 
 ## CQRS Pattern
@@ -61,8 +61,19 @@ graph LR
         Dispatcher -->|Query| QueryHandler
         QueryHandler -->|Read| Repo
         Repo -->|Select| DB
+    subgraph Read Side
+        Dispatcher -->|Query| QueryHandler
+        QueryHandler -->|Read| Repo
+        Repo -->|Select| ReadDB[(Read DB)]
     end
 ```
+
+### Data Access Strategy
+
+- **Write Side**: Uses standard relational entities with normalized tables (`SocialMediaDbContext`).
+- **Read Side**: Uses specialized Read Models (`SocialMediaReadDbContext`) optimized for querying.
+    - **JSON Support**: Complex properties like `Reactions`, `TopComments`, and `Stats` are stored as JSON columns using EF Core's `ToJson()` feature. This reduces joins and improves read performance.
+    - **Separation**: Read and Write concerns are physically separated at the DbContext level, allowing for potential future scaling (e.g., Read Replicas).
 
 - **Commands**: Modify state (Create, Update, Delete). Return void or ID.
 - **Queries**: Read state. Return DTOs. Never modify state.

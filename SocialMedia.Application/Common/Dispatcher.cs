@@ -9,12 +9,12 @@ namespace SocialMedia.Application;
 public class Dispatcher : IDispatcher
 {
     private readonly IServiceProvider _serviceProvider;
-    private static readonly ActivitySource ActivitySource = new("MediaService.Dispatcher");
-    private static readonly Meter Meter = new("MediaService.Application");
-    private static readonly Counter<long> CommandCounter = Meter.CreateCounter<long>("mediaservice.command.execution.count");
-    private static readonly Counter<long> QueryCounter = Meter.CreateCounter<long>("mediaservice.query.execution.count");
-    private static readonly Histogram<double> CommandDuration = Meter.CreateHistogram<double>("mediaservice.command.execution.duration", "ms");
-    private static readonly Histogram<double> QueryDuration = Meter.CreateHistogram<double>("mediaservice.query.execution.duration", "ms");
+    private static readonly ActivitySource ActivitySource = new("SocialMedia.Dispatcher");
+    private static readonly Meter Meter = new("SocialMedia.Application");
+    private static readonly Counter<long> CommandCounter = Meter.CreateCounter<long>("socialmedia.command.execution.count");
+    private static readonly Counter<long> QueryCounter = Meter.CreateCounter<long>("socialmedia.query.execution.count");
+    private static readonly Histogram<double> CommandDuration = Meter.CreateHistogram<double>("socialmedia.command.execution.duration", "ms");
+    private static readonly Histogram<double> QueryDuration = Meter.CreateHistogram<double>("socialmedia.query.execution.duration", "ms");
 
     public Dispatcher(IServiceProvider serviceProvider)
     {

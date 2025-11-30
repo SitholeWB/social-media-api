@@ -39,9 +39,13 @@ public class PostEventHandlers :
             AuthorName = author?.Username ?? "Unknown",
             CreatedAt = notification.Post.CreatedAt,
             FileUrl = notification.Post.File?.Url,
-            LikeCount = 0,
-            CommentCount = 0,
-            TrendingScore = 0,
+
+            Stats = new PostStats
+            {
+                LikeCount = 0,
+                CommentCount = 0,
+                TrendingScore = 0
+            },
             GroupId = notification.Post.Groups.FirstOrDefault()?.Id, // Simplified for now
             GroupName = notification.Post.Groups.FirstOrDefault()?.Name
         };
@@ -65,7 +69,7 @@ public class PostEventHandlers :
             var post = await _readRepository.GetByIdAsync(notification.Like.PostId.Value);
             if (post != null)
             {
-                post.LikeCount++;
+                post.Stats.LikeCount++;
                 post.Reactions.Add(reaction);
                 post.UpdateTrendingScore();
                 await _readRepository.UpdateAsync(post);
@@ -76,7 +80,7 @@ public class PostEventHandlers :
             var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value);
             if (comment != null)
             {
-                comment.LikeCount++;
+                comment.Stats.LikeCount++;
                 comment.Reactions.Add(reaction);
                 await _commentReadRepository.UpdateAsync(comment);
 
@@ -125,12 +129,12 @@ public class PostEventHandlers :
                 AuthorName = author?.Username ?? "Unknown",
                 AuthorProfilePicUrl = null,
                 CreatedAt = notification.Comment.CreatedAt,
-                LikeCount = 0
+                Stats = new CommentStats { LikeCount = 0 }
             };
 
             await _commentReadRepository.AddAsync(commentReadModel);
 
-            post.CommentCount++;
+            post.Stats.CommentCount++;
             
             // Add to TopComments (keep max 30)
             post.TopComments.Add(commentDto);

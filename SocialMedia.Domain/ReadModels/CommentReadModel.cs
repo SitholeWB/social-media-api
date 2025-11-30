@@ -10,6 +10,6 @@ public class CommentReadModel
     public string? AuthorProfilePicUrl { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    public int LikeCount { get; set; }
+    public CommentStats Stats { get; set; } = new();
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
 }

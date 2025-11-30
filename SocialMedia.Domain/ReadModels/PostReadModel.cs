@@ -12,9 +12,7 @@ public class PostReadModel
     
     // Stats
     // Stats
-    public int LikeCount { get; set; }
-    public int CommentCount { get; set; }
-    public int TrendingScore { get; set; } // (LikeCount * 1) + (CommentCount * 2)
+    public PostStats Stats { get; set; } = new();
 
     // Enriched Data
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
@@ -26,6 +24,6 @@ public class PostReadModel
 
     public void UpdateTrendingScore()
     {
-        TrendingScore = LikeCount + (CommentCount * 2);
+        Stats.TrendingScore = Stats.LikeCount + (Stats.CommentCount * 2);
     }
 }
