@@ -1,4 +1,4 @@
-namespace SocialMedia.Infrastructure;
+namespace SocialMedia.Application;
 
 public static class TelemetryConstants
 {
@@ -23,7 +23,10 @@ public static class TelemetryConstants
     // Tag Names
     public const string CommandType = "command.type";
     public const string QueryType = "query.type";
+    public const string EventType = "event.type";
     public const string OperationType = "operation.type";
     public const string EntityType = "entity.type";
     public const string Success = "success";
+    public const string ExceptionType = "exception.type";
+    public const string ExceptionMessage = "exception.message";
 }
