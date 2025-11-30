@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SocialMedia.Infrastructure.Persistence;
 
 namespace SocialMedia.IntegrationTests
 {
@@ -13,6 +14,7 @@ namespace SocialMedia.IntegrationTests
         {
             builder.ConfigureServices(services =>
             {
+                // Remove and replace SocialMediaDbContext
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<SocialMediaDbContext>));
 
@@ -24,6 +26,20 @@ namespace SocialMedia.IntegrationTests
                 services.AddDbContext<SocialMediaDbContext>(options =>
                 {
                     options.UseInMemoryDatabase(_dbName);
+                });
+
+                // Remove and replace SocialMediaReadDbContext
+                var readDescriptor = services.SingleOrDefault(
+                    d => d.ServiceType == typeof(DbContextOptions<SocialMediaReadDbContext>));
+
+                if (readDescriptor != null)
+                {
+                    services.Remove(readDescriptor);
+                }
+
+                services.AddDbContext<SocialMediaReadDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase($"{_dbName}_Read");
                 });
             });
         }

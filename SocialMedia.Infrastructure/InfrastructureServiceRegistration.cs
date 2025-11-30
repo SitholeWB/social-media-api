@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SocialMedia.Domain.Interfaces;
 using SocialMedia.Infrastructure.Repositories;
+using SocialMedia.Infrastructure.Persistence;
 
 namespace SocialMedia.Infrastructure
 {
@@ -14,6 +15,9 @@ namespace SocialMedia.Infrastructure
         {
             services.AddDbContext<SocialMediaDbContext>(options =>
                 options.UseInMemoryDatabase("SocialMediaDb"));
+
+            services.AddDbContext<SocialMediaReadDbContext>(options =>
+                options.UseInMemoryDatabase("SocialMediaReadDb"));
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IPostRepository, PostRepository>();
@@ -28,8 +32,8 @@ namespace SocialMedia.Infrastructure
             services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
-            services.AddSingleton<IPostReadRepository, InMemoryPostReadRepository>();
-            services.AddSingleton<ICommentReadRepository, InMemoryCommentReadRepository>();
+            services.AddScoped<IPostReadRepository, PostReadRepository>();
+            services.AddScoped<ICommentReadRepository, CommentReadRepository>();
 
             services.AddScoped<IIdentityService, IdentityService>();
 
