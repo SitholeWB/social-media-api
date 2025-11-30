@@ -22,11 +22,9 @@ graph TD
 
     subgraph Presentation
         API[SocialMedia.API]
-        Web[SocialMedia.Web]
     end
 
     API --> Application
-    Web --> API
     Application --> Domain
     Infra --> Application
     Infra --> Domain
