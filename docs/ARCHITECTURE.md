@@ -60,10 +60,6 @@ graph LR
     subgraph Read Side
         Dispatcher -->|Query| QueryHandler
         QueryHandler -->|Read| Repo
-        Repo -->|Select| DB
-    subgraph Read Side
-        Dispatcher -->|Query| QueryHandler
-        QueryHandler -->|Read| Repo
         Repo -->|Select| ReadDB[(Read DB)]
     end
 ```
