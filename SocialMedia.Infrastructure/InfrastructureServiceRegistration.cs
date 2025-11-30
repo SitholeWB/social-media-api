@@ -33,6 +33,10 @@ namespace SocialMedia.Infrastructure
 
             services.AddScoped<IIdentityService, IdentityService>();
 
+            // Background Event Processing
+            services.AddScoped<IBackgroundEventProcessor, SocialMedia.Infrastructure.BackgroundJobs.BackgroundEventProcessor>();
+            services.AddHostedService<SocialMedia.Infrastructure.BackgroundJobs.EventProcessorBackgroundService>();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

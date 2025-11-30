@@ -21,6 +21,7 @@ public class SocialMediaDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
+    public DbSet<OutboxEvent> OutboxEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

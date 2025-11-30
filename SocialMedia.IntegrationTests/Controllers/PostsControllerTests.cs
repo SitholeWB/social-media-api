@@ -41,9 +41,11 @@ public class PostsControllerTests : IClassFixture<IntegrationTestWebApplicationF
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var postId = await response.Content.ReadFromJsonAsync<Guid>();
 
+        // Process pending events to update read model
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services);
+
         // Verify retrieval
         var getResponse = await client.GetAsync($"/api/v1/posts");
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         var result = await getResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>();
         Assert.NotNull(result);

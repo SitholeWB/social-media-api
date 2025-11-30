@@ -108,10 +108,9 @@ public class Dispatcher : IDispatcher
         using var activity = ActivitySource.StartActivity($"Event: {typeof(TEvent).Name}", ActivityKind.Internal);
         activity?.SetTag(TelemetryConstants.EventType, typeof(TEvent).Name);
 
-        var handlers = _serviceProvider.GetServices<IEventHandler<TEvent>>();
-        foreach (var handler in handlers)
-        {
-            await handler.Handle(@event, cancellationToken);
-        }
+        var eventProcessor = _serviceProvider.GetRequiredService<IBackgroundEventProcessor>();
+        await eventProcessor.EnqueueEventAsync(@event, cancellationToken);
+        
+        activity?.SetTag(TelemetryConstants.Success, true);
     }
 }
