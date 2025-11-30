@@ -14,24 +14,24 @@ public class PostReadRepository : IPostReadRepository
         _context = context;
     }
 
-    public async Task AddAsync(PostReadModel post)
+    public async Task AddAsync(PostReadModel post, CancellationToken cancellationToken = default)
     {
-        await _context.Posts.AddAsync(post);
-        await _context.SaveChangesAsync();
+        await _context.Posts.AddAsync(post, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(PostReadModel post)
+    public async Task UpdateAsync(PostReadModel post, CancellationToken cancellationToken = default)
     {
         _context.Posts.Update(post);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<PostReadModel?> GetByIdAsync(Guid id)
+    public async Task<PostReadModel?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Posts.FindAsync(id);
+        return await _context.Posts.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null)
+    public async Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Posts.AsQueryable();
 
@@ -45,10 +45,10 @@ public class PostReadRepository : IPostReadRepository
             .ThenByDescending(p => p.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<PostReadModel>> GetLatestAsync(int page, int pageSize, Guid? groupId = null)
+    public async Task<List<PostReadModel>> GetLatestAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Posts.AsQueryable();
 
@@ -61,10 +61,10 @@ public class PostReadRepository : IPostReadRepository
             .OrderByDescending(p => p.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<long> GetTotalCountAsync(Guid? groupId = null)
+    public async Task<long> GetTotalCountAsync(Guid? groupId = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Posts.AsQueryable();
 
@@ -73,6 +73,6 @@ public class PostReadRepository : IPostReadRepository
             query = query.Where(p => p.GroupId == groupId);
         }
 
-        return await query.LongCountAsync();
+        return await query.LongCountAsync(cancellationToken);
     }
 }
