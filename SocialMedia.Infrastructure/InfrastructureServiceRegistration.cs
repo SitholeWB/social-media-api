@@ -1,0 +1,55 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using SocialMedia.Domain.Interfaces;
+using SocialMedia.Infrastructure.Repositories;
+
+namespace SocialMedia.Infrastructure
+{
+    public static class InfrastructureServiceRegistration
+    {
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<SocialMediaDbContext>(options =>
+                options.UseInMemoryDatabase("MediaServiceDb"));
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<IPollRepository, PollRepository>();
+            services.AddScoped<IBlockchainService, BlockchainService>();
+            services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IUserBlockRepository, UserBlockRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddSingleton<IPostReadRepository, InMemoryPostReadRepository>();
+            services.AddSingleton<ICommentReadRepository, InMemoryCommentReadRepository>();
+
+            services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("JwtSettings:Secret").Value ?? "SuperSecretKey12345678901234567890")),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            return services;
+        }
+    }
+}

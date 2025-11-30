@@ -1,22 +1,65 @@
-# social-media-api
+# MediaService
 
-## User create post
-![User Create Post](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-posts.puml)
+## Overview
+MediaService is a comprehensive .NET solution built using **Clean Architecture** principles. It serves as the backend for a social media platform, managing core entities such as **Users**, **Posts**, **Comments**, **Likes**, and **Polls**.
 
-## User add comment
-![User Add Post](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-comment.puml)
+The service is designed to be scalable, maintainable, and testable, separating core business logic from external concerns.
 
-## User react to post
-![User React to Post](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-post-reaction.puml)
+## Architecture
+The project is organized into the following layers:
 
-## User react to comment
-![User React to Comment](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-comment-reaction.puml)
+```mermaid
+graph TD
+    subgraph Core
+        Domain[MediaService.Domain]
+        Application[MediaService.Application]
+    end
 
-## User add group
-![User Add Group](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-group.puml)
+    subgraph Infrastructure
+        Infra[MediaService.Infrastructure]
+        Persistence[Persistence / DB]
+    end
 
-## User join group
-![User Join Group](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-add-user-group.puml)
+    subgraph Presentation
+        API[MediaService.API]
+        Web[MediaService.Web]
+    end
 
-## User get feed (posts)
-![User Get Feed](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/SitholeWB/social-media-api/main/docs/uml-get-user-feed.puml)
+    API --> Application
+    Web --> API
+    Application --> Domain
+    Infra --> Application
+    Infra --> Domain
+    Infra --> Persistence
+```
+
+- **Domain**: Contains enterprise logic and entities. No external dependencies.
+- **Application**: Contains business logic and use cases (CQRS Commands and Queries). Depends only on Domain.
+- **Infrastructure**: Implements interfaces defined in Application/Domain (e.g., Repositories, External Services).
+- **API**: The entry point for the application (REST Controllers).
+
+## Getting Started
+
+### Prerequisites
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- SQL Server (LocalDB or Docker container)
+
+### Build
+To build the entire solution:
+```bash
+dotnet build
+```
+
+### Run
+To run the API project:
+```bash
+dotnet run --project MediaService.API
+```
+The API will be available at `https://localhost:7057` (or similar, check console output).
+
+## Documentation
+Detailed documentation is available in the `docs/` folder:
+
+- 📘 **[Domain Documentation](docs/DOMAIN.md)**: Class diagrams and entity relationships.
+- 🚀 **[API Documentation](docs/API.md)**: Endpoints, authentication, and usage flows.
+- 🏗️ **[Architecture Guide](docs/ARCHITECTURE.md)**: Deep dive into CQRS, patterns, and folder structure.
