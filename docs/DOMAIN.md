@@ -81,6 +81,17 @@ classDiagram
     Comment "1" -- "*" Like : Has
     Comment "1" -- "0..1" MediaFile : Contains
 
+
+    class OutboxEvent {
+        +Guid Id
+        +string EventType
+        +string EventData
+        +OutboxEventStatus Status
+        +int RetryCount
+        +DateTime CreatedAt
+        +DateTime? ProcessedAt
+    }
+
     Poll "1" -- "*" PollOption : Has
     PollOption "1" -- "*" Vote : Receives
 ```
@@ -94,6 +105,8 @@ classDiagram
 - **Poll**: A question with multiple options for users to vote on.
 - **Group**: A collection of users and posts (if applicable).
 - **MediaFile**: Represents an uploaded file (image, video, etc.).
+- **OutboxEvent**: Stores domain events for reliable asynchronous processing using the Outbox pattern.
+
 
 ## Read Models
 
