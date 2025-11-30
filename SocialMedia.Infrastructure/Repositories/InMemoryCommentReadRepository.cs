@@ -5,34 +5,29 @@ namespace SocialMedia.Infrastructure.Repositories;
 
 public class InMemoryCommentReadRepository : ICommentReadRepository
 {
-    private readonly List<CommentReadModel> _comments = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, CommentReadModel> _comments = new();
 
     public Task AddAsync(CommentReadModel comment)
     {
-        _comments.Add(comment);
+        _comments.TryAdd(comment.Id, comment);
         return Task.CompletedTask;
     }
 
     public Task UpdateAsync(CommentReadModel comment)
     {
-        var existing = _comments.FirstOrDefault(c => c.Id == comment.Id);
-        if (existing != null)
-        {
-            _comments.Remove(existing);
-            _comments.Add(comment);
-        }
+        _comments.AddOrUpdate(comment.Id, comment, (key, oldValue) => comment);
         return Task.CompletedTask;
     }
 
     public Task<CommentReadModel?> GetByIdAsync(Guid id)
     {
-        var comment = _comments.FirstOrDefault(c => c.Id == id);
+        _comments.TryGetValue(id, out var comment);
         return Task.FromResult(comment);
     }
 
     public Task<List<CommentReadModel>> GetByPostIdAsync(Guid postId, int page, int pageSize)
     {
-        var comments = _comments
+        var comments = _comments.Values
             .Where(c => c.PostId == postId)
             .OrderByDescending(c => c.CreatedAt)
             .Skip((page - 1) * pageSize)

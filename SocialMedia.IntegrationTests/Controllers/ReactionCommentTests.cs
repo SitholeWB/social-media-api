@@ -34,6 +34,9 @@ public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationF
         var reactionResponse = await client.PostAsJsonAsync("/api/v1/likes/toggle", reactionCommand);
         reactionResponse.EnsureSuccessStatusCode();
 
+        // Process pending events
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services);
+
         // Assert: Check Post Read Model (TopComments)
         var getPostResponse = await client.GetAsync($"/api/v1/posts?pageNumber=1&pageSize=10");
         var postResult = await getPostResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>();
@@ -68,6 +71,9 @@ public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationF
             var commentDto = new CreateCommentDto { PostId = postId, Content = $"Comment {i}", AuthorId = Guid.NewGuid() };
             await client.PostAsJsonAsync("/api/v1/comments", commentDto);
         }
+
+        // Process pending events
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services);
 
         // Act: Get Post Comments (Page 1)
         var getCommentsResponse = await client.GetAsync($"/api/v1/posts/{postId}/comments?pageNumber=1&pageSize=30");

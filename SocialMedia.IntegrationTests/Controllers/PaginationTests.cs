@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace SocialMedia.IntegrationTests;
 
-public class PaginationTests : IClassFixture<WebApplicationFactory<Program>>
+public class PaginationTests : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private readonly HttpClient _client;
+    private readonly IntegrationTestWebApplicationFactory _factory;
 
-    public PaginationTests(WebApplicationFactory<Program> factory)
+    public PaginationTests(IntegrationTestWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
     }
 
@@ -20,6 +22,9 @@ public class PaginationTests : IClassFixture<WebApplicationFactory<Program>>
             var command = new CreatePostCommand(new CreatePostDto { Content = $"Post {i}", AuthorId = Guid.NewGuid() });
             await _client.PostAsJsonAsync("/api/v1/posts", command);
         }
+
+        // Process pending events
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services);
 
         // Act: Get Page 1
         var response1 = await _client.GetAsync("/api/v1/posts?pageNumber=1&pageSize=10");

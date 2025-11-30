@@ -7,6 +7,8 @@ namespace SocialMedia.IntegrationTests
 {
     public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
     {
+        private readonly string _dbName = Guid.NewGuid().ToString();
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -21,7 +23,7 @@ namespace SocialMedia.IntegrationTests
 
                 services.AddDbContext<SocialMediaDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.UseInMemoryDatabase(_dbName);
                 });
             });
         }

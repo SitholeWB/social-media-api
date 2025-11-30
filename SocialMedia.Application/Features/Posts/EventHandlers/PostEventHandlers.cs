@@ -28,6 +28,11 @@ public class PostEventHandlers :
 
     public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Post == null)
+        {
+            throw new ArgumentNullException(nameof(notification.Post), "Post in PostCreatedEvent is null. This might be due to JSON deserialization issues.");
+        }
+
         var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
         
         var readModel = new PostReadModel
@@ -55,6 +60,11 @@ public class PostEventHandlers :
 
     public async Task Handle(LikeAddedEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Like == null)
+        {
+            throw new ArgumentNullException(nameof(notification.Like), "Like in LikeAddedEvent is null. This might be due to JSON deserialization issues.");
+        }
+
         var user = await _userRepository.GetByIdAsync(notification.Like.UserId, cancellationToken);
         var reaction = new ReactionReadDto
         {
@@ -104,6 +114,11 @@ public class PostEventHandlers :
 
     public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
     {
+        if (notification.Comment == null)
+        {
+            throw new ArgumentNullException(nameof(notification.Comment), "Comment in CommentAddedEvent is null. This might be due to JSON deserialization issues.");
+        }
+
         var post = await _readRepository.GetByIdAsync(notification.Comment.PostId);
         if (post != null)
         {

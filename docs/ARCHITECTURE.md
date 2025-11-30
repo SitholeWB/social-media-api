@@ -75,7 +75,48 @@ graph LR
 - **Queries**: Read state. Return DTOs. Never modify state.
 - **Dispatcher**: Decouples Controllers from Handlers.
 
+
+## Event Processing
+
+The application uses an **Outbox Pattern** for reliable asynchronous event processing.
+
+### Architecture
+
+```mermaid
+graph LR
+    Command[Command Handler]
+    Dispatcher[Dispatcher]
+    Outbox[(Outbox Table)]
+    Processor[Background Event Processor]
+    Handler[Event Handler]
+    ReadModel[(Read Model)]
+    
+    Command -->|Publish Event| Dispatcher
+    Dispatcher -->|Enqueue| Outbox
+    Processor -->|Poll & Process| Outbox
+    Processor -->|Invoke| Handler
+    Handler -->|Update| ReadModel
+```
+
+### Components
+
+**`OutboxEvent` Entity**: Persists events with status tracking (`Pending`, `Processing`, `Completed`, `Failed`) and retry count.
+
+**`BackgroundEventProcessor`**: 
+- Serializes events to JSON using `ReferenceHandler.IgnoreCycles`
+- Persists to `OutboxEvents` table
+- Processes events asynchronously with retry logic (max 3 retries)
+
+**`EventProcessorBackgroundService`**: Polls for pending events every 5 seconds and triggers processing.
+
+**Event Handlers**: Update read models in response to domain events (`PostCreatedEvent`, `CommentAddedEvent`, `LikeAddedEvent`).
+
+### Thread Safety
+
+In-memory repositories use `ConcurrentDictionary<Guid, T>` for thread-safe concurrent access during background event processing.
+
 ## Key Design Decisions
+
 
 - **Rich Domain Model**: Entities encapsulate logic (e.g., `Post.AddComment()`).
 - **Repository Pattern**: Abstracts data access logic.

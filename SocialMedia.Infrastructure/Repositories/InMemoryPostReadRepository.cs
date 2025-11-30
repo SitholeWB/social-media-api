@@ -5,35 +5,30 @@ namespace SocialMedia.Infrastructure.Repositories;
 
 public class InMemoryPostReadRepository : IPostReadRepository
 {
-    // Static list to simulate a persistent store across requests in this demo
-    private static readonly List<PostReadModel> _posts = new();
+    // Using ConcurrentDictionary for thread safety
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, PostReadModel> _posts = new();
 
     public Task AddAsync(PostReadModel post)
     {
-        _posts.Add(post);
+        _posts.TryAdd(post.Id, post);
         return Task.CompletedTask;
     }
 
     public Task UpdateAsync(PostReadModel post)
     {
-        var existing = _posts.FirstOrDefault(p => p.Id == post.Id);
-        if (existing != null)
-        {
-            _posts.Remove(existing);
-            _posts.Add(post);
-        }
+        _posts.AddOrUpdate(post.Id, post, (key, oldValue) => post);
         return Task.CompletedTask;
     }
 
     public Task<PostReadModel?> GetByIdAsync(Guid id)
     {
-        var post = _posts.FirstOrDefault(p => p.Id == id);
+        _posts.TryGetValue(id, out var post);
         return Task.FromResult(post);
     }
 
     public Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null)
     {
-        var query = _posts.AsQueryable();
+        var query = _posts.Values.AsQueryable();
 
         if (groupId.HasValue)
         {
@@ -52,7 +47,7 @@ public class InMemoryPostReadRepository : IPostReadRepository
 
     public Task<List<PostReadModel>> GetLatestAsync(int page, int pageSize, Guid? groupId = null)
     {
-        var query = _posts.AsQueryable();
+        var query = _posts.Values.AsQueryable();
 
         if (groupId.HasValue)
         {
@@ -70,7 +65,7 @@ public class InMemoryPostReadRepository : IPostReadRepository
 
     public Task<long> GetTotalCountAsync(Guid? groupId = null)
     {
-        var query = _posts.AsQueryable();
+        var query = _posts.Values.AsQueryable();
 
         if (groupId.HasValue)
         {
