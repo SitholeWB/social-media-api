@@ -1,7 +1,7 @@
-# MediaService
+# SocialMedia
 
 ## Overview
-MediaService is a comprehensive .NET solution built using **Clean Architecture** principles. It serves as the backend for a social media platform, managing core entities such as **Users**, **Posts**, **Comments**, **Likes**, and **Polls**.
+SocialMedia is a comprehensive .NET solution built using **Clean Architecture** principles. It serves as the backend for a social media platform, managing core entities such as **Users**, **Posts**, **Comments**, **Likes**, and **Polls**.
 
 The service is designed to be scalable, maintainable, and testable, separating core business logic from external concerns.
 
@@ -11,18 +11,18 @@ The project is organized into the following layers:
 ```mermaid
 graph TD
     subgraph Core
-        Domain[MediaService.Domain]
-        Application[MediaService.Application]
+        Domain[SocialMedia.Domain]
+        Application[SocialMedia.Application]
     end
 
     subgraph Infrastructure
-        Infra[MediaService.Infrastructure]
+        Infra[SocialMedia.Infrastructure]
         Persistence[Persistence / DB]
     end
 
     subgraph Presentation
-        API[MediaService.API]
-        Web[MediaService.Web]
+        API[SocialMedia.API]
+        Web[SocialMedia.Web]
     end
 
     API --> Application
@@ -53,7 +53,7 @@ dotnet build
 ### Run
 To run the API project:
 ```bash
-dotnet run --project MediaService.API
+dotnet run --project SocialMedia.API
 ```
 The API will be available at `https://localhost:7057` (or similar, check console output).
 
