@@ -70,3 +70,185 @@ sequenceDiagram
     Dispatcher-->>API: PostId
     API-->>Client: 201 Created (Location Header)
 ```
+
+## Detailed Request Flows
+
+### Create Post with Event Processing
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Dispatcher
+    participant CommandHandler
+    participant Repository
+    participant DB
+    participant EventProcessor
+    participant EventHandler
+    participant ReadRepo
+    participant ReadDB
+
+    Client->>Controller: POST /api/v1/posts
+    Controller->>Dispatcher: Send(CreatePostCommand)
+    Dispatcher->>CommandHandler: Handle(command)
+    CommandHandler->>Repository: AddAsync(post)
+    Repository->>DB: Save Post
+    DB-->>Repository: Post Saved
+    
+    CommandHandler->>Dispatcher: Publish(PostCreatedEvent)
+    Dispatcher->>EventProcessor: EnqueueEventAsync(event)
+    EventProcessor->>DB: Save OutboxEvent
+    EventProcessor-->>Dispatcher: Enqueued
+    
+    CommandHandler-->>Controller: Post ID
+    Controller-->>Client: 201 Created
+    
+    Note over EventProcessor: Background Processing
+    EventProcessor->>DB: Poll Pending Events
+    DB-->>EventProcessor: PostCreatedEvent
+    EventProcessor->>EventHandler: Handle(PostCreatedEvent)
+    EventHandler->>ReadRepo: AddAsync(PostReadModel)
+    ReadRepo->>ReadDB: Save Read Model
+    EventHandler-->>EventProcessor: Success
+    EventProcessor->>DB: Mark Event Completed
+```
+
+### Get Posts Query
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Dispatcher
+    participant QueryHandler
+    participant ReadRepo
+    participant ReadDB
+
+    Client->>Controller: GET /api/v1/posts?page=1&pageSize=10
+    Controller->>Dispatcher: Query(GetPostsQuery)
+    Dispatcher->>QueryHandler: Handle(query)
+    QueryHandler->>ReadRepo: GetLatestAsync(page, pageSize)
+    ReadRepo->>ReadDB: SELECT * FROM PostReads
+    ReadDB-->>ReadRepo: PostReadModels
+    QueryHandler->>ReadRepo: GetTotalCountAsync()
+    ReadRepo->>ReadDB: SELECT COUNT(*)
+    ReadDB-->>ReadRepo: Count
+    QueryHandler-->>Dispatcher: PagedResult<PostDto>
+    Dispatcher-->>Controller: PagedResult
+    Controller-->>Client: 200 OK + Posts
+```
+
+### Add Comment Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Dispatcher
+    participant CommandHandler
+    participant CommentRepo
+    participant DB
+    participant EventProcessor
+    participant EventHandler
+    participant ReadRepo
+
+    Client->>Controller: POST /api/v1/comments
+    Controller->>Dispatcher: Send(CreateCommentCommand)
+    Dispatcher->>CommandHandler: Handle(command)
+    
+    CommandHandler->>CommentRepo: AddAsync(comment)
+    CommentRepo->>DB: Save Comment
+    
+    CommandHandler->>Dispatcher: Publish(CommentAddedEvent)
+    Dispatcher->>EventProcessor: EnqueueEventAsync(event)
+    
+    CommandHandler-->>Controller: Comment ID
+    Controller-->>Client: 201 Created
+    
+    Note over EventProcessor: Background Processing
+    EventProcessor->>EventHandler: Handle(CommentAddedEvent)
+    EventHandler->>ReadRepo: AddAsync(CommentReadModel)
+    EventHandler->>ReadRepo: UpdateAsync(PostReadModel)
+    Note over EventHandler: Update Post Stats & TopComments
+```
+
+### Toggle Like Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Dispatcher
+    participant CommandHandler
+    participant LikeRepo
+    participant DB
+    participant EventProcessor
+    participant EventHandler
+    participant ReadRepo
+
+    Client->>Controller: POST /api/v1/likes/toggle
+    Controller->>Dispatcher: Send(ToggleLikeCommand)
+    Dispatcher->>CommandHandler: Handle(command)
+    
+    CommandHandler->>LikeRepo: GetByUserAndTargetAsync()
+    LikeRepo->>DB: Find Existing Like
+    
+    alt Like Exists
+        CommandHandler->>LikeRepo: DeleteAsync(like)
+        CommandHandler-->>Controller: false (unliked)
+    else Like Not Exists
+        CommandHandler->>LikeRepo: AddAsync(like)
+        CommandHandler->>Dispatcher: Publish(LikeAddedEvent)
+        Dispatcher->>EventProcessor: EnqueueEventAsync(event)
+        CommandHandler-->>Controller: true (liked)
+    end
+    
+    Controller-->>Client: 200 OK
+    
+    Note over EventProcessor: Background Processing
+    EventProcessor->>EventHandler: Handle(LikeAddedEvent)
+    EventHandler->>ReadRepo: UpdateAsync(ReadModel)
+    Note over EventHandler: Add Reaction, Update LikeCount
+```
+
+### Error Handling
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Middleware
+    participant Controller
+    participant Dispatcher
+    participant Handler
+
+    Client->>Middleware: HTTP Request
+    Middleware->>Controller: Process Request
+    Controller->>Dispatcher: Send Command/Query
+    Dispatcher->>Handler: Handle
+    
+    alt Validation Error
+        Dispatcher-->>Controller: ValidationException
+        Controller-->>Middleware: ValidationException
+        Middleware-->>Client: 400 Bad Request + Errors
+    else Not Found
+        Handler-->>Dispatcher: NotFoundException
+        Dispatcher-->>Controller: NotFoundException
+        Controller-->>Middleware: NotFoundException
+        Middleware-->>Client: 404 Not Found
+    else Database Error
+        Handler-->>Dispatcher: DbUpdateException
+        Dispatcher-->>Controller: Exception
+        Controller-->>Middleware: Exception
+        Middleware->>Middleware: Log Error
+        Middleware-->>Client: 500 Internal Server Error
+    else Success
+        Handler-->>Dispatcher: Result
+        Dispatcher-->>Controller: Result
+        Controller-->>Middleware: Response
+        Middleware-->>Client: 200 OK + Data
+    end
+```
+
+## Response Formats
+
+All API responses follow a consistent structure with appropriate HTTP status codes.
