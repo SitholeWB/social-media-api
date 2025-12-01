@@ -14,10 +14,10 @@ public class GetReportedUsersQueryHandler : IQueryHandler<GetReportedUsersQuery,
     public async Task<List<ReportedUserDto>> Handle(GetReportedUsersQuery request, CancellationToken cancellationToken)
     {
         // Get reports for posts
-        var postReports = await _reportRepository.GetPostReportCountsByAuthorAsync();
+        var postReports = await _reportRepository.GetPostReportCountsByAuthorAsync(cancellationToken);
 
         // Get reports for comments
-        var commentReports = await _reportRepository.GetCommentReportCountsByAuthorAsync();
+        var commentReports = await _reportRepository.GetCommentReportCountsByAuthorAsync(cancellationToken);
 
         // Combine
         var allReports = postReports

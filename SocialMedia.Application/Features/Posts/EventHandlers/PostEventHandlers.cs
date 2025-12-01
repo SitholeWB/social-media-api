@@ -51,7 +51,7 @@ public class PostEventHandlers :
             GroupName = notification.Post.Groups.FirstOrDefault()?.Name
         };
 
-        await _readRepository.AddAsync(readModel);
+        await _readRepository.AddAsync(readModel, cancellationToken);
     }
 
     public async Task Handle(LikeAddedEvent notification, CancellationToken cancellationToken)
@@ -72,26 +72,26 @@ public class PostEventHandlers :
 
         if (notification.Like.PostId.HasValue)
         {
-            var post = await _readRepository.GetByIdAsync(notification.Like.PostId.Value);
+            var post = await _readRepository.GetByIdAsync(notification.Like.PostId.Value, cancellationToken);
             if (post != null)
             {
                 post.Stats.LikeCount++;
                 post.Reactions.Add(reaction);
                 post.UpdateTrendingScore();
-                await _readRepository.UpdateAsync(post);
+                await _readRepository.UpdateAsync(post, cancellationToken);
             }
         }
         else if (notification.Like.CommentId.HasValue)
         {
-            var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value);
+            var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value, cancellationToken);
             if (comment != null)
             {
                 comment.Stats.LikeCount++;
                 comment.Reactions.Add(reaction);
-                await _commentReadRepository.UpdateAsync(comment);
+                await _commentReadRepository.UpdateAsync(comment, cancellationToken);
 
                 // Update TopComments in PostReadModel if present
-                var post = await _readRepository.GetByIdAsync(comment.PostId);
+                var post = await _readRepository.GetByIdAsync(comment.PostId, cancellationToken);
                 if (post != null)
                 {
                     var topComment = post.TopComments.FirstOrDefault(c => c.Id == comment.Id);
@@ -99,10 +99,8 @@ public class PostEventHandlers :
                     {
                         topComment.LikeCount++;
                         topComment.Reactions.Add(reaction);
-                        await _readRepository.UpdateAsync(post);
+                        await _readRepository.UpdateAsync(post, cancellationToken);
                     }
-                    // If not in top comments, we might want to check if it should be promoted, 
-                    // but for now let's keep it simple (only new comments enter top 30)
                 }
             }
         }
@@ -115,7 +113,7 @@ public class PostEventHandlers :
             throw new ArgumentNullException(nameof(notification.Comment), "Comment in CommentAddedEvent is null. This might be due to JSON deserialization issues.");
         }
 
-        var post = await _readRepository.GetByIdAsync(notification.Comment.PostId);
+        var post = await _readRepository.GetByIdAsync(notification.Comment.PostId, cancellationToken);
         if (post != null)
         {
             var author = await _userRepository.GetByIdAsync(notification.Comment.AuthorId, cancellationToken);
@@ -143,7 +141,7 @@ public class PostEventHandlers :
                 Stats = new CommentStats { LikeCount = 0 }
             };
 
-            await _commentReadRepository.AddAsync(commentReadModel);
+            await _commentReadRepository.AddAsync(commentReadModel, cancellationToken);
 
             post.Stats.CommentCount++;
 
@@ -158,7 +156,7 @@ public class PostEventHandlers :
             }
 
             post.UpdateTrendingScore();
-            await _readRepository.UpdateAsync(post);
+            await _readRepository.UpdateAsync(post, cancellationToken);
         }
     }
 }
