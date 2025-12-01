@@ -1,6 +1,6 @@
 namespace SocialMedia.Domain;
 
-public class PostStats
+public class PostStatsDto
 {
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }

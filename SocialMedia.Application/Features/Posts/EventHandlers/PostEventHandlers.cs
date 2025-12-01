@@ -41,7 +41,7 @@ public class PostEventHandlers :
             CreatedAt = notification.Post.CreatedAt,
             FileUrl = notification.Post.File?.Url,
 
-            Stats = new PostStats
+            Stats = new PostStatsDto
             {
                 LikeCount = 0,
                 CommentCount = 0,
@@ -138,7 +138,7 @@ public class PostEventHandlers :
                 AuthorName = author?.Username ?? "Unknown",
                 AuthorProfilePicUrl = null,
                 CreatedAt = notification.Comment.CreatedAt,
-                Stats = new CommentStats { LikeCount = 0 }
+                Stats = new CommentStatsDto { LikeCount = 0 }
             };
 
             await _commentReadRepository.AddAsync(commentReadModel, cancellationToken);

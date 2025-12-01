@@ -12,7 +12,7 @@ public class PostReadModel
 
     // Stats
     // Stats
-    public PostStats Stats { get; set; } = new();
+    public PostStatsDto Stats { get; set; } = new();
 
     // Enriched Data
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
