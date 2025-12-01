@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 
 namespace SocialMedia.Application;
 

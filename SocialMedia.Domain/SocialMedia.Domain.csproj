@@ -10,6 +10,7 @@
     <Using Include="System.Linq" />
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
+    <Using Include="MediatR" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="13.1.0" />

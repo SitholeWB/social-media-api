@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Infrastructure;
-using Xunit;
 
 namespace SocialMedia.IntegrationTests;
 

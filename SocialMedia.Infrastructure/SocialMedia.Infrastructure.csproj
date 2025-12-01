@@ -28,6 +28,17 @@
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="SocialMedia.Domain" />
     <Using Include="SocialMedia.Application" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <Using Include="Microsoft.IdentityModel.Tokens" />
+    <Using Include="System.Text" />
+    <Using Include="System.Text.Json" />
+    <Using Include="System.Security.Cryptography" />
+    <Using Include="System.Security.Claims" />
+    <Using Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 
 </Project>

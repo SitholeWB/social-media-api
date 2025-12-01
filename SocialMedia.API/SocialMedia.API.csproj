@@ -29,6 +29,8 @@
     <Using Include="SocialMedia.Domain" />
     <Using Include="SocialMedia.Application" />
     <Using Include="SocialMedia.Infrastructure" />
+    <Using Include="Microsoft.AspNetCore.Authorization" />
+    <Using Include="Asp.Versioning" />
   </ItemGroup>
 
 </Project>

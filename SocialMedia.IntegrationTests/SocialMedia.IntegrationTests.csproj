@@ -32,6 +32,11 @@
     <Using Include="SocialMedia.Application" />
     <Using Include="SocialMedia.Infrastructure" />
     <Using Include="SocialMedia.API" />
+    <Using Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.AspNetCore.Hosting" />
+    <Using Include="System.Net.Http.Headers" />
   </ItemGroup>
 
   <ItemGroup>

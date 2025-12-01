@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Headers;
 
 namespace SocialMedia.IntegrationTests;
 
