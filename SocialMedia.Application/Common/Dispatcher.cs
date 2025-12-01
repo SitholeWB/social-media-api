@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using SocialMedia.Application.Common.Validation;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using SocialMedia.Domain.Events;
 
 namespace SocialMedia.Application;
 
@@ -110,7 +108,7 @@ public class Dispatcher : IDispatcher
 
         var eventProcessor = _serviceProvider.GetRequiredService<IBackgroundEventProcessor>();
         await eventProcessor.EnqueueEventAsync(@event, cancellationToken);
-        
+
         activity?.SetTag(TelemetryConstants.Success, true);
     }
 }

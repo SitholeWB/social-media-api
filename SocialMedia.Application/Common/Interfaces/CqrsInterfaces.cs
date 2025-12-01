@@ -1,5 +1,3 @@
-using SocialMedia.Domain.Events;
-
 namespace SocialMedia.Application;
 
 public interface ICommand<out TResult> { }

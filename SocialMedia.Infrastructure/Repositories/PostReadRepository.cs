@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Domain.Interfaces;
-using SocialMedia.Domain.ReadModels;
-using SocialMedia.Infrastructure.Persistence;
-
-namespace SocialMedia.Infrastructure.Repositories;
+namespace SocialMedia.Infrastructure;
 
 public class PostReadRepository : IPostReadRepository
 {

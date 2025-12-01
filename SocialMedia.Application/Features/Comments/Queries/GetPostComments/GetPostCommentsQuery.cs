@@ -1,4 +1,3 @@
-using SocialMedia.Domain.ReadModels;
 
 namespace SocialMedia.Application;
 

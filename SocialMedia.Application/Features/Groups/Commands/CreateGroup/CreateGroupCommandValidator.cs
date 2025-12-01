@@ -1,6 +1,4 @@
-using SocialMedia.Application.Common.Validation;
-
-namespace SocialMedia.Application.Features.Groups.Commands.CreateGroup;
+namespace SocialMedia.Application;
 
 public class CreateGroupCommandValidator : IValidator<CreateGroupCommand>
 {

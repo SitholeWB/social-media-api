@@ -1,6 +1,4 @@
-using SocialMedia.Application.Common.Validation;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SocialMedia.API.Middleware;
 

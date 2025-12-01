@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SocialMedia.Domain;
 
 namespace SocialMedia.IntegrationTests;
 

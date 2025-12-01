@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace SocialMedia.Domain.Events;
+namespace SocialMedia.Domain;
 
-public interface IDomainEventHandler<TEvent> : INotificationHandler<TEvent> 
+public interface IDomainEventHandler<TEvent> : INotificationHandler<TEvent>
     where TEvent : IDomainEvent
 {
 }

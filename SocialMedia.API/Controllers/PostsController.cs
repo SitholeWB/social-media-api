@@ -25,15 +25,15 @@ public class PostsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> Get(
-        [FromQuery] int pageNumber = 1, 
-        [FromQuery] int pageSize = 10, 
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
         [FromQuery] PostSortBy sortBy = PostSortBy.Latest,
         [FromQuery] Guid? groupId = null,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPostsQuery 
-        { 
-            PageNumber = pageNumber, 
+        var query = new GetPostsQuery
+        {
+            PageNumber = pageNumber,
             PageSize = pageSize,
             SortBy = sortBy,
             GroupId = groupId

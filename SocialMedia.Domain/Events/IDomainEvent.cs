@@ -1,6 +1,4 @@
-using MediatR;
-
-namespace SocialMedia.Domain.Events;
+namespace SocialMedia.Domain;
 
 public interface IDomainEvent : IEvent
 {

@@ -1,5 +1,3 @@
-using SocialMedia.Domain.Interfaces;
-
 namespace SocialMedia.Application;
 
 public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<PostDto>>

@@ -1,6 +1,3 @@
-using SocialMedia.Domain.Interfaces;
-using SocialMedia.Domain.ReadModels;
-
 namespace SocialMedia.Application;
 
 public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, PagedResult<CommentReadDto>>
@@ -15,12 +12,12 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
     public async Task<PagedResult<CommentReadDto>> Handle(GetPostCommentsQuery request, CancellationToken cancellationToken)
     {
         var comments = await _commentReadRepository.GetByPostIdAsync(request.PostId, request.PageNumber, request.PageSize);
-        
+
         // We need a way to get total count from the repository for proper pagination
         // For now, let's assume the repository handles it or we add a method
         // But InMemoryCommentReadRepository doesn't have GetTotalCount yet.
         // Let's just return what we have.
-        
+
         var dtos = comments.Select(c => new CommentReadDto
         {
             Id = c.Id,

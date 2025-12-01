@@ -1,6 +1,5 @@
-using SocialMedia.Domain.ReadModels;
 
-namespace SocialMedia.Domain.Interfaces;
+namespace SocialMedia.Domain;
 
 public interface ICommentReadRepository
 {

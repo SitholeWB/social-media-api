@@ -1,4 +1,4 @@
-namespace SocialMedia.Domain.ReadModels;
+namespace SocialMedia.Domain;
 
 public class CommentReadModel
 {
@@ -9,7 +9,7 @@ public class CommentReadModel
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorProfilePicUrl { get; set; }
     public DateTime CreatedAt { get; set; }
-    
+
     public CommentStats Stats { get; set; } = new();
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
 }

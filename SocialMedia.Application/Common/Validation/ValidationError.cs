@@ -1,4 +1,4 @@
-namespace SocialMedia.Application.Common.Validation;
+namespace SocialMedia.Application;
 
 public class ValidationError
 {

@@ -1,4 +1,4 @@
-namespace SocialMedia.Domain.ReadModels;
+namespace SocialMedia.Domain;
 
 public class PostReadModel
 {
@@ -9,7 +9,7 @@ public class PostReadModel
     public string AuthorName { get; set; } = string.Empty; // Denormalized
     public DateTime CreatedAt { get; set; }
     public string? FileUrl { get; set; }
-    
+
     // Stats
     // Stats
     public PostStats Stats { get; set; } = new();

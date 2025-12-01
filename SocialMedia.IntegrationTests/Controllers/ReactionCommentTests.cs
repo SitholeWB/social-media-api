@@ -1,10 +1,3 @@
-using SocialMedia.Application;
-using SocialMedia.Domain.ReadModels;
-using SocialMedia.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net;
-using System.Net.Http.Json;
-
 namespace SocialMedia.IntegrationTests;
 
 public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationFactory>
@@ -41,14 +34,14 @@ public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationF
         var getPostResponse = await client.GetAsync($"/api/v1/posts?pageNumber=1&pageSize=10");
         var postResult = await getPostResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>();
         var post = postResult.Items.FirstOrDefault(p => p.Id == postId);
-        
+
         // Note: PostDto currently doesn't expose TopComments, we might need to update PostDto or fetch comments separately
         // But we can check the comments endpoint
-        
+
         var getCommentsResponse = await client.GetAsync($"/api/v1/posts/{postId}/comments");
         getCommentsResponse.EnsureSuccessStatusCode();
         var commentsResult = await getCommentsResponse.Content.ReadFromJsonAsync<PagedResult<CommentReadDto>>();
-        
+
         Assert.NotNull(commentsResult);
         var comment = commentsResult.Items.FirstOrDefault(c => c.Id == commentId);
         Assert.NotNull(comment);
@@ -81,11 +74,11 @@ public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationF
 
         // Assert
         Assert.Equal(30, commentsResult.Items.Count);
-        
+
         // Act: Get Remaining Comments (Page 2)
         var getMoreCommentsResponse = await client.GetAsync($"/api/v1/posts/{postId}/comments?pageNumber=2&pageSize=10");
         var moreCommentsResult = await getMoreCommentsResponse.Content.ReadFromJsonAsync<PagedResult<CommentReadDto>>();
-        
+
         Assert.True(moreCommentsResult.Items.Count >= 5); // Should be 5
     }
 }

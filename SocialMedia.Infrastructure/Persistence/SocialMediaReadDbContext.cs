@@ -1,7 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Domain.ReadModels;
-
-namespace SocialMedia.Infrastructure.Persistence;
+namespace SocialMedia.Infrastructure;
 
 public class SocialMediaReadDbContext : DbContext
 {
@@ -23,7 +20,7 @@ public class SocialMediaReadDbContext : DbContext
 
             entity.OwnsOne(p => p.Stats, b => b.ToJson());
             entity.OwnsMany(p => p.Reactions, b => b.ToJson());
-            entity.OwnsMany(p => p.TopComments, b => 
+            entity.OwnsMany(p => p.TopComments, b =>
             {
                 b.ToJson();
                 b.OwnsMany(c => c.Reactions);

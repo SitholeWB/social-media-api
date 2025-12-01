@@ -1,10 +1,6 @@
-using SocialMedia.Domain.Events;
-using SocialMedia.Domain.Interfaces;
-using SocialMedia.Domain.ReadModels;
+namespace SocialMedia.Application;
 
-namespace SocialMedia.Application.Features.Posts.EventHandlers;
-
-public class PostEventHandlers : 
+public class PostEventHandlers :
     IEventHandler<PostCreatedEvent>,
     IEventHandler<LikeAddedEvent>,
     IEventHandler<CommentAddedEvent>
@@ -15,7 +11,7 @@ public class PostEventHandlers :
     private readonly IPostRepository _postRepository; // To get Post details for Like/Comment events
 
     public PostEventHandlers(
-        IPostReadRepository readRepository, 
+        IPostReadRepository readRepository,
         ICommentReadRepository commentReadRepository,
         IUserRepository userRepository,
         IPostRepository postRepository)
@@ -34,7 +30,7 @@ public class PostEventHandlers :
         }
 
         var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
-        
+
         var readModel = new PostReadModel
         {
             Id = notification.Post.Id,
@@ -123,7 +119,7 @@ public class PostEventHandlers :
         if (post != null)
         {
             var author = await _userRepository.GetByIdAsync(notification.Comment.AuthorId, cancellationToken);
-            
+
             var commentDto = new CommentReadDto
             {
                 Id = notification.Comment.Id,
@@ -150,7 +146,7 @@ public class PostEventHandlers :
             await _commentReadRepository.AddAsync(commentReadModel);
 
             post.Stats.CommentCount++;
-            
+
             // Add to TopComments (keep max 30)
             post.TopComments.Add(commentDto);
             if (post.TopComments.Count > 30)

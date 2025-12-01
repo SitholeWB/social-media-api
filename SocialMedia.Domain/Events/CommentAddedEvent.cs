@@ -1,5 +1,3 @@
-using SocialMedia.Domain;
-
-namespace SocialMedia.Domain.Events;
+namespace SocialMedia.Domain;
 
 public record CommentAddedEvent(Comment Comment) : IDomainEvent;

@@ -1,4 +1,4 @@
-namespace SocialMedia.Domain.ReadModels;
+namespace SocialMedia.Domain;
 
 public class CommentStats
 {

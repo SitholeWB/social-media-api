@@ -1,11 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SocialMedia.Domain;
-using SocialMedia.Domain.Events;
 using System.Text.Json;
 
-namespace SocialMedia.Infrastructure.BackgroundJobs;
+namespace SocialMedia.Infrastructure;
 
 public class BackgroundEventProcessor : IBackgroundEventProcessor
 {

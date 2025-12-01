@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace SocialMedia.Infrastructure.BackgroundJobs;
+namespace SocialMedia.Infrastructure;
 
 public class EventProcessorBackgroundService : BackgroundService
 {
@@ -28,7 +28,7 @@ public class EventProcessorBackgroundService : BackgroundService
             {
                 using var scope = _serviceProvider.CreateScope();
                 var eventProcessor = scope.ServiceProvider.GetRequiredService<IBackgroundEventProcessor>();
-                
+
                 await eventProcessor.ProcessPendingEventsAsync(stoppingToken);
             }
             catch (Exception ex)

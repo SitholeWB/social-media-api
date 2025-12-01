@@ -1,5 +1,3 @@
-using SocialMedia.Domain.Events;
-
 namespace SocialMedia.Application;
 
 public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
@@ -98,7 +96,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     }, cancellationToken);
                 }
             }
-            
+
             // Publish Event
             await _dispatcher.Publish(new LikeAddedEvent(newLike), cancellationToken);
 

@@ -1,5 +1,3 @@
-using SocialMedia.Domain.Events;
-
 namespace SocialMedia.Application;
 
 public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
@@ -20,7 +18,7 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
 
         // Reload with File navigation property for the event
         var postWithFile = await _postRepository.GetByIdAsync(createdPost.Id, cancellationToken);
-        
+
         await _dispatcher.Publish(new PostCreatedEvent(postWithFile ?? createdPost), cancellationToken);
 
         return createdPost.Id;

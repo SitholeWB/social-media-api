@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using SocialMedia.Domain.ReadModels;
 
 namespace SocialMedia.API;
 

@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace SocialMedia.Domain.Events;
+namespace SocialMedia.Domain;
 
 public interface IEvent : INotification
 {

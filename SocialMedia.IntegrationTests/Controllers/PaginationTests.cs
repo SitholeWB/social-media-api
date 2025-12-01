@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-
 namespace SocialMedia.IntegrationTests;
 
 public class PaginationTests : IClassFixture<IntegrationTestWebApplicationFactory>
