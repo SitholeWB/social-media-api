@@ -18,7 +18,6 @@
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
     <Using Include="SocialMedia.Domain" />
-    <Using Include="MediatR" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="System.Diagnostics" />
     <Using Include="System.Diagnostics.Metrics" />

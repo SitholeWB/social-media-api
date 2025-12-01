@@ -1,8 +1,8 @@
-using MediatR;
 
 namespace SocialMedia.Domain;
 
-public interface IDomainEventHandler<TEvent> : INotificationHandler<TEvent>
+public interface IDomainEventHandler<in TEvent>
     where TEvent : IDomainEvent
 {
+    Task Handle(TEvent notification, CancellationToken cancellationToken);
 }

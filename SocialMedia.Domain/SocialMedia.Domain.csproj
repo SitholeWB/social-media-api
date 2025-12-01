@@ -9,10 +9,8 @@
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Linq" />
     <Using Include="System.Threading" />
-    <Using Include="System.Threading.Tasks" />
-    <Using Include="MediatR" />
+    <Using Include="SocialMedia.Domain" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="13.1.0" />
   </ItemGroup>
 </Project>
