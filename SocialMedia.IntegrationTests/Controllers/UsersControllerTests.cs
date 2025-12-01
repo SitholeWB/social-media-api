@@ -16,9 +16,9 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
-        var registerAuthResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var registerAuthResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
 
         if (isAdmin)
         {
@@ -29,15 +29,15 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
                 if (user != null)
                 {
                     user.Role = UserRole.Admin;
-                    await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
                 }
             }
         }
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return (authResponse!.Token, Guid.Parse(authResponse.Id));
     }
 
@@ -52,7 +52,7 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
         // 2. User 1 Blocks User 2
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user1Token);
         var blockCommand = new BlockUserCommand(user1Id, user2Id);
-        var response = await _client.PostAsJsonAsync("/api/v1/users/block", blockCommand);
+        var response = await _client.PostAsJsonAsync("/api/v1/users/block", blockCommand, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -69,12 +69,12 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
 
         // 2. Admin Bans User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-        var response = await _client.PostAsJsonAsync($"/api/v1/users/{userId}/ban", true);
+        var response = await _client.PostAsJsonAsync($"/api/v1/users/{userId}/ban", true, TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
         // 3. User Tries to Login
         var loginRequest = new LoginRequest($"user_ban_{uniqueId}", "password123");
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);

@@ -16,7 +16,7 @@ public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplica
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
 
         if (isAdmin)
@@ -28,15 +28,15 @@ public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplica
                 if (user != null)
                 {
                     user.Role = UserRole.Admin;
-                    await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
                 }
             }
         }
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return authResponse!.Token;
     }
 
@@ -51,27 +51,27 @@ public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplica
         // 2. Create Post as User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
         var createPostCommand = new CreatePostCommand(new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = Guid.NewGuid() });
-        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto);
+        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
         createPostResponse.EnsureSuccessStatusCode();
-        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>();
+        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // 3. Report Post as User
         var reportCommand = new ReportPostCommand(Guid.Empty, Guid.Empty) { PostId = postId, ReporterId = Guid.NewGuid(), Reason = "Spam" };
-        var reportResponse = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand);
+        var reportResponse = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
         reportResponse.EnsureSuccessStatusCode();
 
         // 4. Delete Reported Content as Admin
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-        var deleteResponse = await _client.DeleteAsync($"/api/v1/moderation/reported-content?minReports=0"); // minReports=0 means > 0 reports (so 1 report is enough)
+        var deleteResponse = await _client.DeleteAsync($"/api/v1/moderation/reported-content?minReports=0", TestContext.Current.CancellationToken); // minReports=0 means > 0 reports (so 1 report is enough)
 
         // Assert
         deleteResponse.EnsureSuccessStatusCode();
-        var result = await deleteResponse.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+        var result = await deleteResponse.Content.ReadFromJsonAsync<Dictionary<string, int>>(TestContext.Current.CancellationToken);
         Assert.True(result!.ContainsKey("deletedCount"));
         Assert.True(result["deletedCount"] >= 1);
 
         // Verify Post is gone
-        var getPostResponse = await _client.GetAsync($"/api/v1/posts/{postId}");
+        var getPostResponse = await _client.GetAsync($"/api/v1/posts/{postId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, getPostResponse.StatusCode);
     }
 }

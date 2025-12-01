@@ -16,14 +16,14 @@ public class NotificationsControllerTests : IClassFixture<IntegrationTestWebAppl
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
-        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var loginAuthResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var loginAuthResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
 
         return (loginAuthResponse!.Token, Guid.Parse(loginAuthResponse.Id));
     }
@@ -39,23 +39,23 @@ public class NotificationsControllerTests : IClassFixture<IntegrationTestWebAppl
         // 2. User 1 Creates Post
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user1Token);
         var createPostCommand = new CreatePostCommand(new CreatePostDto { Title = "Notif Test Post", Content = "Content", AuthorId = user1Id });
-        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto);
+        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
         createPostResponse.EnsureSuccessStatusCode();
-        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>();
+        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // 3. User 2 Likes Post
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user2Token);
         var toggleLikeCommand = new ToggleLikeCommand(user2Id, postId, null, "👍");
-        var likeResponse = await _client.PostAsJsonAsync("/api/v1/likes/toggle", toggleLikeCommand);
+        var likeResponse = await _client.PostAsJsonAsync("/api/v1/likes/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
         likeResponse.EnsureSuccessStatusCode();
 
         // 4. User 1 Gets Notifications
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user1Token);
-        var notifResponse = await _client.GetAsync($"/api/v1/notifications/{user1Id}");
+        var notifResponse = await _client.GetAsync($"/api/v1/notifications/{user1Id}", TestContext.Current.CancellationToken);
 
         // Assert
         notifResponse.EnsureSuccessStatusCode();
-        var notifications = await notifResponse.Content.ReadFromJsonAsync<List<NotificationDto>>();
+        var notifications = await notifResponse.Content.ReadFromJsonAsync<List<NotificationDto>>(TestContext.Current.CancellationToken);
         Assert.NotNull(notifications);
         Assert.NotEmpty(notifications);
         Assert.Contains(notifications, n => n.RelatedId == postId);

@@ -17,16 +17,16 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
 
         // Create Post
         var createPostDto = new CreatePostDto { Title = "Post to Like", Content = "Content", AuthorId = userId };
-        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
-        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Like Post
         var command = new ToggleLikeCommand(userId, postId, null, "❤️");
-        var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command);
+        var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<bool>();
+        var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
         Assert.True(result); // Added
     }
 
@@ -38,20 +38,20 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
 
         // Create Post & Comment
         var createPostDto = new CreatePostDto { Title = "Post for Comment Like", Content = "Content", AuthorId = userId };
-        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
-        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Like", AuthorId = userId };
-        var commentResponse = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto);
-        var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>();
+        var commentResponse = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Like Comment
         var command = new ToggleLikeCommand(userId, null, commentId, "🔥");
-        var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command);
+        var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<bool>();
+        var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
         Assert.True(result); // Added
     }
 }

@@ -12,9 +12,9 @@ public class BlockchainTests : IClassFixture<IntegrationTestWebApplicationFactor
     [Fact]
     public async Task VerifyChain_ShouldReturnTrue_Initially()
     {
-        var response = await _client.GetAsync("/api/v1/polls/chain/verify");
+        var response = await _client.GetAsync("/api/v1/polls/chain/verify", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<VerificationResult>();
+        var result = await response.Content.ReadFromJsonAsync<VerificationResult>(TestContext.Current.CancellationToken);
         Assert.True(result.IsValid);
     }
 
@@ -29,12 +29,12 @@ public class BlockchainTests : IClassFixture<IntegrationTestWebApplicationFactor
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand);
-        var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+        var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+        var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Get Option
-        var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}");
-        var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>();
+        var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+        var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>(TestContext.Current.CancellationToken);
         var optionId = poll.Options[0].Id;
 
         // Vote
@@ -44,13 +44,13 @@ public class BlockchainTests : IClassFixture<IntegrationTestWebApplicationFactor
             PollOptionId = optionId,
             UserId = Guid.NewGuid()
         };
-        var voteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand);
+        var voteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
         voteResponse.EnsureSuccessStatusCode();
 
         // Act: Verify Chain
-        var verifyResponse = await _client.GetAsync("/api/v1/polls/chain/verify");
+        var verifyResponse = await _client.GetAsync("/api/v1/polls/chain/verify", TestContext.Current.CancellationToken);
         verifyResponse.EnsureSuccessStatusCode();
-        var result = await verifyResponse.Content.ReadFromJsonAsync<VerificationResult>();
+        var result = await verifyResponse.Content.ReadFromJsonAsync<VerificationResult>(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.IsValid);

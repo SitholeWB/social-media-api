@@ -22,7 +22,7 @@ public class PostsControllerTests : IClassFixture<IntegrationTestWebApplicationF
         {
             var context = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
             context.MediaFiles.Add(new MediaFile { Id = fileId, FileName = "test.jpg", Url = "http://example.com/test.jpg" });
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
         var createPostDto = new CreatePostDto
@@ -34,19 +34,19 @@ public class PostsControllerTests : IClassFixture<IntegrationTestWebApplicationF
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
+        var response = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var postId = await response.Content.ReadFromJsonAsync<Guid>();
+        var postId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Process pending events to update read model
-        await TestHelpers.ProcessPendingEventsAsync(_factory.Services);
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Verify retrieval
-        var getResponse = await client.GetAsync($"/api/v1/posts");
+        var getResponse = await client.GetAsync($"/api/v1/posts", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        var result = await getResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>();
+        var result = await getResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         var createdPost = result.Items.Find(p => p.Id == postId);
         Assert.NotNull(createdPost);

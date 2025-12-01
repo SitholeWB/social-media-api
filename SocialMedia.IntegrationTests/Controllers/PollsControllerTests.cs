@@ -26,17 +26,17 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync("/api/v1/polls", command);
+            var response = await _client.PostAsJsonAsync("/api/v1/polls", command, TestContext.Current.CancellationToken);
 
             // Assert
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                var error = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
                 Console.WriteLine($"CreatePoll failed: {response.StatusCode} - {error}");
             }
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            var pollDto = await response.Content.ReadFromJsonAsync<Guid>();
+            var pollDto = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
             Assert.NotEqual(Guid.Empty, pollDto);
         }
         catch (Exception ex)
@@ -59,19 +59,19 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand);
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
             createResponse.EnsureSuccessStatusCode();
-            var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+            var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Get the poll to find option IDs
-            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}");
+            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
             if (!getResponse.IsSuccessStatusCode)
             {
-                var error = await getResponse.Content.ReadAsStringAsync();
+                var error = await getResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
                 Console.WriteLine($"GetPoll failed: {getResponse.StatusCode} - {error}");
             }
             getResponse.EnsureSuccessStatusCode();
-            var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>();
+            var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>(TestContext.Current.CancellationToken);
             Assert.NotNull(poll);
             var optionId = poll!.Options[0].Id;
 
@@ -83,12 +83,12 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
             };
 
             // Act
-            var voteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand);
+            var voteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
 
             // Assert
             if (!voteResponse.IsSuccessStatusCode)
             {
-                var error = await voteResponse.Content.ReadAsStringAsync();
+                var error = await voteResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
                 Console.WriteLine($"Vote failed: {voteResponse.StatusCode} - {error}");
             }
             voteResponse.EnsureSuccessStatusCode();
@@ -114,11 +114,11 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand);
-            var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+            var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}");
-            var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>();
+            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+            var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>(TestContext.Current.CancellationToken);
             Assert.NotNull(poll);
             var optionId = poll!.Options[0].Id;
             var userId = Guid.NewGuid();
@@ -131,8 +131,8 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
             };
 
             // Act
-            await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand);
-            var secondVoteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand);
+            await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
+            var secondVoteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, secondVoteResponse.StatusCode);

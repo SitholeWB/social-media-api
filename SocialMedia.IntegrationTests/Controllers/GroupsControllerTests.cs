@@ -16,13 +16,13 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return authResponse!.Token;
     }
 
@@ -36,7 +36,7 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
         var command = new CreateGroupCommand("", "Description", true, false);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/groups", command);
+        var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -52,12 +52,12 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
         var command = new CreateGroupCommand("Test Group", "Description", true, false);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/groups", command);
+        var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var groupId = await response.Content.ReadFromJsonAsync<Guid>();
+        var groupId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         Assert.NotEqual(Guid.Empty, groupId);
     }
 
@@ -69,12 +69,12 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
         var token = await RegisterAndLoginAsync($"groupuser2_{uniqueId}", "password123");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var createCommand = new CreateGroupCommand("Test Group 2", "Description", true, false);
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand);
-        var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
 
         // Act
-        var response = await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null);
+        var response = await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -89,13 +89,13 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
         var token = await RegisterAndLoginAsync($"groupuser3_{uniqueId}", "password123");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var createCommand = new CreateGroupCommand("Test Group 3", "Description", true, false);
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand);
-        var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
-        await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null);
+        await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/groups/{groupId}/users/{userId}");
+        var response = await _client.DeleteAsync($"/api/v1/groups/{groupId}/users/{userId}", TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();

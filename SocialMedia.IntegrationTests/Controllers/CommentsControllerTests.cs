@@ -18,18 +18,18 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
 
         // Create a post first
         var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = Guid.NewGuid() };
-        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
         postResponse.EnsureSuccessStatusCode();
-        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment", AuthorId = Guid.NewGuid() };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto);
+        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var commentId = await response.Content.ReadFromJsonAsync<Guid>();
+        var commentId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         Assert.NotEqual(Guid.Empty, commentId);
     }
 
@@ -41,7 +41,7 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
         var createCommentDto = new CreateCommentDto { PostId = Guid.NewGuid(), Content = "Test Comment", AuthorId = Guid.NewGuid() };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto);
+        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Assert Since we throw KeyNotFoundException, and default middleware might return 500 or
         // 404 depending on config. Usually unhandled exception is 500. If we had exception
@@ -58,20 +58,20 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Test Post 2", Content = "Content 2", AuthorId = Guid.NewGuid() };
-        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
-        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Create a comment
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment 2", AuthorId = Guid.NewGuid() };
-        await client.PostAsJsonAsync("/api/v1/comments", createCommentDto);
+        await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await client.GetAsync($"/api/v1/comments/post/{postId}");
+        var response = await client.GetAsync($"/api/v1/comments/post/{postId}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var result = await response.Content.ReadFromJsonAsync<PagedResult<CommentDto>>();
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<CommentDto>>(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.True(result.Items.Count >= 1);
     }
@@ -88,13 +88,13 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
         {
             var context = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
             context.MediaFiles.Add(new MediaFile { Id = fileId, FileName = "comment.jpg", Url = "http://example.com/comment.jpg" });
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = Guid.NewGuid() };
-        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto);
-        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto
         {
@@ -105,16 +105,16 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto);
+        var response = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var commentId = await response.Content.ReadFromJsonAsync<Guid>();
+        var commentId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Verify retrieval
-        var getResponse = await client.GetAsync($"/api/v1/comments/{commentId}");
+        var getResponse = await client.GetAsync($"/api/v1/comments/{commentId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        var comment = await getResponse.Content.ReadFromJsonAsync<CommentDto>();
+        var comment = await getResponse.Content.ReadFromJsonAsync<CommentDto>(TestContext.Current.CancellationToken);
         Assert.NotNull(comment);
         Assert.Equal("http://example.com/comment.jpg", comment.FileUrl);
     }

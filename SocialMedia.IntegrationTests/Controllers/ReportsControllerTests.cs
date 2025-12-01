@@ -16,7 +16,7 @@ public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicatio
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
 
         if (isAdmin)
@@ -28,15 +28,15 @@ public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicatio
                 if (user != null)
                 {
                     user.Role = UserRole.Admin;
-                    await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
                 }
             }
         }
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest);
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>();
+        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return authResponse!.Token;
     }
 
@@ -51,22 +51,22 @@ public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicatio
         // 2. Create Post as User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
         var createPostCommand = new CreatePostCommand(new CreatePostDto { Title = "Report Test Post", Content = "Content", AuthorId = Guid.NewGuid() });
-        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto);
+        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
         createPostResponse.EnsureSuccessStatusCode();
-        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>();
+        var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // 3. Report Post as User
         var reportCommand = new ReportPostCommand(Guid.Empty, Guid.Empty) { PostId = postId, ReporterId = Guid.NewGuid(), Reason = "Inappropriate content" };
-        var reportResponse = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand);
+        var reportResponse = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
         reportResponse.EnsureSuccessStatusCode();
 
         // 4. Get Pending Reports as Admin
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-        var getReportsResponse = await _client.GetAsync("/api/v1/reports/pending");
+        var getReportsResponse = await _client.GetAsync("/api/v1/reports/pending", TestContext.Current.CancellationToken);
 
         // Assert
         getReportsResponse.EnsureSuccessStatusCode();
-        var result = await getReportsResponse.Content.ReadFromJsonAsync<PagedResult<ReportDto>>();
+        var result = await getReportsResponse.Content.ReadFromJsonAsync<PagedResult<ReportDto>>(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.NotEmpty(result.Items);
         Assert.Contains(result.Items, r => r.PostId == postId);
