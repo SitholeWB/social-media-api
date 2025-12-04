@@ -40,25 +40,25 @@ export interface PagedResult<T> {
 
 export const pollsService = {
     getPolls: (pageNumber = 1, pageSize = 10) =>
-        fetchJson<PagedResult<Poll>>(`/polls/active?pageNumber=${pageNumber}&pageSize=${pageSize}`), // Note: Using active for now, might need all polls endpoint
+        fetchJson<PagedResult<Poll>>(`/api/v1.0/polls/active?pageNumber=${pageNumber}&pageSize=${pageSize}`),
 
     getPoll: (id: string) =>
-        fetchJson<Poll>(`/polls/${id}`),
+        fetchJson<Poll>(`/api/v1.0/polls/${id}`),
 
     createPoll: (command: CreatePollCommand) =>
-        fetchJson<string>('/polls', {
+        fetchJson<string>('/api/v1.0/polls', {
             method: 'POST',
             body: JSON.stringify(command),
         }),
 
     updatePoll: (id: string, command: UpdatePollCommand) =>
-        fetchJson<void>(`/polls/${id}`, {
+        fetchJson<void>(`/api/v1.0/polls/${id}`, {
             method: 'PUT',
             body: JSON.stringify(command),
         }),
 
     deletePoll: (id: string) =>
-        fetchJson<void>(`/polls/${id}`, {
+        fetchJson<void>(`/api/v1.0/polls/${id}`, {
             method: 'DELETE',
         }),
 };

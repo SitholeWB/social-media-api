@@ -21,6 +21,7 @@
     "@mui/x-tree-view": "latest",
     "@react-spring/web": "latest",
     "@reduxjs/toolkit": "^2.11.0",
+    "axios": "^1.13.2",
     "clsx": "latest",
     "dayjs": "latest",
     "react": "latest",

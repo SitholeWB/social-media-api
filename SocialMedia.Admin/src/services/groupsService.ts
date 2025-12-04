@@ -37,25 +37,25 @@ export interface PagedResult<T> {
 
 export const groupsService = {
     getGroups: (pageNumber = 1, pageSize = 10) =>
-        fetchJson<PagedResult<Group>>(`/groups?pageNumber=${pageNumber}&pageSize=${pageSize}`),
+        fetchJson<PagedResult<Group>>(`/api/v1.0/groups?pageNumber=${pageNumber}&pageSize=${pageSize}`),
 
     getGroup: (id: string) =>
-        fetchJson<Group>(`/groups/${id}`),
+        fetchJson<Group>(`/api/v1.0/groups/${id}`),
 
     createGroup: (command: CreateGroupCommand) =>
-        fetchJson<string>('/groups', {
+        fetchJson<string>('/api/v1.0/groups', {
             method: 'POST',
             body: JSON.stringify(command),
         }),
 
     updateGroup: (id: string, command: UpdateGroupCommand) =>
-        fetchJson<void>(`/groups/${id}`, {
+        fetchJson<void>(`/api/v1.0/groups/${id}`, {
             method: 'PUT',
             body: JSON.stringify(command),
         }),
 
     deleteGroup: (id: string) =>
-        fetchJson<void>(`/groups/${id}`, {
+        fetchJson<void>(`/api/v1.0/groups/${id}`, {
             method: 'DELETE',
         }),
 };

@@ -22,6 +22,7 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
             Description = g.Description,
             IsPublic = g.IsPublic,
             IsAutoAdd = g.IsAutoAdd,
+            CreatorId = Guid.Empty, // Group entity doesn't have CreatorId
             CreatedAt = g.CreatedAt
         }).ToList();
 

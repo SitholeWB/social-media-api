@@ -21,6 +21,18 @@ builder.Services.AddApiVersioning(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
+// Add CORS policy for Admin SPA
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAdminSPA", policy =>
+    {
+        policy.WithOrigins("http://localhost:5174", "http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Add Application and Infrastructure services
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -40,6 +52,9 @@ app.UseHttpsRedirection();
 // Serve static files from wwwroot
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+// Enable CORS
+app.UseCors("AllowAdminSPA");
 
 app.UseAuthentication();
 app.UseAuthorization();
