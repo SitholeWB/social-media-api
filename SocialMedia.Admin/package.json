@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "description": "https://github.com/mui/material-ui/blob/v7.3.6/docs/data/material/templates/dashboard/Dashboard.tsx",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mui/x-date-pickers": "latest",
+    "@mui/x-charts": "latest",
+    "@mui/x-data-grid-pro": "latest",
+    "@mui/x-tree-view": "latest",
+    "@mui/material": "latest",
+    "react": "latest",
+    "@mui/icons-material": "latest",
+    "dayjs": "latest",
+    "@mui/x-data-grid": "latest",
+    "clsx": "latest",
+    "@react-spring/web": "latest",
+    "@mui/x-date-pickers-pro": "latest",
+    "react-dom": "latest",
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest"
+  }
+}
