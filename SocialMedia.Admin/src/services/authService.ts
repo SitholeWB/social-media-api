@@ -37,6 +37,14 @@ export const authService = {
         return response.data;
     },
 
+    async loginWithGoogle(idToken: string): Promise<AuthResponse> {
+        const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/v1.0/auth/google`, { idToken });
+        if (response.data.token) {
+            localStorage.setItem(TOKEN_KEY, response.data.token);
+        }
+        return response.data;
+    },
+
     async register(request: RegisterRequest): Promise<AuthResponse> {
         const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/v1.0/auth/register`, request);
         if (response.data.token) {

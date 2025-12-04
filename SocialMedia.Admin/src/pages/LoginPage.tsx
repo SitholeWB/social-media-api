@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import Divider from '@mui/material/Divider';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { login, clearError } from '../store/slices/authSlice';
+import { login, loginWithGoogle, clearError } from '../store/slices/authSlice';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -112,6 +114,21 @@ export default function LoginPage() {
                             >
                                 {loading ? 'Signing in...' : 'Sign In'}
                             </Button>
+
+                            <Divider>OR</Divider>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <GoogleLogin
+                                    onSuccess={(credentialResponse) => {
+                                        if (credentialResponse.credential) {
+                                            dispatch(loginWithGoogle(credentialResponse.credential));
+                                        }
+                                    }}
+                                    onError={() => {
+                                        console.log('Login Failed');
+                                    }}
+                                />
+                            </Box>
                         </Stack>
                     </form>
 

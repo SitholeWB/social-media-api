@@ -1,4 +1,6 @@
 
+using Google.Apis.Auth;
+
 namespace SocialMedia.Infrastructure;
 
 public class IdentityService : IIdentityService
@@ -19,6 +21,51 @@ public class IdentityService : IIdentityService
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
         {
             throw new Exception("Invalid credentials");
+        }
+
+        if (user.IsBanned)
+        {
+            throw new Exception("User is banned");
+        }
+
+        var token = GenerateJwtToken(user);
+
+        return new AuthResponse(user.Id.ToString(), user.Username, user.Email, token);
+    }
+
+    public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken);
+        }
+        catch (InvalidJwtException)
+        {
+            throw new Exception("Invalid Google token");
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == payload.Email, cancellationToken);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                Username = payload.Email.Split('@')[0], // Use email prefix as username
+                Email = payload.Email,
+                PasswordHash = HashPassword(Guid.NewGuid().ToString()), // Random password for Google users
+                CreatedAt = DateTime.UtcNow,
+                Role = UserRole.User
+            };
+
+            // Ensure username is unique
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username, cancellationToken))
+            {
+                user.Username = $"{user.Username}_{Guid.NewGuid().ToString().Substring(0, 4)}";
+            }
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         if (user.IsBanned)

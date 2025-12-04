@@ -31,6 +31,17 @@ export const register = createAsyncThunk<AuthResponse, RegisterRequest>(
     }
 );
 
+export const loginWithGoogle = createAsyncThunk<AuthResponse, string>(
+    'auth/loginWithGoogle',
+    async (idToken, { rejectWithValue }) => {
+        try {
+            return await authService.loginWithGoogle(idToken);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.error || 'Google login failed');
+        }
+    }
+);
+
 export const fetchCurrentUser = createAsyncThunk<User | null>(
     'auth/fetchCurrentUser',
     async () => {
@@ -73,6 +84,25 @@ const authSlice = createSlice({
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || 'Login failed';
+            })
+            // Google Login
+            .addCase(loginWithGoogle.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loginWithGoogle.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+                state.loading = false;
+                state.token = action.payload.token;
+                state.isAuthenticated = true;
+                state.user = {
+                    id: action.payload.userId,
+                    email: action.payload.email,
+                    username: action.payload.username,
+                };
+            })
+            .addCase(loginWithGoogle.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || 'Google login failed';
             })
             // Register
             .addCase(register.pending, (state) => {
