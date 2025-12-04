@@ -9,7 +9,10 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import MenuButton from './MenuButton';
+import IconButton from '@mui/material/IconButton';
+import { useAppDispatch } from '../store/hooks';
+import { logout } from '../store/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
@@ -18,21 +21,46 @@ const MenuItem = styled(MuiMenuItem)({
 export default function OptionsMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    handleClose();
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  const handleSettings = () => {
+    handleClose();
+    navigate('/settings');
+  };
+
+  const handleProfile = () => {
+    handleClose();
+    navigate('/profile');
+  };
+
+  const handleAddAccount = () => {
+    handleClose();
+    navigate('/login');
+  };
+
   return (
     <React.Fragment>
-      <MenuButton
+      <IconButton
         aria-label="Open menu"
         onClick={handleClick}
         sx={{ borderColor: 'transparent' }}
       >
         <MoreVertRoundedIcon />
-      </MenuButton>
+      </IconButton>
       <Menu
         anchorEl={anchorEl}
         id="menu"
@@ -53,14 +81,14 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleProfile}>Profile</MenuItem>
+        <MenuItem onClick={handleProfile}>My account</MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>Add another account</MenuItem>
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
+        <MenuItem onClick={handleAddAccount}>Add another account</MenuItem>
+        <MenuItem onClick={handleSettings}>Settings</MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{
             [`& .${listItemIconClasses.root}`]: {
               ml: 'auto',

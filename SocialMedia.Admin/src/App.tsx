@@ -20,6 +20,7 @@ import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
 import AboutPage from './pages/AboutPage';
 import FeedbackPage from './pages/FeedbackPage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { store, RootState } from './store/store';
 
@@ -65,6 +66,7 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="about" element={<AboutPage />} />
                         <Route path="feedback" element={<FeedbackPage />} />
+                        <Route path="profile" element={<ProfilePage />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
