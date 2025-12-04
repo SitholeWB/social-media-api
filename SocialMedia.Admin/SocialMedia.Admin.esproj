@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.784122">
+  <PropertyGroup>
+    <StartupCommand>npm run dev</StartupCommand>
+    <JavaScriptTestRoot>src\</JavaScriptTestRoot>
+    <JavaScriptTestFramework>Jest</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) JavaScript project to run in parallel with any other project. -->
+    <BuildCommand>npm run build</BuildCommand>
+    <ProductionBuildCommand>npm run build</ProductionBuildCommand>
+    <!-- Command to create an optimized build of the project that's ready for publishing -->
+    <CleanCommand>
+    </CleanCommand>
+    <ShouldRunNpmInstall>true</ShouldRunNpmInstall>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+  </ItemGroup>
+</Project>
