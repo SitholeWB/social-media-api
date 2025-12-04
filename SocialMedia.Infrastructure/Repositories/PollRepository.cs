@@ -65,4 +65,10 @@ public class PollRepository : IPollRepository
 
         return (items, totalCount);
     }
+
+    public async Task DeleteAsync(Poll poll, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Polls.Remove(poll);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

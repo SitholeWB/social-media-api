@@ -12,13 +12,16 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { pollsService, Poll, CreatePollCommand, UpdatePollCommand } from '../services/pollsService';
+import { Poll, CreatePollCommand, UpdatePollCommand } from '../services/pollsService';
 import SidePanel from '../components/SidePanel';
 import PageHeader from '../components/PageHeader';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchPolls, createPoll, updatePoll, deletePoll } from '../store/slices/pollsSlice';
 
 export default function PollsPage() {
-    const [polls, setPolls] = React.useState<Poll[]>([]);
-    const [loading, setLoading] = React.useState(false);
+    const dispatch = useAppDispatch();
+    const { items: polls, loading } = useAppSelector((state) => state.polls);
+
     const [openPanel, setOpenPanel] = React.useState(false);
     const [editingPoll, setEditingPoll] = React.useState<Poll | null>(null);
     const [formData, setFormData] = React.useState<CreatePollCommand>({
@@ -28,21 +31,9 @@ export default function PollsPage() {
     });
     const [isActive, setIsActive] = React.useState(true);
 
-    const fetchPolls = async () => {
-        setLoading(true);
-        try {
-            const result = await pollsService.getPolls();
-            setPolls(result.items);
-        } catch (error) {
-            console.error('Failed to fetch polls', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     React.useEffect(() => {
-        fetchPolls();
-    }, []);
+        dispatch(fetchPolls());
+    }, [dispatch]);
 
     const handleOpenPanel = (poll?: Poll) => {
         if (poll) {
@@ -94,12 +85,12 @@ export default function PollsPage() {
                     isActive: isActive,
                     expiresAt: formData.expiresAt,
                 };
-                await pollsService.updatePoll(editingPoll.id, command);
+                await dispatch(updatePoll({ id: editingPoll.id, command })).unwrap();
             } else {
-                await pollsService.createPoll(formData);
+                await dispatch(createPoll(formData)).unwrap();
             }
             handleClosePanel();
-            fetchPolls();
+            dispatch(fetchPolls());
         } catch (error) {
             console.error('Failed to save poll', error);
         }
@@ -108,8 +99,8 @@ export default function PollsPage() {
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this poll?')) {
             try {
-                await pollsService.deletePoll(id);
-                fetchPolls();
+                await dispatch(deletePoll(id)).unwrap();
+                dispatch(fetchPolls());
             } catch (error) {
                 console.error('Failed to delete poll', error);
             }

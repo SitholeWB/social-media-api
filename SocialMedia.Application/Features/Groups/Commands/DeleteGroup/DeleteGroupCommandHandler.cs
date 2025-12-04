@@ -1,26 +1,22 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace SocialMedia.Application;
 
 public class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupCommand, bool>
 {
-    private readonly SocialMediaDbContext _context;
+    private readonly IGroupRepository _groupRepository;
 
-    public DeleteGroupCommandHandler(SocialMediaDbContext context)
+    public DeleteGroupCommandHandler(IGroupRepository groupRepository)
     {
-        _context = context;
+        _groupRepository = groupRepository;
     }
 
     public async Task<bool> Handle(DeleteGroupCommand command, CancellationToken cancellationToken)
     {
-        var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == command.GroupId, cancellationToken);
+        var group = await _groupRepository.GetByIdAsync(command.GroupId, cancellationToken);
         if (group == null)
         {
             return false;
         }
-
-        _context.Groups.Remove(group);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _groupRepository.DeleteAsync(group, cancellationToken);
         return true;
     }
 }

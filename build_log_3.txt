@@ -1,0 +1,22 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SocialMedia.Domain -> D:\Git\Github\social-media-api\SocialMedia.Domain\bin\Debug\net10.0\SocialMedia.Domain.dll
+  SocialMedia.Application -> D:\Git\Github\social-media-api\SocialMedia.Application\bin\Debug\net10.0\SocialMedia.Application.dll
+  SocialMedia.ServiceDefaults -> D:\Git\Github\social-media-api\SocialMedia.ServiceDefaults\bin\Debug\net10.0\SocialMedia.ServiceDefaults.dll
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.GetByIdAsync(Guid, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.GetAllAsync(CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.AddAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.UpdateAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.DeleteAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+
+Build FAILED.
+
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.GetByIdAsync(Guid, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.GetAllAsync(CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.AddAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.UpdateAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+D:\Git\Github\social-media-api\SocialMedia.Infrastructure\Repositories\GroupRepository.cs(3,32): error CS0535: 'GroupRepository' does not implement interface member 'IRepository<Group>.DeleteAsync(Group, CancellationToken)' [D:\Git\Github\social-media-api\SocialMedia.Infrastructure\SocialMedia.Infrastructure.csproj]
+    0 Warning(s)
+    5 Error(s)
+
+Time Elapsed 00:00:03.88

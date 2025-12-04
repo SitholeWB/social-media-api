@@ -1,31 +1,29 @@
-using Microsoft.EntityFrameworkCore;
+using SocialMedia.Domain;
 
 namespace SocialMedia.Application;
 
 public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>
 {
-    private readonly SocialMediaDbContext _context;
+    private readonly IGroupRepository _groupRepository;
 
-    public GetGroupQueryHandler(SocialMediaDbContext context)
+    public GetGroupQueryHandler(IGroupRepository groupRepository)
     {
-        _context = context;
+        _groupRepository = groupRepository;
     }
 
     public async Task<GroupDto?> Handle(GetGroupQuery query, CancellationToken cancellationToken)
     {
-        return await _context.Groups
-            .AsNoTracking()
-            .Where(g => g.Id == query.GroupId)
-            .Select(g => new GroupDto
-            {
-                Id = g.Id,
-                Name = g.Name,
-                Description = g.Description,
-                IsPublic = g.IsPublic,
-                IsAutoAdd = g.IsAutoAdd,
-                CreatorId = g.CreatorId,
-                CreatedAt = g.CreatedAt
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+        var group = await _groupRepository.GetByIdAsync(query.GroupId, cancellationToken);
+        if (group == null) return null;
+
+        return new GroupDto
+        {
+            Id = group.Id,
+            Name = group.Name,
+            Description = group.Description,
+            IsPublic = group.IsPublic,
+            IsAutoAdd = group.IsAutoAdd,
+            CreatedAt = group.CreatedAt
+        };
     }
 }

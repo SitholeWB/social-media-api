@@ -20,10 +20,12 @@
     "@mui/x-date-pickers-pro": "latest",
     "@mui/x-tree-view": "latest",
     "@react-spring/web": "latest",
+    "@reduxjs/toolkit": "^2.11.0",
     "clsx": "latest",
     "dayjs": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.10.0",
     "typescript": "latest"
   },

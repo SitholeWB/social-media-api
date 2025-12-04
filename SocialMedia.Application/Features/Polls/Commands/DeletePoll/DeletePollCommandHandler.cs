@@ -1,26 +1,25 @@
-using Microsoft.EntityFrameworkCore;
+using SocialMedia.Domain;
 
 namespace SocialMedia.Application;
 
 public class DeletePollCommandHandler : ICommandHandler<DeletePollCommand, bool>
 {
-    private readonly SocialMediaDbContext _context;
+    private readonly IPollRepository _pollRepository;
 
-    public DeletePollCommandHandler(SocialMediaDbContext context)
+    public DeletePollCommandHandler(IPollRepository pollRepository)
     {
-        _context = context;
+        _pollRepository = pollRepository;
     }
 
     public async Task<bool> Handle(DeletePollCommand command, CancellationToken cancellationToken)
     {
-        var poll = await _context.Polls.FirstOrDefaultAsync(p => p.Id == command.PollId, cancellationToken);
+        var poll = await _pollRepository.GetByIdAsync(command.PollId, cancellationToken);
         if (poll == null)
         {
             return false;
         }
 
-        _context.Polls.Remove(poll);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _pollRepository.DeleteAsync(poll, cancellationToken);
         return true;
     }
 }

@@ -1,26 +1,23 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace SocialMedia.Application;
 
 public class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupCommand, bool>
 {
-    private readonly SocialMediaDbContext _context;
+    private readonly IGroupRepository _groupRepository;
 
-    public UpdateGroupCommandHandler(SocialMediaDbContext context)
+    public UpdateGroupCommandHandler(IGroupRepository groupRepository)
     {
-        _context = context;
+        _groupRepository = groupRepository;
     }
 
     public async Task<bool> Handle(UpdateGroupCommand command, CancellationToken cancellationToken)
     {
-        var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == command.GroupId, cancellationToken);
+        var group = await _groupRepository.GetByIdAsync(command.GroupId, cancellationToken);
         if (group == null)
         {
             return false;
         }
-
         group.Update(command.Name, command.Description, command.IsPublic, command.IsAutoAdd);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _groupRepository.UpdateAsync(group, cancellationToken);
         return true;
     }
 }

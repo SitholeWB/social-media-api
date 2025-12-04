@@ -11,13 +11,16 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { groupsService, Group, CreateGroupCommand, UpdateGroupCommand } from '../services/groupsService';
+import { Group, CreateGroupCommand, UpdateGroupCommand } from '../services/groupsService';
 import SidePanel from '../components/SidePanel';
 import PageHeader from '../components/PageHeader';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchGroups, createGroup, updateGroup, deleteGroup } from '../store/slices/groupsSlice';
 
 export default function GroupsPage() {
-    const [groups, setGroups] = React.useState<Group[]>([]);
-    const [loading, setLoading] = React.useState(false);
+    const dispatch = useAppDispatch();
+    const { items: groups, loading } = useAppSelector((state) => state.groups);
+
     const [openPanel, setOpenPanel] = React.useState(false);
     const [editingGroup, setEditingGroup] = React.useState<Group | null>(null);
     const [formData, setFormData] = React.useState<CreateGroupCommand>({
@@ -27,21 +30,9 @@ export default function GroupsPage() {
         isAutoAdd: false,
     });
 
-    const fetchGroups = async () => {
-        setLoading(true);
-        try {
-            const result = await groupsService.getGroups();
-            setGroups(result.items);
-        } catch (error) {
-            console.error('Failed to fetch groups', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     React.useEffect(() => {
-        fetchGroups();
-    }, []);
+        dispatch(fetchGroups());
+    }, [dispatch]);
 
     const handleOpenPanel = (group?: Group) => {
         if (group) {
@@ -76,12 +67,12 @@ export default function GroupsPage() {
                     groupId: editingGroup.id,
                     ...formData,
                 };
-                await groupsService.updateGroup(editingGroup.id, command);
+                await dispatch(updateGroup({ id: editingGroup.id, command })).unwrap();
             } else {
-                await groupsService.createGroup(formData);
+                await dispatch(createGroup(formData)).unwrap();
             }
             handleClosePanel();
-            fetchGroups();
+            dispatch(fetchGroups());
         } catch (error) {
             console.error('Failed to save group', error);
         }
@@ -90,8 +81,8 @@ export default function GroupsPage() {
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this group?')) {
             try {
-                await groupsService.deleteGroup(id);
-                fetchGroups();
+                await dispatch(deleteGroup(id)).unwrap();
+                dispatch(fetchGroups());
             } catch (error) {
                 console.error('Failed to delete group', error);
             }

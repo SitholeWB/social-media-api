@@ -1,38 +1,30 @@
-using Microsoft.EntityFrameworkCore;
+using SocialMedia.Domain;
 
 namespace SocialMedia.Application;
 
 public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<GroupDto>>
 {
-    private readonly SocialMediaDbContext _context;
+    private readonly IGroupRepository _groupRepository;
 
-    public GetGroupsQueryHandler(SocialMediaDbContext context)
+    public GetGroupsQueryHandler(IGroupRepository groupRepository)
     {
-        _context = context;
+        _groupRepository = groupRepository;
     }
 
     public async Task<PagedResult<GroupDto>> Handle(GetGroupsQuery query, CancellationToken cancellationToken)
     {
-        var queryable = _context.Groups.AsNoTracking();
+        var (items, totalCount) = await _groupRepository.GetGroupsPagedAsync(query.PageNumber, query.PageSize, cancellationToken);
 
-        var totalCount = await queryable.CountAsync(cancellationToken);
+        var dtos = items.Select(g => new GroupDto
+        {
+            Id = g.Id,
+            Name = g.Name,
+            Description = g.Description,
+            IsPublic = g.IsPublic,
+            IsAutoAdd = g.IsAutoAdd,
+            CreatedAt = g.CreatedAt
+        }).ToList();
 
-        var items = await queryable
-            .OrderByDescending(g => g.CreatedAt)
-            .Skip((query.PageNumber - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .Select(g => new GroupDto
-            {
-                Id = g.Id,
-                Name = g.Name,
-                Description = g.Description,
-                IsPublic = g.IsPublic,
-                IsAutoAdd = g.IsAutoAdd,
-                CreatorId = g.CreatorId,
-                CreatedAt = g.CreatedAt
-            })
-            .ToListAsync(cancellationToken);
-
-        return new PagedResult<GroupDto>(items, totalCount, query.PageNumber, query.PageSize);
+        return new PagedResult<GroupDto>(dtos, totalCount, query.PageNumber, query.PageSize);
     }
 }
