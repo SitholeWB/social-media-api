@@ -9,4 +9,11 @@ public class Poll : BaseEntity
     public Guid CreatorId { get; set; }
 
     public ICollection<PollOption> Options { get; set; } = new List<PollOption>();
+
+    public void Update(string question, bool isActive, DateTime? expiresAt)
+    {
+        Question = question;
+        IsActive = isActive;
+        ExpiresAt = expiresAt;
+    }
 }

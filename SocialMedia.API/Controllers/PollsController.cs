@@ -71,4 +71,31 @@ public class PollsController : ControllerBase
         var isValid = await _dispatcher.Query<VerifyChainQuery, bool>(query, cancellationToken);
         return Ok(new { IsValid = isValid });
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePoll(Guid id, [FromBody] UpdatePollCommand command, CancellationToken cancellationToken)
+    {
+        if (id != command.PollId)
+        {
+            return BadRequest();
+        }
+
+        var result = await _dispatcher.Send<UpdatePollCommand, bool>(command, cancellationToken);
+        if (!result)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePoll(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeletePollCommand(id);
+        var result = await _dispatcher.Send<DeletePollCommand, bool>(command, cancellationToken);
+        if (!result)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
 }

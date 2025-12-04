@@ -9,4 +9,12 @@ public class Group : BaseEntity
 
     public ICollection<GroupMember> Members { get; set; } = new List<GroupMember>();
     public ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public void Update(string name, string description, bool isPublic, bool isAutoAdd)
+    {
+        Name = name;
+        Description = description;
+        IsPublic = isPublic;
+        IsAutoAdd = isAutoAdd;
+    }
 }

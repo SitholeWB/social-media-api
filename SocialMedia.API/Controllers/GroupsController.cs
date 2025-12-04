@@ -56,4 +56,51 @@ public class GroupsController : ControllerBase
         var result = await _dispatcher.Query<GetPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
         return Ok(result);
     }
+    [HttpGet]
+    public async Task<IActionResult> GetGroups([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var query = new GetGroupsQuery(pageNumber, pageSize);
+        var result = await _dispatcher.Query<GetGroupsQuery, PagedResult<GroupDto>>(query, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetGroup(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetGroupQuery(id);
+        var result = await _dispatcher.Query<GetGroupQuery, GroupDto?>(query, cancellationToken);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateGroup(Guid id, [FromBody] UpdateGroupCommand command, CancellationToken cancellationToken)
+    {
+        if (id != command.GroupId)
+        {
+            return BadRequest();
+        }
+
+        var result = await _dispatcher.Send<UpdateGroupCommand, bool>(command, cancellationToken);
+        if (!result)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteGroup(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteGroupCommand(id);
+        var result = await _dispatcher.Send<DeleteGroupCommand, bool>(command, cancellationToken);
+        if (!result)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
 }
