@@ -14,4 +14,5 @@
   <Project Path="SocialMedia.Infrastructure/SocialMedia.Infrastructure.csproj" />
   <Project Path="SocialMedia.IntegrationTests/SocialMedia.IntegrationTests.csproj" />
   <Project Path="SocialMedia.ServiceDefaults/SocialMedia.ServiceDefaults.csproj" />
+  <Project Path="SocialMedia.UnitTests/SocialMedia.UnitTests.csproj" />
 </Solution>
