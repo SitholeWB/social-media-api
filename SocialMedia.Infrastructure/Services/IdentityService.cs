@@ -23,10 +23,14 @@ public class IdentityService : IIdentityService
             throw new Exception("Invalid credentials");
         }
 
+
         if (user.IsBanned)
         {
             throw new Exception("User is banned");
         }
+
+        user.LastActiveAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
 
         var token = GenerateJwtToken(user);
 
@@ -73,6 +77,9 @@ public class IdentityService : IIdentityService
             throw new Exception("User is banned");
         }
 
+        user.LastActiveAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+
         var token = GenerateJwtToken(user);
 
         return new AuthResponse(user.Id.ToString(), user.Username, user.Email, token);
@@ -91,7 +98,8 @@ public class IdentityService : IIdentityService
             Email = request.Email,
             PasswordHash = HashPassword(request.Password),
             CreatedAt = DateTime.UtcNow,
-            Role = UserRole.User // Explicitly set default
+            Role = UserRole.User, // Explicitly set default
+            LastActiveAt = DateTime.UtcNow
         };
 
         _context.Users.Add(user);

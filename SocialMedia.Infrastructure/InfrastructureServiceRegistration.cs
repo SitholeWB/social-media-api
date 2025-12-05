@@ -1,6 +1,9 @@
 
 namespace SocialMedia.Infrastructure;
 
+using SocialMedia.Infrastructure.Repositories;
+using SocialMedia.Application.Common.Interfaces;
+
 public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
@@ -23,6 +26,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IDashboardStatsRepository, DashboardStatsRepository>();
 
         services.AddScoped<IPostReadRepository, PostReadRepository>();
         services.AddScoped<ICommentReadRepository, CommentReadRepository>();

@@ -8,4 +8,5 @@ public class User : BaseEntity
     public string PasswordHash { get; set; } = string.Empty;
     public UserRole Role { get; set; } = UserRole.User;
     public bool IsBanned { get; set; }
+    public DateTimeOffset? LastActiveAt { get; set; }
 }
