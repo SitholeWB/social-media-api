@@ -1,4 +1,4 @@
-namespace SocialMedia.Application.Common.Models;
+namespace SocialMedia.Application;
 
 public class Result<T>
 {

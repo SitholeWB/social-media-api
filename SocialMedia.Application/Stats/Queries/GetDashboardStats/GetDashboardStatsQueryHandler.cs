@@ -1,8 +1,4 @@
-using SocialMedia.Application.Stats.DTOs;
-using SocialMedia.Application.Common.Interfaces;
-using SocialMedia.Application.Common.Models;
-
-namespace SocialMedia.Application.Stats.Queries.GetDashboardStats;
+namespace SocialMedia.Application;
 
 public class GetDashboardStatsQueryHandler(IDashboardStatsRepository repository)
     : IQueryHandler<GetDashboardStatsQuery, Result<DashboardStatsDto>>

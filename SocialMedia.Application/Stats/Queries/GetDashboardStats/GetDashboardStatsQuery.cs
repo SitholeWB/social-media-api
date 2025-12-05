@@ -1,6 +1,3 @@
-using SocialMedia.Application.Common.Models;
-using SocialMedia.Application.Stats.DTOs;
-
-namespace SocialMedia.Application.Stats.Queries.GetDashboardStats;
+namespace SocialMedia.Application;
 
 public record GetDashboardStatsQuery(DateTime? StartDate, DateTime? EndDate) : IQuery<Result<DashboardStatsDto>>;

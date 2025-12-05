@@ -1,4 +1,4 @@
-namespace SocialMedia.Application.Stats.DTOs;
+namespace SocialMedia.Application;
 
 public record DashboardStatsDto(
     int TotalUsers,

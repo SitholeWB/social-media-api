@@ -1,6 +1,4 @@
-using SocialMedia.Application.Stats.DTOs;
-
-namespace SocialMedia.Application.Common.Interfaces;
+namespace SocialMedia.Application;
 
 public interface IDashboardStatsRepository
 {

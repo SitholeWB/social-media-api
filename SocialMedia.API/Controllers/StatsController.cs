@@ -1,9 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SocialMedia.Application.Stats.Queries.GetDashboardStats;
-using SocialMedia.Application.Stats.DTOs;
-using SocialMedia.Application.Common.Models;
-
 namespace SocialMedia.API.Controllers;
 
 [ApiVersion("1.0")]

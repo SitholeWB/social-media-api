@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SocialMedia.Application.Common.Interfaces;
-using SocialMedia.Application.Stats.DTOs;
 
-namespace SocialMedia.Infrastructure.Repositories;
+namespace SocialMedia.Infrastructure;
 
 public class DashboardStatsRepository(SocialMediaDbContext context) : IDashboardStatsRepository
 {

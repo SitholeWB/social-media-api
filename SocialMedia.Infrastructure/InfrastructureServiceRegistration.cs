@@ -1,9 +1,6 @@
 
 namespace SocialMedia.Infrastructure;
 
-using SocialMedia.Infrastructure.Repositories;
-using SocialMedia.Application.Common.Interfaces;
-
 public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
