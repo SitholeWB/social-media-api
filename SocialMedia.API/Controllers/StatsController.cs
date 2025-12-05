@@ -6,9 +6,10 @@ using SocialMedia.Application.Common.Models;
 
 namespace SocialMedia.API.Controllers;
 
-[Authorize]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-[Route("api/[controller]")]
+[Authorize]
 public class StatsController(Dispatcher dispatcher) : ControllerBase
 {
     [HttpGet("dashboard")]
