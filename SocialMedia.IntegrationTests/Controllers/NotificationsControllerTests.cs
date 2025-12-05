@@ -60,4 +60,21 @@ public class NotificationsControllerTests : IClassFixture<IntegrationTestWebAppl
         Assert.NotEmpty(notifications);
         Assert.Contains(notifications, n => n.RelatedId == postId);
     }
+    [Fact]
+    public async Task GetNotifications_ShouldReturnEmpty_WhenNoNotificationsExist()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (userToken, userId) = await RegisterAndLoginAsync($"user_no_notif_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        // Act
+        var response = await _client.GetAsync($"/api/v1/notifications/{userId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var notifications = await response.Content.ReadFromJsonAsync<List<NotificationDto>>(TestContext.Current.CancellationToken);
+        Assert.NotNull(notifications);
+        Assert.Empty(notifications);
+    }
 }

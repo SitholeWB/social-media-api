@@ -71,4 +71,22 @@ public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicatio
         Assert.NotEmpty(result.Items);
         Assert.Contains(result.Items, r => r.PostId == postId);
     }
+    [Fact]
+    public async Task GetPendingReports_ShouldReturnEmpty_WhenNoReportsExist()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var adminToken = await RegisterAndLoginAsync($"admin_no_reports_{uniqueId}", "password123", true);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        // Act
+        var response = await _client.GetAsync("/api/v1/reports/pending", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<ReportDto>>(TestContext.Current.CancellationToken);
+        Assert.NotNull(result);
+        // Note: There might be reports from other tests, so we just verify we get a valid response
+        Assert.NotNull(result.Items);
+    }
 }

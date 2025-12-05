@@ -118,4 +118,57 @@ public class CommentsControllerTests : IClassFixture<IntegrationTestWebApplicati
         Assert.NotNull(comment);
         Assert.Equal("http://example.com/comment.jpg", comment.FileUrl);
     }
+
+    [Fact]
+    public async Task UpdateComment_ShouldReturnNotFound_WhenCommentDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var commentId = Guid.NewGuid();
+
+        // Act
+        var response = await client.PutAsJsonAsync($"/api/v1/comments/{commentId}", "Updated Content", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteComment_ShouldReturnNotFound_WhenCommentDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var commentId = Guid.NewGuid();
+
+        // Act
+        var response = await client.DeleteAsync($"/api/v1/comments/{commentId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReportComment_ShouldReturnOk_WhenRequestIsValid()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Create a post
+        var createPostDto = new CreatePostDto { Title = "Post for Report", Content = "Content", AuthorId = Guid.NewGuid() };
+        var postResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
+        // Create a comment
+        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Report", AuthorId = Guid.NewGuid() };
+        var commentResponse = await client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
+        var reportCommand = new ReportCommentCommand(commentId, Guid.NewGuid()) { Reason = "Spam" };
+
+        // Act
+        var response = await client.PostAsJsonAsync($"/api/v1/comments/{commentId}/report", reportCommand, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
 }

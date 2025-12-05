@@ -74,4 +74,18 @@ public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplica
         var getPostResponse = await _client.GetAsync($"/api/v1/posts/{postId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, getPostResponse.StatusCode);
     }
+    [Fact]
+    public async Task DeleteReportedContent_ShouldReturnForbidden_WhenUserIsNotAdmin()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var userToken = await RegisterAndLoginAsync($"user_mod_fail_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        // Act
+        var response = await _client.DeleteAsync($"/api/v1/moderation/reported-content?minReports=1", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
 }

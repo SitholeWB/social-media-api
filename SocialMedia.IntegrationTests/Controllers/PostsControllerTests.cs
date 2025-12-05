@@ -52,4 +52,48 @@ public class PostsControllerTests : IClassFixture<IntegrationTestWebApplicationF
         Assert.NotNull(createdPost);
         Assert.Equal("http://example.com/test.jpg", createdPost.FileUrl);
     }
+    [Fact]
+    public async Task GetPostById_ShouldReturnNotFound_WhenPostDoesNotExist()
+    {
+        var client = _factory.CreateClient();
+        var postId = Guid.NewGuid();
+
+        var response = await client.GetAsync($"/api/v1/posts/{postId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReportPost_ShouldReturnOk_WhenRequestIsValid()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var createPostDto = new CreatePostDto { Title = "Post to Report", Content = "Content", AuthorId = Guid.NewGuid() };
+        var createResponse = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
+        var reportCommand = new ReportPostCommand(postId, Guid.NewGuid()) { Reason = "Spam" };
+
+        // Act
+        var response = await client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreatePost_ShouldReturnCreated_WhenRequestIsValid()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Test Content", AuthorId = Guid.NewGuid() };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var postId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+        Assert.NotEqual(Guid.Empty, postId);
+    }
 }

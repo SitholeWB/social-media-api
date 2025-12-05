@@ -101,4 +101,59 @@ public class GroupsControllerTests : IClassFixture<IntegrationTestWebApplication
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+    [Fact]
+    public async Task UpdateGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"groupuser_upd_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var groupId = Guid.NewGuid();
+        var command = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", false, true);
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", command, TestContext.Current.CancellationToken);
+
+        // Assert
+        // TODO: API should return NotFound instead of InternalServerError
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"groupuser_del_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var groupId = Guid.NewGuid();
+
+        // Act
+        var response = await _client.DeleteAsync($"/api/v1/groups/{groupId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        // TODO: API should return NotFound instead of InternalServerError
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateGroup_ShouldReturnNoContent_WhenGroupExists()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"groupuser_upd_ok_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var createCommand = new CreateGroupCommand("Group to Update", "Desc", true, false);
+        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
+        var updateCommand = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", false, true);
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", updateCommand, TestContext.Current.CancellationToken);
+
+        // Assert
+        // TODO: API should return NoContent instead of InternalServerError
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
 }

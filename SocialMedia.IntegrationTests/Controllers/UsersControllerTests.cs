@@ -79,4 +79,52 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
+    [Fact]
+    public async Task BanUser_ShouldReturnForbidden_WhenNonAdminTriesToBan()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (userToken, userId) = await RegisterAndLoginAsync($"user_ban_fail_{uniqueId}", "password123");
+        var targetUserId = Guid.NewGuid();
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/api/v1/users/{targetUserId}/ban", true, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetReportedUsers_ShouldReturnOk_WhenAdminRequests()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (adminToken, _) = await RegisterAndLoginAsync($"admin_reported_{uniqueId}", "password123", true);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        // Act
+        var response = await _client.GetAsync("/api/v1/users/reported?minReports=1", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<List<ReportedUserDto>>(TestContext.Current.CancellationToken);
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task GetReportedUsers_ShouldReturnForbidden_WhenNonAdminRequests()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (userToken, _) = await RegisterAndLoginAsync($"user_reported_fail_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        // Act
+        var response = await _client.GetAsync("/api/v1/users/reported?minReports=1", TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
 }

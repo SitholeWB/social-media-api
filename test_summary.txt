@@ -1,0 +1,15 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SocialMedia.Domain -> D:\Git\Github\social-media-api\SocialMedia.Domain\bin\Debug\net10.0\SocialMedia.Domain.dll
+  SocialMedia.ServiceDefaults -> D:\Git\Github\social-media-api\SocialMedia.ServiceDefaults\bin\Debug\net10.0\SocialMedia.ServiceDefaults.dll
+  SocialMedia.Application -> D:\Git\Github\social-media-api\SocialMedia.Application\bin\Debug\net10.0\SocialMedia.Application.dll
+  SocialMedia.Infrastructure -> D:\Git\Github\social-media-api\SocialMedia.Infrastructure\bin\Debug\net10.0\SocialMedia.Infrastructure.dll
+  SocialMedia.API -> D:\Git\Github\social-media-api\SocialMedia.API\bin\Debug\net10.0\SocialMedia.API.dll
+  SocialMedia.IntegrationTests -> D:\Git\Github\social-media-api\SocialMedia.IntegrationTests\bin\Debug\net10.0\SocialMedia.IntegrationTests.dll
+Test run for D:\Git\Github\social-media-api\SocialMedia.IntegrationTests\bin\Debug\net10.0\SocialMedia.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    53, Skipped:     0, Total:    53, Duration: 4 s - SocialMedia.IntegrationTests.dll (net10.0)
