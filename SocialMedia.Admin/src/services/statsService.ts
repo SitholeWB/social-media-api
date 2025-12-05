@@ -1,4 +1,4 @@
-import axios from '../utils/axios';
+import { fetchJson } from './api';
 
 export interface DashboardStats {
     totalUsers: number;
@@ -16,6 +16,5 @@ export const getDashboardStats = async (startDate?: string, endDate?: string): P
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
 
-    const response = await axios.get<DashboardStats>(`/stats/dashboard?${params.toString()}`);
-    return response.data;
+    return fetchJson<DashboardStats>(`/api/v1.0/Stats/dashboard?${params.toString()}`);
 };
