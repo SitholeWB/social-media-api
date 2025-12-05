@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -18,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchGroups, createGroup, updateGroup, deleteGroup } from '../store/slices/groupsSlice';
 
 export default function GroupsPage() {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { items: groups, loading } = useAppSelector((state) => state.groups);
 
@@ -34,24 +36,14 @@ export default function GroupsPage() {
         dispatch(fetchGroups());
     }, [dispatch]);
 
-    const handleOpenPanel = (group?: Group) => {
-        if (group) {
-            setEditingGroup(group);
-            setFormData({
-                name: group.name,
-                description: group.description,
-                isPublic: group.isPublic,
-                isAutoAdd: group.isAutoAdd,
-            });
-        } else {
-            setEditingGroup(null);
-            setFormData({
-                name: '',
-                description: '',
-                isPublic: true,
-                isAutoAdd: false,
-            });
-        }
+    const handleOpenPanel = (group: Group) => {
+        setEditingGroup(group);
+        setFormData({
+            name: group.name,
+            description: group.description,
+            isPublic: group.isPublic,
+            isAutoAdd: group.isAutoAdd,
+        });
         setOpenPanel(true);
     };
 
@@ -68,8 +60,6 @@ export default function GroupsPage() {
                     ...formData,
                 };
                 await dispatch(updateGroup({ id: editingGroup.id, command })).unwrap();
-            } else {
-                await dispatch(createGroup(formData)).unwrap();
             }
             handleClosePanel();
             dispatch(fetchGroups());
@@ -120,7 +110,7 @@ export default function GroupsPage() {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={() => handleOpenPanel()}
+                        onClick={() => navigate('/groups/create')}
                         sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
                     >
                         Create Group
@@ -166,12 +156,12 @@ export default function GroupsPage() {
             <SidePanel
                 open={openPanel}
                 onClose={handleClosePanel}
-                title={editingGroup ? 'Edit Group' : 'Create Group'}
+                title="Edit Group"
                 actions={
                     <>
                         <Button onClick={handleClosePanel} sx={{ textTransform: 'none' }}>Cancel</Button>
                         <Button onClick={handleSave} variant="contained" sx={{ textTransform: 'none' }}>
-                            {editingGroup ? 'Save Changes' : 'Create Group'}
+                            Save Changes
                         </Button>
                     </>
                 }

@@ -12,8 +12,10 @@ import {
 import Layout from './Layout';
 import MainGrid from './components/MainGrid';
 import GroupsPage from './pages/GroupsPage';
+import CreateGroupPage from './pages/CreateGroupPage';
 import UsersPage from './pages/UsersPage';
 import PollsPage from './pages/PollsPage';
+import CreatePollPage from './pages/CreatePollPage';
 import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -60,8 +62,10 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                     >
                         <Route index element={<MainGrid />} />
                         <Route path="groups" element={<GroupsPage />} />
+                        <Route path="groups/create" element={<CreateGroupPage />} />
                         <Route path="users" element={<UsersPage />} />
                         <Route path="polls" element={<PollsPage />} />
+                        <Route path="polls/create" element={<CreatePollPage />} />
                         <Route path="reports" element={<ReportsPage />} />
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="about" element={<AboutPage />} />

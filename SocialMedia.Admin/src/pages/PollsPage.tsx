@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,6 +20,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchPolls, createPoll, updatePoll, deletePoll } from '../store/slices/pollsSlice';
 
 export default function PollsPage() {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { items: polls, loading } = useAppSelector((state) => state.polls);
 
@@ -35,24 +37,14 @@ export default function PollsPage() {
         dispatch(fetchPolls());
     }, [dispatch]);
 
-    const handleOpenPanel = (poll?: Poll) => {
-        if (poll) {
-            setEditingPoll(poll);
-            setFormData({
-                question: poll.question,
-                options: [], // Options editing not supported in this simple version
-                expiresAt: poll.expiresAt,
-            });
-            setIsActive(poll.isActive);
-        } else {
-            setEditingPoll(null);
-            setFormData({
-                question: '',
-                options: ['', ''],
-                expiresAt: undefined,
-            });
-            setIsActive(true);
-        }
+    const handleOpenPanel = (poll: Poll) => {
+        setEditingPoll(poll);
+        setFormData({
+            question: poll.question,
+            options: [], // Options editing not supported in this simple version
+            expiresAt: poll.expiresAt,
+        });
+        setIsActive(poll.isActive);
         setOpenPanel(true);
     };
 
@@ -86,8 +78,6 @@ export default function PollsPage() {
                     expiresAt: formData.expiresAt,
                 };
                 await dispatch(updatePoll({ id: editingPoll.id, command })).unwrap();
-            } else {
-                await dispatch(createPoll(formData)).unwrap();
             }
             handleClosePanel();
             dispatch(fetchPolls());
@@ -142,7 +132,7 @@ export default function PollsPage() {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={() => handleOpenPanel()}
+                        onClick={() => navigate('/polls/create')}
                         sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
                     >
                         Create Poll
@@ -188,12 +178,12 @@ export default function PollsPage() {
             <SidePanel
                 open={openPanel}
                 onClose={handleClosePanel}
-                title={editingPoll ? 'Edit Poll' : 'Create Poll'}
+                title="Edit Poll"
                 actions={
                     <>
                         <Button onClick={handleClosePanel} sx={{ textTransform: 'none' }}>Cancel</Button>
                         <Button onClick={handleSave} variant="contained" sx={{ textTransform: 'none' }}>
-                            {editingPoll ? 'Save Changes' : 'Create Poll'}
+                            Save Changes
                         </Button>
                     </>
                 }
@@ -210,37 +200,7 @@ export default function PollsPage() {
                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                     />
 
-                    {!editingPoll && (
-                        <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>Options</Typography>
-                            <Stack spacing={2}>
-                                {formData.options.map((option, index) => (
-                                    <Stack direction="row" spacing={1} key={index}>
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            placeholder={`Option ${index + 1}`}
-                                            value={option}
-                                            onChange={(e) => handleOptionChange(index, e.target.value)}
-                                        />
-                                        {formData.options.length > 2 && (
-                                            <IconButton size="small" onClick={() => removeOption(index)} color="error">
-                                                <DeleteIcon fontSize="small" />
-                                            </IconButton>
-                                        )}
-                                    </Stack>
-                                ))}
-                                <Button
-                                    size="small"
-                                    startIcon={<AddIcon />}
-                                    onClick={addOption}
-                                    sx={{ alignSelf: 'flex-start', textTransform: 'none' }}
-                                >
-                                    Add Option
-                                </Button>
-                            </Stack>
-                        </Box>
-                    )}
+
 
                     {editingPoll && (
                         <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
