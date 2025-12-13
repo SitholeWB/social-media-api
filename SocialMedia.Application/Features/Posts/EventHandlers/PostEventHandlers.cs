@@ -83,7 +83,6 @@ public class PostEventHandlers :
                     });
                 }
                 post.Stats.LikeCount++;
-                post.Reactions.Add(reaction);
                 post.UpdateTrendingScore();
                 await _readRepository.UpdateAsync(post, cancellationToken);
             }

@@ -48,21 +48,20 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                 // Update emoji
                 existingLike.Emoji = command.Emoji;
                 await _likeRepository.UpdateAsync(existingLike, cancellationToken);
-                return true; // Updated
             }
         }
         else
         {
             // Create new
-            var newLike = new Like
+            existingLike = new Like
             {
                 UserId = command.UserId,
                 PostId = command.PostId,
                 CommentId = command.CommentId,
                 Emoji = command.Emoji,
-                Username = command.username
+                Username = command.Username
             };
-            await _likeRepository.AddAsync(newLike, cancellationToken);
+            await _likeRepository.AddAsync(existingLike, cancellationToken);
 
             // Create Notification
             if (command.PostId.HasValue)
@@ -73,7 +72,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = post.AuthorId,
-                        Message = $"{command.username} liked your post",
+                        Message = $"{command.Username} liked your post",
                         Type = NotificationType.LikePost,
                         RelatedId = command.PostId.Value,
                         IsRead = false,
@@ -89,7 +88,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = comment.AuthorId,
-                        Message = $"{command.username} liked your comment",
+                        Message = $"{command.Username} liked your comment",
                         Type = NotificationType.LikeComment,
                         RelatedId = command.CommentId.Value,
                         IsRead = false,
@@ -97,11 +96,10 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     }, cancellationToken);
                 }
             }
-
-            // Publish Event
-            await _dispatcher.Publish(new LikeAddedEvent(newLike), cancellationToken);
-
-            return true; // Added
         }
+        // Publish Event
+        await _dispatcher.Publish(new LikeAddedEvent(existingLike), cancellationToken);
+
+        return true; // Added
     }
 }

@@ -1,10 +1,9 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 public class PollsController : ControllerBase
 {
     private readonly IDispatcher _dispatcher;
@@ -71,6 +70,7 @@ public class PollsController : ControllerBase
         var isValid = await _dispatcher.Query<VerifyChainQuery, bool>(query, cancellationToken);
         return Ok(new { IsValid = isValid });
     }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePoll(Guid id, [FromBody] UpdatePollCommand command, CancellationToken cancellationToken)
     {

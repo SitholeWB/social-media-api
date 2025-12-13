@@ -1,11 +1,9 @@
-
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 public class ReportsController : ControllerBase
 {
     private readonly IDispatcher _dispatcher;
