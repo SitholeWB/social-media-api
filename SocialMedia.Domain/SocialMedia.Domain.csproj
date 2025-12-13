@@ -11,6 +11,4 @@
     <Using Include="System.Threading" />
     <Using Include="SocialMedia.Domain" />
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
 </Project>
