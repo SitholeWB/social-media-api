@@ -1,4 +1,3 @@
-
 namespace SocialMedia.IntegrationTests;
 
 public class NotificationsControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
@@ -45,7 +44,7 @@ public class NotificationsControllerTests : IClassFixture<IntegrationTestWebAppl
 
         // 3. User 2 Likes Post
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user2Token);
-        var toggleLikeCommand = new ToggleLikeCommand(user2Id, postId, null, "👍");
+        var toggleLikeCommand = new ToggleLikeCommand(user2Id, postId, null, "👍", "Matshana Sithole");
         var likeResponse = await _client.PostAsJsonAsync("/api/v1/likes/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
         likeResponse.EnsureSuccessStatusCode();
 
@@ -60,6 +59,7 @@ public class NotificationsControllerTests : IClassFixture<IntegrationTestWebAppl
         Assert.NotEmpty(notifications);
         Assert.Contains(notifications, n => n.RelatedId == postId);
     }
+
     [Fact]
     public async Task GetNotifications_ShouldReturnEmpty_WhenNoNotificationsExist()
     {

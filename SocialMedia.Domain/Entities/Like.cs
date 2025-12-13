@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Domain;
 
 public class Like : BaseEntity
@@ -9,4 +8,5 @@ public class Like : BaseEntity
     public Comment? Comment { get; set; }
     public Guid UserId { get; set; }
     public string Emoji { get; set; } = "👍";
+    public string Username { get; set; } = string.Empty;
 }

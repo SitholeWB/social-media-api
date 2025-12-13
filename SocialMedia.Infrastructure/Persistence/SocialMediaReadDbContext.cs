@@ -18,7 +18,7 @@ public class SocialMediaReadDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             var config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory) // ensures it looks in the right folder
+                .SetBasePath(Directory.GetCurrentDirectory()) // ensures it looks in the right folder
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
             // Read connection string by name
@@ -38,10 +38,14 @@ public class SocialMediaReadDbContext : DbContext
 
             entity.OwnsOne(p => p.Stats, b => b.ToJson());
             entity.OwnsMany(p => p.Reactions, b => b.ToJson());
+            entity.OwnsMany(p => p.AdminTags, b => b.ToJson());
+            entity.OwnsMany(p => p.Tags, b => b.ToJson());
             entity.OwnsMany(p => p.TopComments, b =>
             {
                 b.ToJson();
                 b.OwnsMany(c => c.Reactions);
+                b.OwnsMany(c => c.Tags);
+                b.OwnsMany(c => c.AdminTags);
             });
         });
 
@@ -52,32 +56,8 @@ public class SocialMediaReadDbContext : DbContext
 
             entity.OwnsOne(c => c.Stats, b => b.ToJson());
             entity.OwnsMany(c => c.Reactions, b => b.ToJson());
+            entity.OwnsMany(c => c.Tags, b => b.ToJson());
+            entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
         });
-
-        modelBuilder.Entity<CommentReadModel>()
-            .Property(p => p.Tags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-        modelBuilder.Entity<CommentReadModel>()
-            .Property(p => p.AdminTags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-
-        modelBuilder.Entity<PostReadModel>()
-            .Property(p => p.Tags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-        modelBuilder.Entity<PostReadModel>()
-            .Property(p => p.AdminTags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
     }
 }

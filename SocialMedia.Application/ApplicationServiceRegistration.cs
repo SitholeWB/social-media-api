@@ -18,7 +18,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<CreateCommentCommand, Guid>, CreateCommentCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateCommentCommand, bool>, UpdateCommentCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteCommentCommand, bool>, DeleteCommentCommandHandler>();
-        services.AddScoped<IQueryHandler<GetCommentByIdQuery, CommentDto>, GetCommentByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetCommentByIdQuery, CommentReadDto>, GetCommentByIdQueryHandler>();
         services.AddScoped<IQueryHandler<GetPostCommentsQuery, PagedResult<CommentReadDto>>, GetPostCommentsQueryHandler>();
 
         services.AddScoped<ICommandHandler<ToggleLikeCommand, bool>, ToggleLikeCommandHandler>();

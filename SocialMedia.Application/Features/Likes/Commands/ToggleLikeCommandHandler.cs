@@ -59,7 +59,8 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                 UserId = command.UserId,
                 PostId = command.PostId,
                 CommentId = command.CommentId,
-                Emoji = command.Emoji
+                Emoji = command.Emoji,
+                Username = command.username
             };
             await _likeRepository.AddAsync(newLike, cancellationToken);
 
@@ -72,7 +73,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = post.AuthorId,
-                        Message = $"Someone liked your post",
+                        Message = $"{command.username} liked your post",
                         Type = NotificationType.LikePost,
                         RelatedId = command.PostId.Value,
                         IsRead = false,
@@ -88,7 +89,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = comment.AuthorId,
-                        Message = $"Someone liked your comment",
+                        Message = $"{command.username} liked your comment",
                         Type = NotificationType.LikeComment,
                         RelatedId = command.CommentId.Value,
                         IsRead = false,

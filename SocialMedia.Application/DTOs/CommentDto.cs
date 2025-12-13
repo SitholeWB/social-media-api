@@ -8,6 +8,7 @@ public class CommentDto
     public Guid AuthorId { get; set; }
     public string? FileUrl { get; set; }
     public DateTime CreatedAt { get; set; }
-    public ICollection<string> AdminTags { get; set; } = [];
-    public ICollection<string> Tags { get; set; } = [];
+    public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
+    public ICollection<TagDto> AdminTags { get; set; } = [];
+    public ICollection<TagDto> Tags { get; set; } = [];
 }

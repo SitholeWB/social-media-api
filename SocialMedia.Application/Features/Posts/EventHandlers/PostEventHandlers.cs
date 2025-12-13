@@ -64,20 +64,24 @@ public class PostEventHandlers :
             throw new ArgumentNullException(nameof(notification.Like), "Like in LikeAddedEvent is null. This might be due to JSON deserialization issues.");
         }
 
-        var user = await _userRepository.GetByIdAsync(notification.Like.UserId, cancellationToken);
-        var reaction = new ReactionReadDto
-        {
-            UserId = notification.Like.UserId,
-            UserName = user?.Username ?? "Unknown",
-            UserProfilePicUrl = null, // TODO: Add ProfilePic to User entity
-            Emoji = notification.Like.Emoji
-        };
-
         if (notification.Like.PostId.HasValue)
         {
             var post = await _readRepository.GetByIdAsync(notification.Like.PostId.Value, cancellationToken);
             if (post != null)
             {
+                var reaction = post.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji);
+                if (reaction != null)
+                {
+                    reaction.Count++;
+                }
+                else
+                {
+                    post.Reactions.Add(new ReactionReadDto
+                    {
+                        Emoji = notification.Like.Emoji,
+                        Count = 1
+                    });
+                }
                 post.Stats.LikeCount++;
                 post.Reactions.Add(reaction);
                 post.UpdateTrendingScore();
@@ -89,8 +93,20 @@ public class PostEventHandlers :
             var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value, cancellationToken);
             if (comment != null)
             {
+                var reaction = comment.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji);
+                if (reaction != null)
+                {
+                    reaction.Count++;
+                }
+                else
+                {
+                    comment.Reactions.Add(new ReactionReadDto
+                    {
+                        Emoji = notification.Like.Emoji,
+                        Count = 1
+                    });
+                }
                 comment.Stats.LikeCount++;
-                comment.Reactions.Add(reaction);
                 await _commentReadRepository.UpdateAsync(comment, cancellationToken);
 
                 // Update TopComments in PostReadModel if present

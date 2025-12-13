@@ -21,7 +21,7 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Like Post
-        var command = new ToggleLikeCommand(userId, postId, null, "❤️");
+        var command = new ToggleLikeCommand(userId, postId, null, "❤️", "Matshana Sithole");
         var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -46,7 +46,7 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
         var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Like Comment
-        var command = new ToggleLikeCommand(userId, null, commentId, "🔥");
+        var command = new ToggleLikeCommand(userId, null, commentId, "🔥", "Matshana Sithole");
         var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -54,6 +54,7 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
         var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
         Assert.True(result); // Added
     }
+
     [Fact]
     public async Task LikePost_ShouldReturnNotFound_WhenPostDoesNotExist()
     {
@@ -61,21 +62,20 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
         var userId = Guid.NewGuid();
         var postId = Guid.NewGuid();
 
-        var command = new ToggleLikeCommand(userId, postId, null, "❤️");
+        var command = new ToggleLikeCommand(userId, postId, null, "❤️", "Matshana Sithole");
         var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
-        // Assuming the handler throws NotFoundException or similar which maps to 404 or 500
-        // If it returns false, then it might be 200 OK with false.
-        // Let's check the implementation. If ToggleLikeCommandHandler throws, we expect error code.
-        // If it just returns false (which it seems to do based on bool return type), we might need to check that.
-        // However, usually referencing a non-existent FK would fail.
-        // Let's assume for now it might fail or return false.
-        // Actually, looking at previous tests, we expect success.
-        // If the post doesn't exist, EF Core might throw DbUpdateException due to FK constraint.
-        // This would result in 500 Internal Server Error unless handled.
-        
+        // Assuming the handler throws NotFoundException or similar which maps to 404 or 500 If it
+        // returns false, then it might be 200 OK with false. Let's check the implementation. If
+        // ToggleLikeCommandHandler throws, we expect error code. If it just returns false (which it
+        // seems to do based on bool return type), we might need to check that. However, usually
+        // referencing a non-existent FK would fail. Let's assume for now it might fail or return
+        // false. Actually, looking at previous tests, we expect success. If the post doesn't exist,
+        // EF Core might throw DbUpdateException due to FK constraint. This would result in 500
+        // Internal Server Error unless handled.
+
         // TODO: API should probably return NotFound or BadRequest, but currently returns success
-        Assert.True(response.IsSuccessStatusCode); 
+        Assert.True(response.IsSuccessStatusCode);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class LikesControllerTests : IClassFixture<IntegrationTestWebApplicationF
         var userId = Guid.NewGuid();
         var commentId = Guid.NewGuid();
 
-        var command = new ToggleLikeCommand(userId, null, commentId, "🔥");
+        var command = new ToggleLikeCommand(userId, null, commentId, "🔥", "Matshana Sithole");
         var response = await client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
 
         // TODO: API should probably return NotFound or BadRequest, but currently returns success

@@ -31,7 +31,7 @@ public class SocialMediaDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             var config = new ConfigurationBuilder()
-                            .SetBasePath(AppContext.BaseDirectory) // ensures it looks in the right folder
+                            .SetBasePath(Directory.GetCurrentDirectory()) // ensures it looks in the right folder
                             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                             .Build();
 
@@ -56,37 +56,23 @@ public class SocialMediaDbContext : DbContext
             .HasForeignKey(l => l.PostId)
             .IsRequired(false);
 
+        modelBuilder.Entity<Post>(entity =>
+        {
+            entity.OwnsMany(c => c.Tags, b => b.ToJson());
+            entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
+        });
+
         modelBuilder.Entity<Comment>()
             .HasMany(c => c.Likes)
             .WithOne(l => l.Comment)
             .HasForeignKey(l => l.CommentId)
             .IsRequired(false);
 
-        modelBuilder.Entity<Comment>()
-            .Property(p => p.Tags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-        modelBuilder.Entity<Comment>()
-            .Property(p => p.AdminTags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-
-        modelBuilder.Entity<Post>()
-            .Property(p => p.Tags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
-        modelBuilder.Entity<Post>()
-            .Property(p => p.AdminTags)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
-                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
-            ).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.OwnsMany(c => c.Tags, b => b.ToJson());
+            entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
+        });
 
         modelBuilder.Entity<Poll>()
             .HasMany(p => p.Options)

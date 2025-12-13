@@ -26,7 +26,9 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
             AuthorProfilePicUrl = c.AuthorProfilePicUrl,
             CreatedAt = c.CreatedAt,
             LikeCount = c.Stats.LikeCount,
-            Reactions = c.Reactions
+            Reactions = c.Reactions,
+            Tags = c.Tags,
+            AdminTags = c.AdminTags
         }).ToList();
 
         return new PagedResult<CommentReadDto>(dtos, 0, request.PageNumber, request.PageSize);

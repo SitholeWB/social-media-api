@@ -8,8 +8,8 @@ public class Post : BaseEntity
 
     public Guid? FileId { get; set; }
     public MediaFile? File { get; set; }
-    public List<string> AdminTags { get; set; } = new List<string>();
-    public List<string> Tags { get; set; } = new List<string>();
+    public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
+    public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
     public ICollection<Comment> Comments { get; set; } = [];
     public ICollection<Like> Likes { get; set; } = [];
     public ICollection<Group> Groups { get; set; } = [];

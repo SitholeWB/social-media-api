@@ -9,8 +9,8 @@ public class PostReadModel
     public string AuthorName { get; set; } = string.Empty; // Denormalized
     public DateTime CreatedAt { get; set; }
     public string? FileUrl { get; set; }
-    public List<string> AdminTags { get; set; } = new List<string>();
-    public List<string> Tags { get; set; } = new List<string>();
+    public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
+    public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 
     // Stats Stats
     public PostStatsDto Stats { get; set; } = new();

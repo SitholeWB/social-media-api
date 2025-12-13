@@ -26,7 +26,7 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> GetCommentById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCommentByIdQuery(id);
-        var comment = await _dispatcher.Query<GetCommentByIdQuery, CommentDto>(query, cancellationToken);
+        var comment = await _dispatcher.Query<GetCommentByIdQuery, CommentReadDto>(query, cancellationToken);
         if (comment == null)
         {
             return NotFound();

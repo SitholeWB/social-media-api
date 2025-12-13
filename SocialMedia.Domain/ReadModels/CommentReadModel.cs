@@ -11,8 +11,9 @@ public class CommentReadModel
     public DateTime CreatedAt { get; set; }
 
     public CommentStatsDto Stats { get; set; } = new();
+
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
 
-    public List<string> AdminTags { get; set; } = new List<string>();
-    public List<string> Tags { get; set; } = new List<string>();
+    public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
+    public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 }

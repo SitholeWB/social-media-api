@@ -11,7 +11,7 @@ public class PostDto
     public DateTime CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }
-
-    public ICollection<string> AdminTags { get; set; } = [];
-    public ICollection<string> Tags { get; set; } = [];
+    public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
+    public ICollection<TagDto> AdminTags { get; set; } = [];
+    public ICollection<TagDto> Tags { get; set; } = [];
 }

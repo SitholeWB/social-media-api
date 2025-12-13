@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialMedia.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_read : Migration
+    public partial class initial_tables_read : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,10 +22,10 @@ namespace SocialMedia.Infrastructure.Migrations
                     AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorProfilePicUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Reactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Stats = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Stats = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,12 +43,12 @@ namespace SocialMedia.Infrastructure.Migrations
                     AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Reactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Stats = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TopComments = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

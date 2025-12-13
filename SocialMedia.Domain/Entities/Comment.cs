@@ -12,6 +12,6 @@ public class Comment : BaseEntity
 
     public ICollection<Like> Likes { get; set; } = new List<Like>();
 
-    public List<string> AdminTags { get; set; } = new List<string>();
-    public List<string> Tags { get; set; } = new List<string>();
+    public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
+    public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 }

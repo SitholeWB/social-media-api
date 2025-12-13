@@ -25,8 +25,8 @@ public static class CommentMapper
             PostId = dto.PostId,
             AuthorId = dto.AuthorId,
             FileId = dto.FileId,
-            AdminTags = dto.AdminTags,
-            Tags = dto.Tags
+            AdminTags = dto.AdminTags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
+            Tags = dto.Tags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
         };
     }
 }

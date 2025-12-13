@@ -27,8 +27,8 @@ public static class PostMapper
             Content = dto.Content,
             AuthorId = dto.AuthorId,
             FileId = dto.FileId,
-            Tags = dto.Tags,
-            AdminTags = dto.AdminTags
+            Tags = dto.Tags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
+            AdminTags = dto.AdminTags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? []
         };
     }
 }
