@@ -1,4 +1,3 @@
-
 using Google.Apis.Auth;
 
 namespace SocialMedia.Infrastructure;
@@ -16,13 +15,12 @@ public class IdentityService : IIdentityService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username || u.Email == request.Username, cancellationToken);
 
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
         {
             throw new Exception("Invalid credentials");
         }
-
 
         if (user.IsBanned)
         {
@@ -146,5 +144,4 @@ public class IdentityService : IIdentityService
         var hash = HashPassword(password);
         return hash == storedHash;
     }
-
 }
