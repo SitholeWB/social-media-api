@@ -1,10 +1,9 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize]
 public class PostsController : ControllerBase
 {
     private readonly IDispatcher _dispatcher;
@@ -22,6 +21,7 @@ public class PostsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = postId }, postId);
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromQuery] int pageNumber = 1,
@@ -41,6 +41,7 @@ public class PostsController : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {

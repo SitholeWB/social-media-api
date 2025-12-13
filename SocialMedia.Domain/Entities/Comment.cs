@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Domain;
 
 public class Comment : BaseEntity
@@ -12,4 +11,7 @@ public class Comment : BaseEntity
     public MediaFile? File { get; set; }
 
     public ICollection<Like> Likes { get; set; } = new List<Like>();
+
+    public List<string> AdminTags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new List<string>();
 }

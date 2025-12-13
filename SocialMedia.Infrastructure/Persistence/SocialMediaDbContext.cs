@@ -1,9 +1,12 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class SocialMediaDbContext : DbContext
 {
     public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options) : base(options)
+    {
+    }
+
+    public SocialMediaDbContext()
     {
     }
 
@@ -22,6 +25,21 @@ public class SocialMediaDbContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<OutboxEvent> OutboxEvents { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var config = new ConfigurationBuilder()
+                            .SetBasePath(AppContext.BaseDirectory) // ensures it looks in the right folder
+                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                            .Build();
+
+            // Read connection string by name
+            var connectionString = config.GetConnectionString("WriteConnection");
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +62,32 @@ public class SocialMediaDbContext : DbContext
             .HasForeignKey(l => l.CommentId)
             .IsRequired(false);
 
+        modelBuilder.Entity<Comment>()
+            .Property(p => p.Tags)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
+                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
+            ).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<Comment>()
+            .Property(p => p.AdminTags)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
+                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
+            ).HasColumnType("nvarchar(max)");
+
+        modelBuilder.Entity<Post>()
+            .Property(p => p.Tags)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
+                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
+            ).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<Post>()
+            .Property(p => p.AdminTags)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, new JsonSerializerOptions()), // to DB
+                v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // from DB
+            ).HasColumnType("nvarchar(max)");
+
         modelBuilder.Entity<Poll>()
             .HasMany(p => p.Options)
             .WithOne(o => o.Poll)
@@ -58,13 +102,13 @@ public class SocialMediaDbContext : DbContext
             .HasOne(r => r.Post)
             .WithMany()
             .HasForeignKey(r => r.PostId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Report>()
             .HasOne(r => r.Comment)
             .WithMany()
             .HasForeignKey(r => r.CommentId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<UserBlock>()
             .HasOne(ub => ub.Blocker)

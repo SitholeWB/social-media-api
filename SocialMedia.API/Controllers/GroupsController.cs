@@ -1,5 +1,3 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
@@ -38,6 +36,7 @@ public class GroupsController : ControllerBase
         return Ok();
     }
 
+    [AllowAnonymous]
     [HttpGet("{groupId}/posts")]
     public async Task<IActionResult> GetGroupPosts(
         Guid groupId,
@@ -56,6 +55,8 @@ public class GroupsController : ControllerBase
         var result = await _dispatcher.Query<GetPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
         return Ok(result);
     }
+
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetGroups([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
@@ -64,6 +65,7 @@ public class GroupsController : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetGroup(Guid id, CancellationToken cancellationToken)
     {

@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public class PostDto
@@ -12,4 +11,7 @@ public class PostDto
     public DateTime CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }
+
+    public ICollection<string> AdminTags { get; set; } = [];
+    public ICollection<string> Tags { get; set; } = [];
 }

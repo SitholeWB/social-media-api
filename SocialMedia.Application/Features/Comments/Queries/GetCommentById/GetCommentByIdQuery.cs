@@ -1,15 +1,6 @@
-
 namespace SocialMedia.Application;
 
-public class GetCommentByIdQuery : IQuery<CommentDto>
-{
-    public Guid Id { get; }
-
-    public GetCommentByIdQuery(Guid id)
-    {
-        Id = id;
-    }
-}
+public record GetCommentByIdQuery(Guid Id) : IQuery<CommentDto>;
 
 public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, CommentDto>
 {

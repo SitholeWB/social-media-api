@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public class CommentDto
@@ -9,4 +8,6 @@ public class CommentDto
     public Guid AuthorId { get; set; }
     public string? FileUrl { get; set; }
     public DateTime CreatedAt { get; set; }
+    public ICollection<string> AdminTags { get; set; } = [];
+    public ICollection<string> Tags { get; set; } = [];
 }

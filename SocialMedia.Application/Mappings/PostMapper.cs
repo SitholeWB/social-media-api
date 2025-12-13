@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public static class PostMapper
@@ -12,7 +11,11 @@ public static class PostMapper
             Content = post.Content,
             AuthorId = post.AuthorId,
             FileUrl = post.File?.Url,
-            CreatedAt = post.CreatedAt
+            CreatedAt = post.CreatedAt,
+            AdminTags = post.AdminTags,
+            Tags = post.Tags,
+            LikeCount = post.Likes?.Count ?? 0,
+            CommentCount = post.Comments?.Count ?? 0,
         };
     }
 
@@ -23,7 +26,9 @@ public static class PostMapper
             Title = dto.Title,
             Content = dto.Content,
             AuthorId = dto.AuthorId,
-            FileId = dto.FileId
+            FileId = dto.FileId,
+            Tags = dto.Tags,
+            AdminTags = dto.AdminTags
         };
     }
 }

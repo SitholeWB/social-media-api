@@ -9,17 +9,20 @@ public class PostReadModel
     public string AuthorName { get; set; } = string.Empty; // Denormalized
     public DateTime CreatedAt { get; set; }
     public string? FileUrl { get; set; }
+    public List<string> AdminTags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new List<string>();
 
-    // Stats
-    // Stats
+    // Stats Stats
     public PostStatsDto Stats { get; set; } = new();
 
     // Enriched Data
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
+
     public ICollection<CommentReadDto> TopComments { get; set; } = new List<CommentReadDto>();
 
     // Group Info
     public Guid? GroupId { get; set; }
+
     public string? GroupName { get; set; }
 
     public void UpdateTrendingScore()

@@ -43,7 +43,7 @@ public class ReactionCommentTests : IClassFixture<IntegrationTestWebApplicationF
         var commentsResult = await getCommentsResponse.Content.ReadFromJsonAsync<PagedResult<CommentReadDto>>(TestContext.Current.CancellationToken);
 
         Assert.NotNull(commentsResult);
-        var comment = commentsResult.Items.FirstOrDefault(c => c.Id == commentId);
+        var comment = commentsResult.Items.FirstOrDefault(c => c.CommentId == commentId);
         Assert.NotNull(comment);
         Assert.Equal(1, comment.LikeCount);
         Assert.Contains(comment.Reactions, r => r.Emoji == "❤️");

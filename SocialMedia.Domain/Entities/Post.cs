@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Domain;
 
 public class Post : BaseEntity
@@ -9,8 +8,9 @@ public class Post : BaseEntity
 
     public Guid? FileId { get; set; }
     public MediaFile? File { get; set; }
-
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public ICollection<Like> Likes { get; set; } = new List<Like>();
-    public ICollection<Group> Groups { get; set; } = new List<Group>();
+    public List<string> AdminTags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new List<string>();
+    public ICollection<Comment> Comments { get; set; } = [];
+    public ICollection<Like> Likes { get; set; } = [];
+    public ICollection<Group> Groups { get; set; } = [];
 }

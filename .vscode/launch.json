@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/SocialMedia.API/bin/Debug/net10.0/SocialMedia.API.dll",
+            "program": "${workspaceFolder}/SocialMedia.API/bin/Debug/net8.0/SocialMedia.API.dll",
             "args": [],
             "cwd": "${workspaceFolder}/SocialMedia.API",
             "stopAtEntry": false,

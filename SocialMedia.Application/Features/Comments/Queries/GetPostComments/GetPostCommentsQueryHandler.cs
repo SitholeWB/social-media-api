@@ -13,14 +13,13 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
     {
         var comments = await _commentReadRepository.GetByPostIdAsync(request.PostId, request.PageNumber, request.PageSize);
 
-        // We need a way to get total count from the repository for proper pagination
-        // For now, let's assume the repository handles it or we add a method
-        // But InMemoryCommentReadRepository doesn't have GetTotalCount yet.
-        // Let's just return what we have.
+        // We need a way to get total count from the repository for proper pagination For now, let's
+        // assume the repository handles it or we add a method But InMemoryCommentReadRepository
+        // doesn't have GetTotalCount yet. Let's just return what we have.
 
         var dtos = comments.Select(c => new CommentReadDto
         {
-            Id = c.Id,
+            CommentId = c.Id,
             Content = c.Content,
             AuthorId = c.AuthorId,
             AuthorName = c.AuthorName,

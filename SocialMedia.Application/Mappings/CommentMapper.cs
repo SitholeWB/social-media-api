@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public static class CommentMapper
@@ -12,7 +11,9 @@ public static class CommentMapper
             PostId = comment.PostId,
             AuthorId = comment.AuthorId,
             FileUrl = comment.File?.Url,
-            CreatedAt = comment.CreatedAt
+            CreatedAt = comment.CreatedAt,
+            AdminTags = comment.AdminTags,
+            Tags = comment.Tags
         };
     }
 
@@ -23,7 +24,9 @@ public static class CommentMapper
             Content = dto.Content,
             PostId = dto.PostId,
             AuthorId = dto.AuthorId,
-            FileId = dto.FileId
+            FileId = dto.FileId,
+            AdminTags = dto.AdminTags,
+            Tags = dto.Tags
         };
     }
 }

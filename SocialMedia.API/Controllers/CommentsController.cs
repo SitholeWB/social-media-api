@@ -1,10 +1,9 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/comments")]
 [ApiController]
+[Authorize]
 public class CommentsController : ControllerBase
 {
     private readonly IDispatcher _dispatcher;
@@ -22,6 +21,7 @@ public class CommentsController : ControllerBase
         return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, commentId);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCommentById(Guid id, CancellationToken cancellationToken)
     {
@@ -32,14 +32,6 @@ public class CommentsController : ControllerBase
             return NotFound();
         }
         return Ok(comment);
-    }
-
-    [HttpGet("post/{postId}")]
-    public async Task<IActionResult> GetCommentsByPostId(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
-    {
-        var query = new GetCommentsByPostIdQuery(postId, pageNumber, pageSize);
-        var result = await _dispatcher.Query<GetCommentsByPostIdQuery, PagedResult<CommentDto>>(query, cancellationToken);
-        return Ok(result);
     }
 
     [HttpPut("{id}")]
@@ -78,7 +70,8 @@ public class CommentsController : ControllerBase
         return Ok(new { ReportId = reportId });
     }
 
-    [HttpGet("/api/v1/posts/{postId}/comments")]
+    [AllowAnonymous]
+    [HttpGet("post/{postId}")]
     public async Task<IActionResult> GetPostComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var query = new GetPostCommentsQuery(postId, pageNumber, pageSize);

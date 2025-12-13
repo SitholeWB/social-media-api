@@ -1,15 +1,22 @@
-
 namespace SocialMedia.Infrastructure;
 
 public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("WriteConnection");
+        var connectionStringRead = configuration.GetConnectionString("ReadConnection");
+        //services.AddDbContext<SocialMediaDbContext>(options =>
+        //    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+        //services.AddDbContext<SocialMediaReadDbContext>(options =>
+        //    options.UseMySql(connectionStringRead, ServerVersion.AutoDetect(connectionStringRead)));
+
         services.AddDbContext<SocialMediaDbContext>(options =>
-            options.UseInMemoryDatabase("SocialMediaDb"));
+            options.UseSqlServer(connectionString));
 
         services.AddDbContext<SocialMediaReadDbContext>(options =>
-            options.UseInMemoryDatabase("SocialMediaReadDb"));
+            options.UseSqlServer(connectionStringRead));
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IPostRepository, PostRepository>();

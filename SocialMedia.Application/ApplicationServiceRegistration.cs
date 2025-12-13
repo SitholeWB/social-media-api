@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public static class ApplicationServiceRegistration
@@ -20,7 +19,6 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<UpdateCommentCommand, bool>, UpdateCommentCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteCommentCommand, bool>, DeleteCommentCommandHandler>();
         services.AddScoped<IQueryHandler<GetCommentByIdQuery, CommentDto>, GetCommentByIdQueryHandler>();
-        services.AddScoped<IQueryHandler<GetCommentsByPostIdQuery, PagedResult<CommentDto>>, GetCommentsByPostIdQueryHandler>();
         services.AddScoped<IQueryHandler<GetPostCommentsQuery, PagedResult<CommentReadDto>>, GetPostCommentsQueryHandler>();
 
         services.AddScoped<ICommandHandler<ToggleLikeCommand, bool>, ToggleLikeCommandHandler>();
@@ -50,6 +48,8 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();
         services.AddScoped<ICommandHandler<AddUserToGroupCommand, bool>, AddUserToGroupCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveUserFromGroupCommand, bool>, RemoveUserFromGroupCommandHandler>();
+        services.AddScoped<IQueryHandler<GetGroupsQuery, PagedResult<GroupDto>>, GetGroupsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetGroupQuery, GroupDto?>, GetGroupQueryHandler>();
 
         // Users
         services.AddScoped<ICommandHandler<BlockUserCommand, bool>, BlockUserCommandHandler>();

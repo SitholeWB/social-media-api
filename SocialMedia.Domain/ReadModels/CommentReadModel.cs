@@ -12,4 +12,7 @@ public class CommentReadModel
 
     public CommentStatsDto Stats { get; set; } = new();
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
+
+    public List<string> AdminTags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new List<string>();
 }

@@ -40,7 +40,10 @@ public class PostEventHandlers :
             AuthorName = author?.Username ?? "Unknown",
             CreatedAt = notification.Post.CreatedAt,
             FileUrl = notification.Post.File?.Url,
-
+            AdminTags = notification.Post.AdminTags,
+            Reactions = new List<ReactionReadDto>(),
+            TopComments = new List<CommentReadDto>(),
+            Tags = notification.Post.Tags,
             Stats = new PostStatsDto
             {
                 LikeCount = 0,
@@ -94,7 +97,7 @@ public class PostEventHandlers :
                 var post = await _readRepository.GetByIdAsync(comment.PostId, cancellationToken);
                 if (post != null)
                 {
-                    var topComment = post.TopComments.FirstOrDefault(c => c.Id == comment.Id);
+                    var topComment = post.TopComments.FirstOrDefault(c => c.CommentId == comment.Id);
                     if (topComment != null)
                     {
                         topComment.LikeCount++;
@@ -120,13 +123,16 @@ public class PostEventHandlers :
 
             var commentDto = new CommentReadDto
             {
-                Id = notification.Comment.Id,
+                CommentId = notification.Comment.Id,
                 Content = notification.Comment.Content,
                 AuthorId = notification.Comment.AuthorId,
                 AuthorName = author?.Username ?? "Unknown",
                 AuthorProfilePicUrl = null,
                 CreatedAt = notification.Comment.CreatedAt,
-                LikeCount = 0
+                LikeCount = 0,
+                Reactions = new List<ReactionReadDto>(),
+                AdminTags = notification.Comment.AdminTags,
+                Tags = notification.Comment.Tags
             };
 
             var commentReadModel = new CommentReadModel
@@ -138,7 +144,10 @@ public class PostEventHandlers :
                 AuthorName = author?.Username ?? "Unknown",
                 AuthorProfilePicUrl = null,
                 CreatedAt = notification.Comment.CreatedAt,
-                Stats = new CommentStatsDto { LikeCount = 0 }
+                Stats = new CommentStatsDto { LikeCount = 0 },
+                Reactions = new List<ReactionReadDto>(),
+                Tags = notification.Comment.Tags,
+                AdminTags = notification.Comment.AdminTags
             };
 
             await _commentReadRepository.AddAsync(commentReadModel, cancellationToken);
@@ -149,8 +158,8 @@ public class PostEventHandlers :
             post.TopComments.Add(commentDto);
             if (post.TopComments.Count > 30)
             {
-                // Remove oldest or least relevant? Requirement says "more reactions or new".
-                // For now, let's just keep the latest 30.
+                // Remove oldest or least relevant? Requirement says "more reactions or new". For
+                // now, let's just keep the latest 30.
                 var oldest = post.TopComments.OrderBy(c => c.CreatedAt).First();
                 post.TopComments.Remove(oldest);
             }

@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public class CreatePostDto
@@ -7,4 +6,6 @@ public class CreatePostDto
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }
     public Guid? FileId { get; set; }
+    public List<string> AdminTags { get; set; } = [];
+    public List<string> Tags { get; set; } = [];
 }
