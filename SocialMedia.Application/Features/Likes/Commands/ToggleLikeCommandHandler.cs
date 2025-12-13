@@ -35,6 +35,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
             existingLike = await _likeRepository.GetByCommentIdAndUserIdAsync(command.CommentId.Value, command.UserId.GetValueOrDefault(), cancellationToken);
         }
         var toggleLikeType = ToggleLikeType.Added;
+        var oldEmoji = existingLike?.Emoji ?? string.Empty;
         if (existingLike != null)
         {
             if (existingLike.Emoji == command.Emoji)
@@ -100,11 +101,11 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         }
         if (existingLike.CommentId.HasValue)
         {
-            await _dispatcher.Publish(new CommentLikeAddedEvent(existingLike, toggleLikeType), cancellationToken);
+            await _dispatcher.Publish(new CommentLikeAddedEvent(existingLike, toggleLikeType, oldEmoji), cancellationToken);
         }
         else if (existingLike.PostId.HasValue)
         {
-            await _dispatcher.Publish(new PostLikeAddedEvent(existingLike, toggleLikeType), cancellationToken);
+            await _dispatcher.Publish(new PostLikeAddedEvent(existingLike, toggleLikeType, oldEmoji), cancellationToken);
         }
         return toggleLikeType == ToggleLikeType.Added; // Added
     }

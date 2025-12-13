@@ -76,6 +76,20 @@ public class PostEventHandlers :
                         reaction.Count--;
                         post.Stats.LikeCount--;
                     }
+                    else if (notification.ToggleLikeType == ToggleLikeType.Updated)
+                    {
+                        var oldReaction = post.Reactions.FirstOrDefault(r => r.Emoji == notification.OldEmoji);
+                        if (oldReaction != null)
+                        {
+                            oldReaction.Count--;
+                        }
+                        reaction.Count++;
+                    }
+                    else if (notification.ToggleLikeType == ToggleLikeType.Added)
+                    {
+                        reaction.Count++;
+                        post.Stats.LikeCount++;
+                    }
                 }
                 else
                 {
