@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
@@ -18,10 +16,7 @@ public class LikesController : ControllerBase
     [HttpPost("toggle")]
     public async Task<IActionResult> ToggleLike([FromBody] ToggleLikeCommand command, CancellationToken cancellationToken)
     {
-        var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-        Guid.TryParse(userId, out var parsedUserId);
-        command.Username = User?.Identity?.Name;
-        command.UserId = parsedUserId;
+        command.UserId = this.GetUserId();
         var result = await _dispatcher.Send<ToggleLikeCommand, bool>(command, cancellationToken);
         return Ok(result);
     }

@@ -11,6 +11,7 @@ public static class ApplicationServiceRegistration
 
         // Register Handlers Manually
         services.AddScoped<ICommandHandler<CreatePostCommand, Guid>, CreatePostCommandHandler>();
+        services.AddScoped<ICommandHandler<DeletePostCommand, bool>, DeletePostCommandHandler>();
         services.AddScoped<IQueryHandler<GetPostsQuery, PagedResult<PostDto>>, GetPostsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPostByIdQuery, PostDto?>, GetPostByIdQueryHandler>();
 

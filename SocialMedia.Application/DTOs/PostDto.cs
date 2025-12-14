@@ -8,7 +8,7 @@ public class PostDto
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
     public string? FileUrl { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();

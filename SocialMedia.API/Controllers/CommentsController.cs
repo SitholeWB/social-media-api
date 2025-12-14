@@ -49,7 +49,7 @@ public class CommentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteComment(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteCommentCommand(id);
+        var command = new DeleteCommentCommand(id, this.GetUserId().GetValueOrDefault(Guid.Empty));
         var result = await _dispatcher.Send<DeleteCommentCommand, bool>(command, cancellationToken);
         if (!result)
         {

@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public class PollDto
@@ -6,7 +5,7 @@ public class PollDto
     public Guid Id { get; set; }
     public string Question { get; set; } = string.Empty;
     public bool IsActive { get; set; }
-    public DateTime? ExpiresAt { get; set; }
+    public DateTimeOffset? ExpiresAt { get; set; }
     public Guid CreatorId { get; set; }
     public List<PollOptionDto> Options { get; set; } = new List<PollOptionDto>();
 }

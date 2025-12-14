@@ -7,7 +7,8 @@ public class PostReadModel
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty; // Denormalized
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? LastModifiedAt { get; set; }
     public string? FileUrl { get; set; }
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();

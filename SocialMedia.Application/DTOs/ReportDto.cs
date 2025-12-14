@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public class ReportDto
@@ -9,5 +8,5 @@ public class ReportDto
     public ReportStatus Status { get; set; }
     public Guid? PostId { get; set; }
     public Guid? CommentId { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 }

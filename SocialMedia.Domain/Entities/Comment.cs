@@ -6,7 +6,7 @@ public class Comment : BaseEntity
     public Guid PostId { get; set; }
     public Post Post { get; set; } = null!;
     public Guid AuthorId { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public Guid? FileId { get; set; }
     public MediaFile? File { get; set; }
 

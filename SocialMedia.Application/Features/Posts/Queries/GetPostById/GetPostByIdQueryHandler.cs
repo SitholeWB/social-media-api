@@ -25,7 +25,8 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
             LikeCount = p.Stats.LikeCount,
             CommentCount = p.Stats.CommentCount,
             AdminTags = p.AdminTags,
-            Tags = p.Tags
+            Tags = p.Tags,
+            Reactions = p.Reactions
         };
     }
 }

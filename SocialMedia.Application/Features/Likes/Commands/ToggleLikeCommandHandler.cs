@@ -48,6 +48,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
             {
                 // Update emoji
                 existingLike.Emoji = command.Emoji;
+                existingLike.LastModifiedAt = DateTimeOffset.Now;
                 await _likeRepository.UpdateAsync(existingLike, cancellationToken);
                 toggleLikeType = ToggleLikeType.Updated;
             }

@@ -8,7 +8,8 @@ public class CommentReadModel
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorProfilePicUrl { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? LastModifiedAt { get; set; }
 
     public CommentStatsDto Stats { get; set; } = new();
 

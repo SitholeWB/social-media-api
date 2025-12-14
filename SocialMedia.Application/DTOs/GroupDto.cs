@@ -8,5 +8,5 @@ public class GroupDto
     public bool IsPublic { get; set; }
     public bool IsAutoAdd { get; set; }
     public Guid CreatorId { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 }
