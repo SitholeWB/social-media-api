@@ -12,8 +12,8 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     [DbContext(typeof(SocialMediaDbContext))]
-    [Migration("20251214150203_initial_write")]
-    partial class initial_write
+    [Migration("20251214175240_InitialCreate_write")]
+    partial class InitialCreate_write
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -391,6 +391,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("StatusFullScreen")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -461,12 +464,20 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Names")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
                         .IsRequired()

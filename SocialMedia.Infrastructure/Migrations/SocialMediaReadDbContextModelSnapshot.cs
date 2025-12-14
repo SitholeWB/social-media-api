@@ -88,6 +88,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("StatusFullScreen")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

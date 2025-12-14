@@ -57,7 +57,9 @@ public class IdentityService : IIdentityService
                 Email = payload.Email,
                 PasswordHash = HashPassword(Guid.NewGuid().ToString()), // Random password for Google users
                 CreatedAt = DateTime.UtcNow,
-                Role = UserRole.User
+                Role = UserRole.User,
+                Surname = payload.FamilyName,
+                Names = payload.GivenName
             };
 
             // Ensure username is unique
@@ -85,7 +87,7 @@ public class IdentityService : IIdentityService
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        if (await _context.Users.AnyAsync(u => u.Username == request.Username, cancellationToken))
+        if (await _context.Users.AnyAsync(u => u.Username == request.Username || u.Email == request.Username, cancellationToken))
         {
             throw new Exception("Username already exists");
         }
@@ -97,7 +99,9 @@ public class IdentityService : IIdentityService
             PasswordHash = HashPassword(request.Password),
             CreatedAt = DateTime.UtcNow,
             Role = UserRole.User, // Explicitly set default
-            LastActiveAt = DateTime.UtcNow
+            LastActiveAt = DateTime.UtcNow,
+            Names = request.Names,
+            Surname = request.Surname
         };
 
         _context.Users.Add(user);

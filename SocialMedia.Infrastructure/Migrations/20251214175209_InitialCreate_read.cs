@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialMedia.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_tables_read : Migration
+    public partial class InitialCreate_read : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,6 +45,7 @@ namespace SocialMedia.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StatusFullScreen = table.Column<bool>(type: "bit", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),

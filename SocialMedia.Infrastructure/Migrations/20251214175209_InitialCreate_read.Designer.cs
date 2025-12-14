@@ -12,8 +12,8 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251214150116_initial_tables_read")]
-    partial class initial_tables_read
+    [Migration("20251214175209_InitialCreate_read")]
+    partial class InitialCreate_read
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,6 +90,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("StatusFullScreen")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()

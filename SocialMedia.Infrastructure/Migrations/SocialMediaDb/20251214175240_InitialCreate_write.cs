@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     /// <inheritdoc />
-    public partial class initial_write : Migration
+    public partial class InitialCreate_write : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -106,6 +106,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Names = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     IsBanned = table.Column<bool>(type: "bit", nullable: false),
@@ -127,6 +129,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    StatusFullScreen = table.Column<bool>(type: "bit", nullable: false),
                     FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
