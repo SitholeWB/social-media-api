@@ -25,7 +25,8 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
             CommentCount = p.Stats.CommentCount,
             AdminTags = p.AdminTags,
             Tags = p.Tags,
-            Reactions = p.Reactions
+            Reactions = p.Reactions,
+            StatusFullScreen = p.StatusFullScreen
         };
     }
 }
