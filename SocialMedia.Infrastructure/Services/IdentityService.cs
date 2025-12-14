@@ -33,7 +33,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.Username, user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
     }
 
     public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default)
@@ -83,7 +83,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.Username, user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -111,7 +111,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.Username, user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
     }
 
     private string GenerateJwtToken(User user)
@@ -127,7 +127,6 @@ public class IdentityService : IIdentityService
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.Names} {user.Surname}"),
-                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             }),
             Expires = DateTime.UtcNow.AddDays(7),

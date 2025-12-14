@@ -10,4 +10,6 @@ public class User : BaseEntity
     public UserRole Role { get; set; } = UserRole.User;
     public bool IsBanned { get; set; }
     public DateTimeOffset? LastActiveAt { get; set; }
+
+    public string GetFullName() => $"{Names} {Surname}".Trim();
 }
