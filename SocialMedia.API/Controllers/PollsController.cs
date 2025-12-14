@@ -43,6 +43,7 @@ public class PollsController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("active")]
     public async Task<IActionResult> GetActivePolls([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
@@ -51,6 +52,7 @@ public class PollsController : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
