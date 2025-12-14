@@ -65,5 +65,5 @@ app.MapControllers();
 
 await app.RunAsync();
 
-public partial class Program
-{ }
+//This is needed for integration tests
+public partial class Program;
