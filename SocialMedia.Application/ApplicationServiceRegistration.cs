@@ -41,13 +41,10 @@ public static class ApplicationServiceRegistration
 
         // Register Event Handlers
         services.AddScoped<IEventHandler<PostCreatedEvent>, EmailNotificationHandler>();
-        services.AddScoped<IEventHandler<PostCreatedEvent>, PostEventHandlers>();
-        services.AddScoped<IEventHandler<PostLikeAddedEvent>, PostEventHandlers>();
-        services.AddScoped<IEventHandler<CommentAddedEvent>, CommentEventHandlers>();
-
-        // Register Event Handlers
-        services.AddScoped<IEventHandler<CommentLikeAddedEvent>, CommentEventHandlers>();
-        services.AddScoped<IEventHandler<CommentAddedEvent>, CommentEventHandlers>();
+        services.AddScoped<IEventHandler<PostCreatedEvent>, PostCreatedEventHandler>();
+        services.AddScoped<IEventHandler<PostLikeAddedEvent>, PostLikedAddedEventHandler>();
+        services.AddScoped<IEventHandler<CommentAddedEvent>, CommentAddedEventHandler>();
+        services.AddScoped<IEventHandler<CommentLikeAddedEvent>, CommentLikeAddedEventHandler>();
 
         // Groups
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();

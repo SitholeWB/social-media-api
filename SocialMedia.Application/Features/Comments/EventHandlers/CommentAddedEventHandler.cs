@@ -1,87 +1,20 @@
 namespace SocialMedia.Application;
 
-public class xCommentEventHandlers :
-    IEventHandler<CommentLikeAddedEvent>,
+public class CommentAddedEventHandler :
     IEventHandler<CommentAddedEvent>
 {
     private readonly IPostReadRepository _readRepository;
     private readonly ICommentReadRepository _commentReadRepository;
     private readonly IUserRepository _userRepository; // To get Author Name
-    private readonly IPostRepository _postRepository; // To get Post details for Like/Comment events
 
-    public xCommentEventHandlers(
+    public CommentAddedEventHandler(
         IPostReadRepository readRepository,
         ICommentReadRepository commentReadRepository,
-        IUserRepository userRepository,
-        IPostRepository postRepository)
+        IUserRepository userRepository)
     {
         _readRepository = readRepository;
         _commentReadRepository = commentReadRepository;
         _userRepository = userRepository;
-        _postRepository = postRepository;
-    }
-
-    public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
-    {
-        if (notification.Like == null)
-        {
-            throw new ArgumentNullException(nameof(notification.Like), "Like in LikeAddedEvent is null. This might be due to JSON deserialization issues.");
-        }
-
-        if (notification.Like.CommentId.HasValue)
-        {
-            var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value, cancellationToken);
-            if (comment != null)
-            {
-                var reaction = comment.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji);
-                if (reaction != null)
-                {
-                    if (notification.ToggleLikeType == ToggleLikeType.Removed)
-                    {
-                        reaction.Count--;
-                        comment.Stats.LikeCount--;
-                    }
-                    else if (notification.ToggleLikeType == ToggleLikeType.Updated)
-                    {
-                        var oldReaction = comment.Reactions.FirstOrDefault(r => r.Emoji == notification.OldEmoji);
-                        if (oldReaction != null)
-                        {
-                            oldReaction.Count--;
-                        }
-                        reaction.Count++;
-                    }
-                    else if (notification.ToggleLikeType == ToggleLikeType.Added)
-                    {
-                        reaction.Count++;
-                        comment.Stats.LikeCount++;
-                    }
-                }
-                else
-                {
-                    comment.Reactions.Add(new ReactionReadDto
-                    {
-                        Emoji = notification.Like.Emoji,
-                        Count = 1
-                    });
-                    comment.Stats.LikeCount++;
-                }
-                comment.Reactions = [.. comment.Reactions.Where(r => r.Count > 0)];
-                await _commentReadRepository.UpdateAsync(comment, cancellationToken);
-
-                // Update TopComments in PostReadModel if present
-                var post = await _readRepository.GetByIdAsync(comment.PostId, cancellationToken);
-                if (post != null)
-                {
-                    var topComment = post.TopComments.FirstOrDefault(c => c.CommentId == comment.Id);
-                    if (topComment != null)
-                    {
-                        topComment.LikeCount++;
-                        topComment.Reactions.Add(reaction);
-                        await _readRepository.UpdateAsync(post, cancellationToken);
-                    }
-                }
-            }
-        }
     }
 
     public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)

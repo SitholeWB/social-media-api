@@ -1,59 +1,14 @@
 namespace SocialMedia.Application;
 
-public class xPostEventHandlers :
-    IEventHandler<PostCreatedEvent>,
+public class PostLikedAddedEventHandler :
     IEventHandler<PostLikeAddedEvent>
 {
     private readonly IPostReadRepository _readRepository;
-    private readonly ICommentReadRepository _commentReadRepository;
-    private readonly IUserRepository _userRepository; // To get Author Name
-    private readonly IPostRepository _postRepository; // To get Post details for Like/Comment events
 
-    public xPostEventHandlers(
-        IPostReadRepository readRepository,
-        ICommentReadRepository commentReadRepository,
-        IUserRepository userRepository,
-        IPostRepository postRepository)
+    public PostLikedAddedEventHandler(
+        IPostReadRepository readRepository)
     {
         _readRepository = readRepository;
-        _commentReadRepository = commentReadRepository;
-        _userRepository = userRepository;
-        _postRepository = postRepository;
-    }
-
-    public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
-    {
-        if (notification.Post == null)
-        {
-            throw new ArgumentNullException(nameof(notification.Post), "Post in PostCreatedEvent is null. This might be due to JSON deserialization issues.");
-        }
-
-        var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
-
-        var readModel = new PostReadModel
-        {
-            Id = notification.Post.Id,
-            Title = notification.Post.Title,
-            Content = notification.Post.Content,
-            AuthorId = notification.Post.AuthorId,
-            AuthorName = author?.Username ?? "Unknown",
-            CreatedAt = notification.Post.CreatedAt,
-            FileUrl = notification.Post.File?.Url,
-            AdminTags = notification.Post.AdminTags,
-            Reactions = new List<ReactionReadDto>(),
-            TopComments = new List<CommentReadDto>(),
-            Tags = notification.Post.Tags,
-            Stats = new PostStatsDto
-            {
-                LikeCount = 0,
-                CommentCount = 0,
-                TrendingScore = 0
-            },
-            GroupId = notification.Post.Groups.FirstOrDefault()?.Id, // Simplified for now
-            GroupName = notification.Post.Groups.FirstOrDefault()?.Name
-        };
-
-        await _readRepository.AddAsync(readModel, cancellationToken);
     }
 
     public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
