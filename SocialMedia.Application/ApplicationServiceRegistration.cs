@@ -46,6 +46,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEventHandler<PostDeletedEvent>, PostDeletedEventHandler>();
         services.AddScoped<IEventHandler<CommentAddedEvent>, CommentAddedEventHandler>();
         services.AddScoped<IEventHandler<CommentLikeAddedEvent>, CommentLikeAddedEventHandler>();
+        services.AddScoped<IEventHandler<CommentDeletedEvent>, CommentDeletedEventHandler>();
 
         // Groups
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();

@@ -1,3 +1,3 @@
 namespace SocialMedia.Domain;
 
-public record PostCreatedEvent(Post Post) : IDomainEvent;
+public record CommentDeletedEvent(Comment Comment) : IDomainEvent;
