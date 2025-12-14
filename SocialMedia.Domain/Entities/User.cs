@@ -11,5 +11,20 @@ public class User : BaseEntity
     public bool IsBanned { get; set; }
     public DateTimeOffset? LastActiveAt { get; set; }
 
-    public string GetFullName() => $"{Names} {Surname}".Trim();
+    public string GetFullName()
+    {
+        if (string.IsNullOrWhiteSpace(Names) && string.IsNullOrWhiteSpace(Surname))
+        {
+            return Username;
+        }
+        if (string.IsNullOrWhiteSpace(Names))
+        {
+            return Surname;
+        }
+        if (string.IsNullOrWhiteSpace(Surname))
+        {
+            return Names;
+        }
+        return $"{Names} {Surname}".Trim();
+    }
 }
