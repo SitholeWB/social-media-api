@@ -29,7 +29,7 @@ public class PostCreatedEventHandler :
             Title = notification.Post.Title,
             Content = notification.Post.Content,
             AuthorId = notification.Post.AuthorId,
-            AuthorName = author?.Username ?? "Unknown",
+            AuthorName = author?.GetFullName() ?? "Unknown",
             CreatedAt = notification.Post.CreatedAt,
             FileUrl = notification.Post.File?.Url,
             AdminTags = notification.Post.AdminTags,
