@@ -26,6 +26,18 @@ public class PostReadRepository : IPostReadRepository
         return await _context.Posts.FindAsync(new object[] { id }, cancellationToken);
     }
 
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var post = await _context.Posts.FindAsync(new object[] { id }, cancellationToken);
+        if (post is null)
+        {
+            return false;
+        }
+        _context.Posts.Remove(post);
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     public async Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default)
     {
         var query = _context.Posts.AsQueryable();

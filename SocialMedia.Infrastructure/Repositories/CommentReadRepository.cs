@@ -26,6 +26,18 @@ public class CommentReadRepository : ICommentReadRepository
         return await _context.Comments.FindAsync(new object[] { id }, cancellationToken);
     }
 
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var comment = await _context.Comments.FindAsync(new object[] { id }, cancellationToken);
+        if (comment is null)
+        {
+            return false;
+        }
+        _context.Comments.Remove(comment);
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     public async Task<List<CommentReadModel>> GetByPostIdAsync(Guid postId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         return await _context.Comments

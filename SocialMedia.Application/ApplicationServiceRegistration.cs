@@ -43,6 +43,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEventHandler<PostCreatedEvent>, EmailNotificationHandler>();
         services.AddScoped<IEventHandler<PostCreatedEvent>, PostCreatedEventHandler>();
         services.AddScoped<IEventHandler<PostLikeAddedEvent>, PostLikedAddedEventHandler>();
+        services.AddScoped<IEventHandler<PostDeletedEvent>, PostDeletedEventHandler>();
         services.AddScoped<IEventHandler<CommentAddedEvent>, CommentAddedEventHandler>();
         services.AddScoped<IEventHandler<CommentLikeAddedEvent>, CommentLikeAddedEventHandler>();
 
