@@ -33,6 +33,7 @@ public class PostCreatedEventHandler :
             CreatedAt = notification.Post.CreatedAt,
             FileUrl = notification.Post.File?.Url,
             AdminTags = notification.Post.AdminTags,
+            StatusFullScreen = notification.Post.StatusFullScreen,
             Reactions = new List<ReactionReadDto>(),
             TopComments = new List<CommentReadDto>(),
             Tags = notification.Post.Tags,

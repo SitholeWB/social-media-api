@@ -16,6 +16,7 @@ public static class PostMapper
             Tags = post.Tags,
             LikeCount = post.Likes?.Count ?? 0,
             CommentCount = post.Comments?.Count ?? 0,
+            StatusFullScreen = post.StatusFullScreen
         };
     }
 
@@ -26,6 +27,7 @@ public static class PostMapper
             Title = dto.Title,
             Content = dto.Content,
             AuthorId = dto.AuthorId,
+            StatusFullScreen = dto.StatusFullScreen,
             FileId = dto.FileId,
             Tags = dto.Tags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
             AdminTags = dto.AdminTags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? []

@@ -10,6 +10,7 @@ public class PostReadModel
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? LastModifiedAt { get; set; }
     public string? FileUrl { get; set; }
+    public bool StatusFullScreen { get; set; } = false;
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 

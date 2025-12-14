@@ -6,6 +6,7 @@ public class Post : BaseEntity
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }
     public bool IsDeleted { get; set; } = false;
+    public bool StatusFullScreen { get; set; } = false;
     public Guid? FileId { get; set; }
     public MediaFile? File { get; set; }
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
