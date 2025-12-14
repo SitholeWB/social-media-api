@@ -15,7 +15,8 @@ public class IdentityService : IIdentityService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username || u.Email == request.Username, cancellationToken);
+        var username = request.Username.Trim();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == username, cancellationToken);
 
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
         {
@@ -87,15 +88,16 @@ public class IdentityService : IIdentityService
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        if (await _context.Users.AnyAsync(u => u.Username == request.Username || u.Email == request.Username, cancellationToken))
+        var username = request.Username.Trim();
+        if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == username, cancellationToken))
         {
             throw new Exception("Username already exists");
         }
 
         var user = new User
         {
-            Username = request.Username,
-            Email = request.Email,
+            Username = request.Username.Trim(),
+            Email = request.Email.Trim(),
             PasswordHash = HashPassword(request.Password),
             CreatedAt = DateTime.UtcNow,
             Role = UserRole.User, // Explicitly set default
