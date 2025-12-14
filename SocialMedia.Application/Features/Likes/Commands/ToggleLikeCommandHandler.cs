@@ -34,6 +34,28 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         {
             existingLike = await _likeRepository.GetByCommentIdAndUserIdAsync(command.CommentId.Value, command.UserId.GetValueOrDefault(), cancellationToken);
         }
+
+        // Validate entity exists before creating new like
+        if (existingLike == null)
+        {
+            if (command.PostId.HasValue)
+            {
+                var post = await _postRepository.GetByIdAsync(command.PostId.Value, cancellationToken);
+                if (post == null)
+                {
+                    return false; // Post doesn't exist
+                }
+            }
+            else if (command.CommentId.HasValue)
+            {
+                var comment = await _commentRepository.GetByIdAsync(command.CommentId.Value, cancellationToken);
+                if (comment == null)
+                {
+                    return false; // Comment doesn't exist
+                }
+            }
+        }
+
         var toggleLikeType = ToggleLikeType.Added;
         var oldEmoji = existingLike?.Emoji ?? string.Empty;
         if (existingLike != null)

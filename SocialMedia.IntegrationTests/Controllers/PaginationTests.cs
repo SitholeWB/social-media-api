@@ -1,16 +1,7 @@
 namespace SocialMedia.IntegrationTests;
 
-public class PaginationTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class PaginationTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly HttpClient _client;
-    private readonly IntegrationTestWebApplicationFactory _factory;
-
-    public PaginationTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
     [Fact]
     public async Task GetPosts_ShouldReturnPagedResult()
     {

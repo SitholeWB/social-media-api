@@ -1,17 +1,7 @@
-
 namespace SocialMedia.IntegrationTests;
 
-public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class ModerationControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly IntegrationTestWebApplicationFactory _factory;
-    private readonly HttpClient _client;
-
-    public ModerationControllerTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
     private async Task<string> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
     {
         var email = $"{username}@example.com";
@@ -74,6 +64,7 @@ public class ModerationControllerTests : IClassFixture<IntegrationTestWebApplica
         var getPostResponse = await _client.GetAsync($"/api/v1/posts/{postId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, getPostResponse.StatusCode);
     }
+
     [Fact]
     public async Task DeleteReportedContent_ShouldReturnForbidden_WhenUserIsNotAdmin()
     {

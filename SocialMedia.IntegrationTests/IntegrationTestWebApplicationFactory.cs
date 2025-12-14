@@ -1,4 +1,3 @@
-
 namespace SocialMedia.IntegrationTests
 {
     public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
@@ -7,6 +6,7 @@ namespace SocialMedia.IntegrationTests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.UseEnvironment("Testing");
             builder.ConfigureServices(services =>
             {
                 // Remove and replace SocialMediaDbContext

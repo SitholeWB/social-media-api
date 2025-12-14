@@ -4,6 +4,8 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var env = services.BuildServiceProvider().GetRequiredService<IHostEnvironment>();
+        var isTesting = env.IsEnvironment("Testing");
         var connectionString = configuration.GetConnectionString("WriteConnection");
         var connectionStringRead = configuration.GetConnectionString("ReadConnection");
         //services.AddDbContext<SocialMediaDbContext>(options =>
@@ -11,12 +13,16 @@ public static class InfrastructureServiceRegistration
 
         //services.AddDbContext<SocialMediaReadDbContext>(options =>
         //    options.UseMySql(connectionStringRead, ServerVersion.AutoDetect(connectionStringRead)));
-
-        services.AddDbContext<SocialMediaDbContext>(options =>
-            options.UseSqlServer(connectionString));
-
-        services.AddDbContext<SocialMediaReadDbContext>(options =>
-            options.UseSqlServer(connectionStringRead));
+        if (isTesting)
+        {
+            services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("write_db"));
+            services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("read_db"));
+        }
+        else
+        {
+            services.AddDbContext<SocialMediaDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<SocialMediaReadDbContext>(options => options.UseSqlServer(connectionStringRead));
+        }
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IPostRepository, PostRepository>();

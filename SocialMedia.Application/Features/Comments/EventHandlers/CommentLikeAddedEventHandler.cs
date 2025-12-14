@@ -65,11 +65,12 @@ public class CommentLikeAddedEventHandler :
                 var post = await _readRepository.GetByIdAsync(comment.PostId, cancellationToken);
                 if (post != null)
                 {
-                    var topComment = post.TopComments.FirstOrDefault(c => c.CommentId == comment.Id);
+                    var topComment = post.TopComments?.FirstOrDefault(c => c.CommentId == comment.Id);
                     if (topComment != null)
                     {
-                        topComment.LikeCount++;
-                        topComment.Reactions.Add(reaction);
+                        topComment.LikeCount = comment.Stats.LikeCount;
+                        topComment.Reactions = comment.Reactions;
+                        post.UpdateTrendingScore();
                         await _readRepository.UpdateAsync(post, cancellationToken);
                     }
                 }

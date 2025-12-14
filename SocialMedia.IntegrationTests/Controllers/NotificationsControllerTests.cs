@@ -1,16 +1,7 @@
 namespace SocialMedia.IntegrationTests;
 
-public class NotificationsControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class NotificationsControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly IntegrationTestWebApplicationFactory _factory;
-    private readonly HttpClient _client;
-
-    public NotificationsControllerTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
     private async Task<(string Token, Guid UserId)> RegisterAndLoginAsync(string username, string password)
     {
         var email = $"{username}@example.com";

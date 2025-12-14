@@ -1,16 +1,7 @@
-
-
 namespace SocialMedia.IntegrationTests;
 
-public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly HttpClient _client;
-
-    public PollsControllerTests(WebApplicationFactory<Program> factory)
-    {
-        _client = factory.CreateClient();
-    }
-
     [Fact]
     public async Task CreatePoll_ShouldReturnCreated()
     {
@@ -143,6 +134,7 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
             throw;
         }
     }
+
     [Fact]
     public async Task GetPoll_ShouldReturnNotFound_WhenPollDoesNotExist()
     {
@@ -154,20 +146,28 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task UpdatePoll_ShouldReturnNotFound_WhenPollDoesNotExist()
     {
+        // Arrange
         var pollId = Guid.NewGuid();
         var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1));
+
+        // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", command, TestContext.Current.CancellationToken);
-        // TODO: API should return NotFound instead of InternalServerError
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
     public async Task DeletePoll_ShouldReturnNotFound_WhenPollDoesNotExist()
     {
+        // Arrange
         var pollId = Guid.NewGuid();
+
+        // Act
         var response = await _client.DeleteAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
-        // TODO: API should return NotFound instead of InternalServerError
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
@@ -189,8 +189,8 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", updateCommand, TestContext.Current.CancellationToken);
 
-        // TODO: API should return NoContent instead of InternalServerError
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     [Fact]
@@ -210,7 +210,6 @@ public class PollsControllerTests : IClassFixture<WebApplicationFactory<Program>
         // Act
         var response = await _client.DeleteAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
 
-        // TODO: API should return NoContent instead of InternalServerError
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 }

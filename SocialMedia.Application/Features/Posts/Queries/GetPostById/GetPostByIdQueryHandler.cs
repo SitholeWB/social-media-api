@@ -12,8 +12,7 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
     public async Task<PostDto?> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
         var p = await _postRepository.GetByIdAsync(request.Id, cancellationToken);
-        p ??= new PostReadModel();
-        return new PostDto
+        return p == null ? null : new PostDto
         {
             Id = p.Id,
             Title = p.Title,

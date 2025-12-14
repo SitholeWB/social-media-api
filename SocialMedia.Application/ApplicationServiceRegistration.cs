@@ -50,6 +50,8 @@ public static class ApplicationServiceRegistration
 
         // Groups
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteGroupCommand, bool>, DeleteGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateGroupCommand, bool>, UpdateGroupCommandHandler>();
         services.AddScoped<ICommandHandler<AddUserToGroupCommand, bool>, AddUserToGroupCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveUserFromGroupCommand, bool>, RemoveUserFromGroupCommandHandler>();
         services.AddScoped<IQueryHandler<GetGroupsQuery, PagedResult<GroupDto>>, GetGroupsQueryHandler>();
@@ -62,6 +64,10 @@ public static class ApplicationServiceRegistration
 
         // Moderation
         services.AddScoped<ICommandHandler<DeleteReportedContentCommand, int>, DeleteReportedContentCommandHandler>();
+
+        // polls
+        services.AddScoped<ICommandHandler<DeletePollCommand, bool>, DeletePollCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdatePollCommand, bool>, UpdatePollCommandHandler>();
 
         // Notifications
         services.AddScoped<IQueryHandler<GetNotificationsQuery, List<NotificationDto>>, GetNotificationsQueryHandler>();

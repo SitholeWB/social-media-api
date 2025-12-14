@@ -1,17 +1,7 @@
-
 namespace SocialMedia.IntegrationTests;
 
-public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly IntegrationTestWebApplicationFactory _factory;
-    private readonly HttpClient _client;
-
-    public UsersControllerTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
     private async Task<(string Token, Guid UserId)> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
     {
         var email = $"{username}@example.com";
@@ -79,6 +69,7 @@ public class UsersControllerTests : IClassFixture<IntegrationTestWebApplicationF
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
     }
+
     [Fact]
     public async Task BanUser_ShouldReturnForbidden_WhenNonAdminTriesToBan()
     {

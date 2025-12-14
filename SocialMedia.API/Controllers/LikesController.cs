@@ -18,6 +18,10 @@ public class LikesController : ControllerBase
     {
         command.UserId = this.GetUserId();
         var result = await _dispatcher.Send<ToggleLikeCommand, bool>(command, cancellationToken);
+        if (!result)
+        {
+            return NotFound(); // Post or Comment doesn't exist
+        }
         return Ok(result);
     }
 }

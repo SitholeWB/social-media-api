@@ -1,17 +1,7 @@
-
 namespace SocialMedia.IntegrationTests;
 
-public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class ReportsControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly IntegrationTestWebApplicationFactory _factory;
-    private readonly HttpClient _client;
-
-    public ReportsControllerTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
     private async Task<string> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
     {
         var email = $"{username}@example.com";
@@ -71,6 +61,7 @@ public class ReportsControllerTests : IClassFixture<IntegrationTestWebApplicatio
         Assert.NotEmpty(result.Items);
         Assert.Contains(result.Items, r => r.PostId == postId);
     }
+
     [Fact]
     public async Task GetPendingReports_ShouldReturnEmpty_WhenNoReportsExist()
     {

@@ -1,14 +1,7 @@
 namespace SocialMedia.IntegrationTests;
 
-public class BlockchainTests : IClassFixture<IntegrationTestWebApplicationFactory>
+public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly HttpClient _client;
-
-    public BlockchainTests(IntegrationTestWebApplicationFactory factory)
-    {
-        _client = factory.CreateClient();
-    }
-
     [Fact]
     public async Task VerifyChain_ShouldReturnTrue_Initially()
     {

@@ -2,15 +2,8 @@ namespace SocialMedia.IntegrationTests;
 
 using System.Net;
 
-public class AuthTests : IClassFixture<WebApplicationFactory<Program>>
+public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private readonly WebApplicationFactory<Program> _factory;
-
-    public AuthTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-    }
-
     [Fact]
     public async Task Register_ShouldReturnAuthResponse_WhenRequestIsValid()
     {
