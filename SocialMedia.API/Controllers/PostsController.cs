@@ -54,6 +54,18 @@ public class PostsController : ControllerBase
         return Ok(post);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCommentById(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeletePostCommand(id, this.GetUserId());
+        var comment = await _dispatcher.Send<DeletePostCommand, bool>(command, cancellationToken);
+        if (!comment)
+        {
+            return NotFound();
+        }
+        return Ok(comment);
+    }
+
     [HttpPost("{id}/report")]
     public async Task<IActionResult> ReportPost(Guid id, [FromBody] ReportPostCommand command, CancellationToken cancellationToken)
     {
