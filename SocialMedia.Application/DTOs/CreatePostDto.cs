@@ -4,6 +4,7 @@ public class CreatePostDto
 {
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
+    public Guid GroupId { get; set; }
     public Guid AuthorId { get; set; }
     public Guid? FileId { get; set; }
     public bool StatusFullScreen { get; set; } = false;

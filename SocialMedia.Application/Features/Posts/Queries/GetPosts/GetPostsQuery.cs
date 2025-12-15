@@ -6,10 +6,9 @@ public enum PostSortBy
     Trending
 }
 
-public record GetPostsQuery() : IQuery<PagedResult<PostDto>>
+public record GetPostsQuery(Guid GroupId) : IQuery<PagedResult<PostDto>>
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
     public PostSortBy SortBy { get; set; } = PostSortBy.Latest;
-    public Guid? GroupId { get; set; }
 }

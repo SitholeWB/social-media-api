@@ -41,7 +41,7 @@ public class ReportsControllerTests(IntegrationTestWebApplicationFactory factory
         // 2. Create Post as User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
         var createPostCommand = new CreatePostCommand(new CreatePostDto { Title = "Report Test Post", Content = "Content", AuthorId = Guid.NewGuid() });
-        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
+        var createPostResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
         createPostResponse.EnsureSuccessStatusCode();
         var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 

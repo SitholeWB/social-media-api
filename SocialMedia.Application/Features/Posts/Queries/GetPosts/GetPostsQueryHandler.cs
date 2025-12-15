@@ -12,8 +12,8 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
     public async Task<PagedResult<PostDto>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
     {
         var posts = request.SortBy == PostSortBy.Trending
-            ? await _readRepository.GetTrendingAsync(request.PageNumber, request.PageSize, request.GroupId, cancellationToken)
-            : await _readRepository.GetLatestAsync(request.PageNumber, request.PageSize, request.GroupId, cancellationToken);
+            ? await _readRepository.GetTrendingAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken)
+            : await _readRepository.GetLatestAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken);
 
         var dtos = posts.Select(p => new PostDto
         {

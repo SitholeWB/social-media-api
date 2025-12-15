@@ -7,7 +7,7 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Arrange
         var postDto = new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = Guid.NewGuid() };
-        var postResponse = await _client.PostAsJsonAsync("/api/v1/posts", postDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", postDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var commentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment", AuthorId = Guid.NewGuid() };
@@ -23,7 +23,7 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Assert: Check Post Read Model (TopComments)
-        var getPostResponse = await _client.GetAsync($"/api/v1/posts?pageNumber=1&pageSize=10", TestContext.Current.CancellationToken);
+        var getPostResponse = await _client.GetAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts?pageNumber=1&pageSize=10", TestContext.Current.CancellationToken);
         var postResult = await getPostResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>(TestContext.Current.CancellationToken);
         var post = postResult.Items.FirstOrDefault(p => p.Id == postId);
 
@@ -46,7 +46,7 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Arrange
         var postDto = new CreatePostDto { Title = "Popular Post", Content = "Content", AuthorId = Guid.NewGuid() };
-        var postResponse = await _client.PostAsJsonAsync("/api/v1/posts", postDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", postDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Add 35 comments

@@ -9,7 +9,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // Create Post
         var createPostDto = new CreatePostDto { Title = "Post to Like", Content = "Content", AuthorId = userId };
-        var postResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Like Post
@@ -29,7 +29,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // Create Post & Comment
         var createPostDto = new CreatePostDto { Title = "Post for Comment Like", Content = "Content", AuthorId = userId };
-        var postResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Like", AuthorId = userId };

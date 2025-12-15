@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class PostRepository : Repository<Post>, IPostRepository
@@ -20,7 +19,8 @@ public class PostRepository : Repository<Post>, IPostRepository
             .Include(p => p.File)
             .ToListAsync(cancellationToken);
     }
-    public async Task<(List<Post> Items, long TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+
+    public async Task<(List<Post> Items, long TotalCount)> GetPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Posts
             .Include(p => p.File)

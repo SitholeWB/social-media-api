@@ -10,9 +10,9 @@ public interface IPostReadRepository
 
     Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default);
+    Task<List<PostReadModel>> GetTrendingAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default);
 
-    Task<List<PostReadModel>> GetLatestAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default);
+    Task<List<PostReadModel>> GetLatestAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default);
 
-    Task<long> GetTotalCountAsync(Guid? groupId = null, CancellationToken cancellationToken = default);
+    Task<long> GetTotalCountAsync(Guid groupId, CancellationToken cancellationToken = default);
 }

@@ -38,15 +38,9 @@ public class PostReadRepository : IPostReadRepository
         return true;
     }
 
-    public async Task<List<PostReadModel>> GetTrendingAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default)
+    public async Task<List<PostReadModel>> GetTrendingAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = _context.Posts.AsQueryable();
-
-        if (groupId.HasValue)
-        {
-            query = query.Where(p => p.GroupId == groupId);
-        }
-
+        var query = _context.Posts.Where(p => p.GroupId == groupId);
         return await query
             .OrderByDescending(p => p.Stats.TrendingScore)
             .ThenByDescending(p => p.CreatedAt)
@@ -55,15 +49,9 @@ public class PostReadRepository : IPostReadRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<PostReadModel>> GetLatestAsync(int page, int pageSize, Guid? groupId = null, CancellationToken cancellationToken = default)
+    public async Task<List<PostReadModel>> GetLatestAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = _context.Posts.AsQueryable();
-
-        if (groupId.HasValue)
-        {
-            query = query.Where(p => p.GroupId == groupId);
-        }
-
+        var query = _context.Posts.Where(p => p.GroupId == groupId);
         return await query
             .OrderByDescending(p => p.CreatedAt)
             .Skip((page - 1) * pageSize)
@@ -71,15 +59,9 @@ public class PostReadRepository : IPostReadRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<long> GetTotalCountAsync(Guid? groupId = null, CancellationToken cancellationToken = default)
+    public async Task<long> GetTotalCountAsync(Guid groupId, CancellationToken cancellationToken = default)
     {
-        var query = _context.Posts.AsQueryable();
-
-        if (groupId.HasValue)
-        {
-            query = query.Where(p => p.GroupId == groupId);
-        }
-
+        var query = _context.Posts.Where(p => p.GroupId == groupId);
         return await query.LongCountAsync(cancellationToken);
     }
 }

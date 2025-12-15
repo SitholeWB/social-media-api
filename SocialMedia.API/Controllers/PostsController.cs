@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/posts")]
 [ApiController]
 [Authorize]
 public class PostsController : ControllerBase
@@ -11,34 +11,6 @@ public class PostsController : ControllerBase
     public PostsController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] CreatePostDto createPostDto, CancellationToken cancellationToken)
-    {
-        var command = new CreatePostCommand(createPostDto);
-        var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
-        return CreatedAtAction(nameof(Get), new { id = postId }, postId);
-    }
-
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IActionResult> Get(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery] PostSortBy sortBy = PostSortBy.Latest,
-        [FromQuery] Guid? groupId = null,
-        CancellationToken cancellationToken = default)
-    {
-        var query = new GetPostsQuery
-        {
-            PageNumber = pageNumber,
-            PageSize = pageSize,
-            SortBy = sortBy,
-            GroupId = groupId
-        };
-        var result = await _dispatcher.Query<GetPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
-        return Ok(result);
     }
 
     [AllowAnonymous]

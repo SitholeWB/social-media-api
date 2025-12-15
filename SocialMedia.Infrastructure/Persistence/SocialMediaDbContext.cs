@@ -109,8 +109,9 @@ public class SocialMediaDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Post>()
-            .HasMany(p => p.Groups)
-            .WithMany(g => g.Posts);
+            .HasOne(p => p.Group)
+            .WithMany(g => g.Posts)
+            .HasForeignKey(x => x.GroupId);
 
         modelBuilder.Entity<GroupMember>()
             .HasOne(gm => gm.Group)

@@ -29,7 +29,7 @@ public class NotificationsControllerTests(IntegrationTestWebApplicationFactory f
         // 2. User 1 Creates Post
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user1Token);
         var createPostCommand = new CreatePostCommand(new CreatePostDto { Title = "Notif Test Post", Content = "Content", AuthorId = user1Id });
-        var createPostResponse = await _client.PostAsJsonAsync("/api/v1/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
+        var createPostResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostCommand.PostDto, TestContext.Current.CancellationToken);
         createPostResponse.EnsureSuccessStatusCode();
         var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 

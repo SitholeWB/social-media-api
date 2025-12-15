@@ -43,8 +43,8 @@ public class PostCreatedEventHandler :
                 CommentCount = 0,
                 TrendingScore = 0
             },
-            GroupId = notification.Post.Groups.FirstOrDefault()?.Id, // Simplified for now
-            GroupName = notification.Post.Groups.FirstOrDefault()?.Name
+            GroupId = notification.Post.GroupId,
+            GroupName = notification.Post.Group?.Name
         };
 
         await _readRepository.AddAsync(readModel, cancellationToken);

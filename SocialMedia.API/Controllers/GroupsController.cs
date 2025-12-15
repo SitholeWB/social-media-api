@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/groups")]
 [ApiController]
 [Authorize]
 public class GroupsController : ControllerBase
@@ -36,6 +36,15 @@ public class GroupsController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("{groupId}/posts")]
+    public async Task<IActionResult> CreatePost([FromBody] CreatePostDto createPostDto, [FromRoute] Guid groupId, CancellationToken cancellationToken)
+    {
+        createPostDto.GroupId = groupId;
+        var command = new CreatePostCommand(createPostDto);
+        var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
+        return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);
+    }
+
     [AllowAnonymous]
     [HttpGet("{groupId}/posts")]
     public async Task<IActionResult> GetGroupPosts(
@@ -45,7 +54,7 @@ public class GroupsController : ControllerBase
         [FromQuery] PostSortBy sortBy = PostSortBy.Latest,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPostsQuery
+        var query = new GetPostsQuery(groupId)
         {
             PageNumber = pageNumber,
             PageSize = pageSize,
