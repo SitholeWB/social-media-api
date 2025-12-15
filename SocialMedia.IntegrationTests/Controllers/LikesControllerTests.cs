@@ -14,7 +14,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // Like Post
         var command = new ToggleLikeCommand(userId, postId, null, "❤️", "Matshana Sithole");
-        var response = await _client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response.EnsureSuccessStatusCode();
@@ -38,7 +38,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // Like Comment
         var command = new ToggleLikeCommand(userId, null, commentId, "🔥", "Matshana Sithole");
-        var response = await _client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", command, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response.EnsureSuccessStatusCode();
@@ -56,7 +56,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
         var command = new ToggleLikeCommand(userId, postId, null, "❤️", "Matshana Sithole");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", command, TestContext.Current.CancellationToken);
 
         // Assert API should return NotFound when post doesn't exist
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -72,7 +72,7 @@ public class LikesControllerTests(IntegrationTestWebApplicationFactory factory) 
         var command = new ToggleLikeCommand(userId, null, commentId, "🔥", "Matshana Sithole");
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/likes/toggle", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", command, TestContext.Current.CancellationToken);
 
         // Assert API should return NotFound when comment doesn't exist
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

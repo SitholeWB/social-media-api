@@ -36,7 +36,7 @@ public class NotificationsControllerTests(IntegrationTestWebApplicationFactory f
         // 3. User 2 Likes Post
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user2Token);
         var toggleLikeCommand = new ToggleLikeCommand(user2Id, postId, null, "👍", "Matshana Sithole");
-        var likeResponse = await _client.PostAsJsonAsync("/api/v1/likes/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
+        var likeResponse = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
         likeResponse.EnsureSuccessStatusCode();
 
         // 4. User 1 Gets Notifications

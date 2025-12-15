@@ -16,7 +16,7 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
 
         // Act: React to comment
         var reactionCommand = new { CommentId = commentId, UserId = Guid.NewGuid(), Emoji = "❤️" };
-        var reactionResponse = await _client.PostAsJsonAsync("/api/v1/likes/toggle", reactionCommand, TestContext.Current.CancellationToken);
+        var reactionResponse = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", reactionCommand, TestContext.Current.CancellationToken);
         reactionResponse.EnsureSuccessStatusCode();
 
         // Process pending events
