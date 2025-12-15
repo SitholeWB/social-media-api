@@ -130,6 +130,6 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         {
             await _dispatcher.Publish(new PostLikeAddedEvent(existingLike, toggleLikeType, oldEmoji), cancellationToken);
         }
-        return toggleLikeType == ToggleLikeType.Added; // Added
+        return true; // Added
     }
 }
