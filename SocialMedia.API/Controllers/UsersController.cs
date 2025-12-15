@@ -1,9 +1,7 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/users")]
 [ApiController]
 [Authorize]
 public class UsersController : ControllerBase
@@ -39,5 +37,4 @@ public class UsersController : ControllerBase
         var result = await _dispatcher.Query<GetReportedUsersQuery, List<ReportedUserDto>>(query, cancellationToken);
         return Ok(result);
     }
-
 }

@@ -1,9 +1,7 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/notifications")]
 [ApiController]
 [Authorize]
 public class NotificationsController : ControllerBase
@@ -23,5 +21,4 @@ public class NotificationsController : ControllerBase
         var result = await _dispatcher.Query<GetNotificationsQuery, List<NotificationDto>>(query, cancellationToken);
         return Ok(result);
     }
-
 }

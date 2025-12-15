@@ -54,6 +54,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<UpdateGroupCommand, bool>, UpdateGroupCommandHandler>();
         services.AddScoped<ICommandHandler<AddUserToGroupCommand, bool>, AddUserToGroupCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveUserFromGroupCommand, bool>, RemoveUserFromGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateDefaultGroupsCommand, string>, CreateDefaultGroupsCommandHandler>();
         services.AddScoped<IQueryHandler<GetGroupsQuery, PagedResult<GroupDto>>, GetGroupsQueryHandler>();
         services.AddScoped<IQueryHandler<GetGroupQuery, GroupDto?>, GetGroupQueryHandler>();
 

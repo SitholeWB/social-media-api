@@ -1,7 +1,7 @@
 namespace SocialMedia.API.Controllers;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/stats")]
 [ApiController]
 [Authorize]
 public class StatsController(Dispatcher dispatcher) : ControllerBase

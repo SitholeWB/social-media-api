@@ -1,9 +1,7 @@
-
-
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/moderation")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class ModerationController : ControllerBase
@@ -22,5 +20,4 @@ public class ModerationController : ControllerBase
         var deletedCount = await _dispatcher.Send<DeleteReportedContentCommand, int>(command, cancellationToken);
         return Ok(new { deletedCount = deletedCount });
     }
-
 }
