@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251214175209_InitialCreate_read")]
+    [Migration("20251215175412_InitialCreate_read")]
     partial class InitialCreate_read
     {
         /// <inheritdoc />
@@ -55,6 +55,8 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
 
                     b.ToTable("CommentReads", (string)null);
                 });
@@ -99,6 +101,8 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("PostReads", (string)null);
                 });

@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     [DbContext(typeof(SocialMediaDbContext))]
-    [Migration("20251214175240_InitialCreate_write")]
+    [Migration("20251215175437_InitialCreate_write")]
     partial class InitialCreate_write
     {
         /// <inheritdoc />
@@ -24,21 +24,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GroupPost", b =>
-                {
-                    b.Property<Guid>("GroupsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PostsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("GroupsId", "PostsId");
-
-                    b.HasIndex("PostsId");
-
-                    b.ToTable("GroupPost");
-                });
 
             modelBuilder.Entity("SocialMedia.Domain.Block", b =>
                 {
@@ -385,6 +370,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<Guid?>("FileId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -401,6 +389,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.HasKey("Id");
 
                     b.HasIndex("FileId");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Posts");
                 });
@@ -540,21 +530,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.ToTable("Votes");
                 });
 
-            modelBuilder.Entity("GroupPost", b =>
-                {
-                    b.HasOne("SocialMedia.Domain.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialMedia.Domain.Post", null)
-                        .WithMany()
-                        .HasForeignKey("PostsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SocialMedia.Domain.Comment", b =>
                 {
                     b.HasOne("SocialMedia.Domain.MediaFile", "File")
@@ -692,6 +667,12 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         .WithMany()
                         .HasForeignKey("FileId");
 
+                    b.HasOne("SocialMedia.Domain.Group", "Group")
+                        .WithMany("Posts")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsMany("SocialMedia.Domain.TagDto", "AdminTags", b1 =>
                         {
                             b1.Property<Guid>("PostId")
@@ -749,6 +730,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Navigation("AdminTags");
 
                     b.Navigation("File");
+
+                    b.Navigation("Group");
 
                     b.Navigation("Tags");
                 });
@@ -808,6 +791,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
             modelBuilder.Entity("SocialMedia.Domain.Group", b =>
                 {
                     b.Navigation("Members");
+
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Poll", b =>

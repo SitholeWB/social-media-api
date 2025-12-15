@@ -58,6 +58,16 @@ namespace SocialMedia.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_PostReads", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommentReads_PostId",
+                table: "CommentReads",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostReads_GroupId",
+                table: "PostReads",
+                column: "GroupId");
         }
 
         /// <inheritdoc />

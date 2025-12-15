@@ -34,6 +34,7 @@ public class SocialMediaReadDbContext : DbContext
         modelBuilder.Entity<PostReadModel>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.GroupId);
             entity.ToTable("PostReads"); // Separate table or view usually
 
             entity.OwnsOne(p => p.Stats, b => b.ToJson());
@@ -52,6 +53,7 @@ public class SocialMediaReadDbContext : DbContext
         modelBuilder.Entity<CommentReadModel>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.PostId);
             entity.ToTable("CommentReads");
 
             entity.OwnsOne(c => c.Stats, b => b.ToJson());

@@ -53,6 +53,8 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PostId");
+
                     b.ToTable("CommentReads", (string)null);
                 });
 
@@ -96,6 +98,8 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("PostReads", (string)null);
                 });

@@ -125,6 +125,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -139,6 +140,12 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Posts_MediaFiles_FileId",
                         column: x => x.FileId,
@@ -277,30 +284,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupPost",
-                columns: table => new
-                {
-                    GroupsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupPost", x => new { x.GroupsId, x.PostsId });
-                    table.ForeignKey(
-                        name: "FK_GroupPost_Groups_GroupsId",
-                        column: x => x.GroupsId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GroupPost_Posts_PostsId",
-                        column: x => x.PostsId,
-                        principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Votes",
                 columns: table => new
                 {
@@ -398,11 +381,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupPost_PostsId",
-                table: "GroupPost",
-                column: "PostsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Likes_CommentId",
                 table: "Likes",
                 column: "CommentId");
@@ -426,6 +404,11 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "IX_Posts_FileId",
                 table: "Posts",
                 column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_GroupId",
+                table: "Posts",
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_CommentId",
@@ -463,9 +446,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "GroupMembers");
 
             migrationBuilder.DropTable(
-                name: "GroupPost");
-
-            migrationBuilder.DropTable(
                 name: "Likes");
 
             migrationBuilder.DropTable(
@@ -484,9 +464,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "Votes");
 
             migrationBuilder.DropTable(
-                name: "Groups");
-
-            migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
@@ -500,6 +477,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             migrationBuilder.DropTable(
                 name: "Polls");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "MediaFiles");
