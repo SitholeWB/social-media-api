@@ -10,7 +10,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddApiVersioning(options =>
 {
-    options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+    options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
 })
@@ -51,6 +51,7 @@ app.UseHttpsRedirection();
 // Serve static files from wwwroot
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRouting();
 
 // Enable CORS
 app.UseCors("AllowAdminSPA");

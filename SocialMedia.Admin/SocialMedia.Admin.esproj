@@ -1,17 +1,11 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.784122">
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.784122">
   <PropertyGroup>
     <StartupCommand>npm run dev</StartupCommand>
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
     <JavaScriptTestFramework>Jest</JavaScriptTestFramework>
-    <!-- Allows the build (or compile) JavaScript project to run in parallel with any other project. -->
-    <BuildCommand>npm run build</BuildCommand>
-    <ProductionBuildCommand>npm run build</ProductionBuildCommand>
-    <!-- Command to create an optimized build of the project that's ready for publishing -->
-    <CleanCommand>
-    </CleanCommand>
-    <ShouldRunNpmInstall>true</ShouldRunNpmInstall>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Folder where production build objects will be placed -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="src\" />
-  </ItemGroup>
 </Project>

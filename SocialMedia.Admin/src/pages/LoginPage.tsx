@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { GoogleLogin } from '@react-oauth/google';
 import Divider from '@mui/material/Divider';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -10,6 +9,9 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
+import GoogleIcon from '@mui/icons-material/Google';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth, googleProvider } from '../firebaseConfig';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { login, loginWithGoogle, clearError } from '../store/slices/authSlice';
 
@@ -41,6 +43,27 @@ export default function LoginPage() {
             await dispatch(login(formData)).unwrap();
         } catch (err) {
             // Error is handled by Redux
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential?.idToken;
+
+            if (token) {
+                dispatch(loginWithGoogle(token));
+            } else {
+                // Fallback to Firebase ID Token if google credential token is missing (though our backend expects Google ID Token, verify if this is compatible)
+                // For now, let's assume we need the Google ID Token strictly.
+                console.error("No Google ID Token found in credential");
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            // Dispatch error to redux if needed or show local alert
         }
     };
 
@@ -117,18 +140,27 @@ export default function LoginPage() {
 
                             <Divider>OR</Divider>
 
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <GoogleLogin
-                                    onSuccess={(credentialResponse) => {
-                                        if (credentialResponse.credential) {
-                                            dispatch(loginWithGoogle(credentialResponse.credential));
-                                        }
-                                    }}
-                                    onError={() => {
-                                        console.log('Login Failed');
-                                    }}
-                                />
-                            </Box>
+                            <Button
+                                variant="outlined"
+                                size="large"
+                                fullWidth
+                                startIcon={<GoogleIcon />}
+                                onClick={handleGoogleLogin}
+                                sx={{
+                                    py: 1.5,
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    fontSize: '1rem',
+                                    borderColor: 'divider',
+                                    color: 'text.primary',
+                                    '&:hover': {
+                                        borderColor: 'text.primary',
+                                        backgroundColor: 'action.hover',
+                                    },
+                                }}
+                            >
+                                Sign in with Google
+                            </Button>
                         </Stack>
                     </form>
 

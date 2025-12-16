@@ -74,7 +74,11 @@ export const authService = {
                 headers: { Authorization: `Bearer ${token}` }
             });
             return response.data;
-        } catch {
+        } catch (error: any) {
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                localStorage.removeItem(TOKEN_KEY);
+                window.location.href = '/login';
+            }
             return null;
         }
     }
