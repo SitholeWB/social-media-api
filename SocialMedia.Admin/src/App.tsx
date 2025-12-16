@@ -25,6 +25,11 @@ import FeedbackPage from './pages/FeedbackPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { store, RootState } from './store/store';
+import PostsPage from './pages/PostsPage';
+import CreatePostPage from './pages/CreatePostPage';
+import EditPostPage from './pages/EditPostPage';
+import EditGroupPage from './pages/EditGroupPage';
+import EditPollPage from './pages/EditPollPage';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -61,16 +66,21 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                         }
                     >
                         <Route index element={<MainGrid />} />
-                        <Route path="groups" element={<GroupsPage />} />
-                        <Route path="groups/create" element={<CreateGroupPage />} />
+                        <Route path="/groups" element={<GroupsPage />} />
+                        <Route path="/groups/create" element={<CreateGroupPage />} />
+                        <Route path="/groups/:groupId/edit" element={<EditGroupPage />} />
                         <Route path="users" element={<UsersPage />} />
-                        <Route path="polls" element={<PollsPage />} />
-                        <Route path="polls/create" element={<CreatePollPage />} />
+                        <Route path="/polls" element={<PollsPage />} />
+                        <Route path="/polls/create" element={<CreatePollPage />} />
+                        <Route path="/polls/:pollId/edit" element={<EditPollPage />} />
                         <Route path="reports" element={<ReportsPage />} />
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="about" element={<AboutPage />} />
                         <Route path="feedback" element={<FeedbackPage />} />
                         <Route path="profile" element={<ProfilePage />} />
+                        <Route path="/groups/:groupId/posts" element={<PostsPage />} />
+                        <Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
+                        <Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

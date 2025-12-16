@@ -61,9 +61,8 @@ export default function CreatePollPage() {
                         autoFocus
                         label="Question"
                         fullWidth
+                        variant="standard"
                         multiline
-                        maxRows={4}
-                        variant="outlined"
                         value={formData.question}
                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                     />
@@ -76,6 +75,7 @@ export default function CreatePollPage() {
                                     <TextField
                                         fullWidth
                                         size="small"
+                                        variant="standard"
                                         placeholder={`Option ${index + 1}`}
                                         value={option}
                                         onChange={(e) => handleOptionChange(index, e.target.value)}
@@ -102,7 +102,8 @@ export default function CreatePollPage() {
                         label="Expires At"
                         type="datetime-local"
                         fullWidth
-                        InputLabelProps={{ shrink: true }}
+                        variant="standard"
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={formData.expiresAt ? new Date(formData.expiresAt).toISOString().slice(0, 16) : ''}
                         onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value || undefined })}
                     />

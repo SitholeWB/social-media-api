@@ -1,6 +1,6 @@
-// pages/CreateGroupPage.tsx
+// pages/EditGroupPage.tsx
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,13 +11,15 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageHeader from '../components/PageHeader';
-import { useAppDispatch } from '../store/hooks';
-import { createGroup } from '../store/slices/groupsSlice';
-import { CreateGroupCommand } from '../services/groupsService';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchGroups, updateGroup } from '../store/slices/groupsSlice';
+import { UpdateGroupCommand } from '../services/groupsService';
 
-export default function CreateGroupPage() {
+export default function EditGroupPage() {
+    const { groupId } = useParams<{ groupId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { items: groups, loading: reduxLoading } = useAppSelector((state) => state.groups);
 
     const [name, setName] = React.useState('');
     const [description, setDescription] = React.useState('');
@@ -25,6 +27,22 @@ export default function CreateGroupPage() {
     const [isAutoAdd, setIsAutoAdd] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        dispatch(fetchGroups());
+    }, [dispatch]);
+
+    React.useEffect(() => {
+        if (groupId && groups.length > 0) {
+            const group = groups.find(g => g.id === groupId);
+            if (group) {
+                setName(group.name);
+                setDescription(group.description);
+                setIsPublic(group.isPublic);
+                setIsAutoAdd(group.isAutoAdd);
+            }
+        }
+    }, [groupId, groups]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,18 +61,24 @@ export default function CreateGroupPage() {
             setLoading(true);
             setError(null);
 
-            const command: CreateGroupCommand = {
-                name,
-                description,
-                isPublic,
-                isAutoAdd,
-            };
-            
-            await dispatch(createGroup(command)).unwrap();
-            
-            navigate('/groups');
+            if (groupId) {
+                const command: UpdateGroupCommand = {
+                    groupId,
+                    name,
+                    description,
+                    isPublic,
+                    isAutoAdd,
+                };
+                
+                await dispatch(updateGroup({ 
+                    id: groupId, 
+                    command 
+                })).unwrap();
+                
+                navigate('/groups');
+            }
         } catch (err: any) {
-            setError(err.message || 'Failed to create group');
+            setError(err.message || 'Failed to update group');
         } finally {
             setLoading(false);
         }
@@ -64,10 +88,24 @@ export default function CreateGroupPage() {
         navigate('/groups');
     };
 
+    const currentGroup = groups.find(g => g.id === groupId);
+
+    if (!groupId) {
+        return <Typography>Group ID is required</Typography>;
+    }
+
+    if (reduxLoading && !currentGroup) {
+        return <Typography>Loading...</Typography>;
+    }
+
+    if (!currentGroup && !reduxLoading) {
+        return <Typography>Group not found</Typography>;
+    }
+
     return (
         <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto' }}>
             <PageHeader
-                title="Create Group"
+                title="Edit Group"
                 action={
                     <Button
                         startIcon={<ArrowBackIcon />}
@@ -103,19 +141,19 @@ export default function CreateGroupPage() {
                             variant="standard"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            disabled={loading}
+                            disabled={loading || reduxLoading}
                             required
                         />
 
                         <TextField
                             label="Description"
                             fullWidth
+                            multiline
                             variant="standard"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            disabled={loading}
+                            disabled={loading || reduxLoading}
                             required
-                            multiline
                         />
 
                         <Paper
@@ -133,7 +171,7 @@ export default function CreateGroupPage() {
                                         <Checkbox
                                             checked={isPublic}
                                             onChange={(e) => setIsPublic(e.target.checked)}
-                                            disabled={loading}
+                                            disabled={loading || reduxLoading}
                                         />
                                     }
                                     label="Public Group"
@@ -143,7 +181,7 @@ export default function CreateGroupPage() {
                                         <Checkbox
                                             checked={isAutoAdd}
                                             onChange={(e) => setIsAutoAdd(e.target.checked)}
-                                            disabled={loading}
+                                            disabled={loading || reduxLoading}
                                         />
                                     }
                                     label="Auto-add new users"
@@ -162,10 +200,10 @@ export default function CreateGroupPage() {
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={loading}
+                                disabled={loading || reduxLoading}
                                 sx={{ textTransform: 'none' }}
                             >
-                                {loading ? 'Creating...' : 'Create Group'}
+                                {loading ? 'Saving...' : 'Save Changes'}
                             </Button>
                         </Stack>
                     </Stack>

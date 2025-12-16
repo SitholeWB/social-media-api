@@ -111,6 +111,7 @@ export default function LoginPage() {
                                 fullWidth
                                 required
                                 autoFocus
+                                variant="standard"
                                 value={formData.username}
                                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             />
@@ -119,6 +120,7 @@ export default function LoginPage() {
                                 type="password"
                                 fullWidth
                                 required
+                                variant="standard"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             />

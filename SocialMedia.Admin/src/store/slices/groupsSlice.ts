@@ -1,3 +1,4 @@
+// store/slices/groupsSlice.ts - Updated version
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { groupsService, Group, CreateGroupCommand, UpdateGroupCommand } from '../../services/groupsService';
 
@@ -5,17 +6,24 @@ interface GroupsState {
     items: Group[];
     loading: boolean;
     error: string | null;
+    currentGroup: Group | null;
 }
 
 const initialState: GroupsState = {
     items: [],
     loading: false,
     error: null,
+    currentGroup: null,
 };
 
 export const fetchGroups = createAsyncThunk('groups/fetchGroups', async () => {
     const response = await groupsService.getGroups();
     return response.items;
+});
+
+export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: string) => {
+    const group = await groupsService.getGroup(id);
+    return group;
 });
 
 export const createGroup = createAsyncThunk('groups/createGroup', async (command: CreateGroupCommand) => {
@@ -33,7 +41,11 @@ export const deleteGroup = createAsyncThunk('groups/deleteGroup', async (id: str
 const groupsSlice = createSlice({
     name: 'groups',
     initialState,
-    reducers: {},
+    reducers: {
+        clearCurrentGroup: (state) => {
+            state.currentGroup = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchGroups.pending, (state) => {
@@ -48,8 +60,20 @@ const groupsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to fetch groups';
             })
+            .addCase(fetchGroup.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchGroup.fulfilled, (state, action: PayloadAction<Group>) => {
+                state.loading = false;
+                state.currentGroup = action.payload;
+            })
+            .addCase(fetchGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to fetch group';
+            })
             .addCase(createGroup.fulfilled, (state) => {
-                // We could optimistically add the group here, but for now we'll just re-fetch
+                // We could optimistically add the group here
             })
             .addCase(updateGroup.fulfilled, (state) => {
                 // Same here
@@ -60,4 +84,5 @@ const groupsSlice = createSlice({
     },
 });
 
+export const { clearCurrentGroup } = groupsSlice.actions;
 export default groupsSlice.reducer;
