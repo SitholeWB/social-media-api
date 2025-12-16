@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7168';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7168';
 const TOKEN_KEY = 'auth_token';
 
 export async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
