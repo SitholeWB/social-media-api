@@ -23,6 +23,7 @@ import {
 import { formatDateTime } from '../utils/dateTime';
 
 export default function PostsPage() {
+    const { user } = useAppSelector((state) => state.auth);
     const { groupId } = useParams<{ groupId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -96,21 +97,26 @@ export default function PostsPage() {
             sortable: false,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <Stack direction="row" spacing={1}>
-                    <IconButton
-                        onClick={() => navigate(`/groups/${groupId}/posts/${params.row.id}/edit`)}
-                        size="small"
-                        color="primary"
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(params.row.id)} size="small" color="error">
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    {params.row.authorId === user?.id &&
+                        <>
+                        
+                            <IconButton
+                                onClick={() => navigate(`/groups/${groupId}/posts/${params.row.id}/edit`)}
+                                size="small"
+                                color="primary"
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton onClick={() => handleDelete(params.row.id)} size="small" color="error">
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </>
+                    }
                 </Stack>
             ),
         },
     ];
-
+    
     if (!groupId) {
         return <Typography>Group ID is required</Typography>;
     }

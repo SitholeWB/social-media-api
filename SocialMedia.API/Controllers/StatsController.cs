@@ -4,7 +4,7 @@ namespace SocialMedia.API.Controllers;
 [Route("api/v{version:apiVersion}/stats")]
 [ApiController]
 [Authorize]
-public class StatsController(Dispatcher dispatcher) : ControllerBase
+public class StatsController(IDispatcher dispatcher) : ControllerBase
 {
     [HttpGet("dashboard")]
     public async Task<IActionResult> GetDashboardStats([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, CancellationToken cancellationToken)

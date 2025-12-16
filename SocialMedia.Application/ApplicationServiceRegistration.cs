@@ -70,6 +70,9 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<DeletePollCommand, bool>, DeletePollCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePollCommand, bool>, UpdatePollCommandHandler>();
 
+        // stats
+        services.AddScoped<IQueryHandler<GetDashboardStatsQuery, Result<DashboardStatsDto>>, GetDashboardStatsQueryHandler>();
+
         // Notifications
         services.AddScoped<IQueryHandler<GetNotificationsQuery, List<NotificationDto>>, GetNotificationsQueryHandler>();
 
