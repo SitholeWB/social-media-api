@@ -35,6 +35,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
+    "eslint": "^9.39.2",
     "vite": "latest"
   }
 }
