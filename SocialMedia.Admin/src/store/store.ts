@@ -4,6 +4,7 @@ import pollsReducer from './slices/pollsSlice';
 import authReducer from './slices/authSlice';
 import settingsReducer from './slices/settingsSlice';
 import postsReducer from './slices/postsSlice';
+import reportsSlice from './slices/reportsSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
         polls: pollsReducer,
         auth: authReducer,
         settings: settingsReducer,
-        posts: postsReducer
+        posts: postsReducer,
+        reports: reportsSlice,
     },
 });
 

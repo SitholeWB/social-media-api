@@ -20,6 +20,7 @@ import {
     setPageNumber,
     setPageSize
 } from '../store/slices/pollsSlice';
+import { formatDate } from '../utils/dateTime';
 
 export default function PollsPage() {
     const navigate = useNavigate();
@@ -56,18 +57,6 @@ export default function PollsPage() {
         // MUI DataGrid uses 0-based page index, but our API uses 1-based
         dispatch(setPageNumber(model.page + 1));
         dispatch(setPageSize(model.pageSize));
-    };
-
-    const formatDate = (dateString?: string) => {
-        if (!dateString) return 'Never';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
     };
 
     const columns: GridColDef[] = [

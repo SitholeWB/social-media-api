@@ -16,7 +16,6 @@ import CreateGroupPage from './pages/CreateGroupPage';
 import UsersPage from './pages/UsersPage';
 import PollsPage from './pages/PollsPage';
 import CreatePollPage from './pages/CreatePollPage';
-import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
@@ -29,6 +28,7 @@ import EditPostPage from './pages/EditPostPage';
 import EditGroupPage from './pages/EditGroupPage';
 import EditPollPage from './pages/EditPollPage';
 import ViewPollPage from './pages/ViewPollPage';
+import ReportedPostsPage from './pages/ReportedPostsPage';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -72,13 +72,13 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                         <Route path="/polls" element={<PollsPage />} />
                         <Route path="/polls/create" element={<CreatePollPage />} />
                         <Route path="/polls/:pollId/edit" element={<EditPollPage />} />
-                        <Route path="reports" element={<ReportsPage />} />
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="profile" element={<ProfilePage />} />
                         <Route path="/groups/:groupId/posts" element={<PostsPage />} />
                         <Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
                         <Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
                         <Route path="/polls/:pollId" element={<ViewPollPage />} />
+                        <Route path="/reports" element={<ReportedPostsPage />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
