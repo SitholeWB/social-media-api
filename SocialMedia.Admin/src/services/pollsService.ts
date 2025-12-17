@@ -1,4 +1,11 @@
+// services/pollsService.ts
 import { fetchJson } from './api';
+
+export interface PollOption {
+    id: string;
+    text: string;
+    voteCount: number;
+}
 
 export interface Poll {
     id: string;
@@ -9,12 +16,6 @@ export interface Poll {
     options: PollOption[];
 }
 
-export interface PollOption {
-    id: string;
-    text: string;
-    voteCount: number;
-}
-
 export interface CreatePollCommand {
     question: string;
     options: string[];
@@ -22,7 +23,6 @@ export interface CreatePollCommand {
 }
 
 export interface UpdatePollCommand {
-    pollId: string;
     question: string;
     isActive: boolean;
     expiresAt?: string;
@@ -30,12 +30,10 @@ export interface UpdatePollCommand {
 
 export interface PagedResult<T> {
     items: T[];
-    totalCount: number;
     pageNumber: number;
     pageSize: number;
+    totalCount: number;
     totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
 }
 
 export const pollsService = {
@@ -46,13 +44,13 @@ export const pollsService = {
         fetchJson<Poll>(`/api/v1.0/polls/${id}`),
 
     createPoll: (command: CreatePollCommand) =>
-        fetchJson<string>('/api/v1.0/polls', {
+        fetchJson<Poll>('/api/v1.0/polls', {
             method: 'POST',
             body: JSON.stringify(command),
         }),
 
     updatePoll: (id: string, command: UpdatePollCommand) =>
-        fetchJson<void>(`/api/v1.0/polls/${id}`, {
+        fetchJson<Poll>(`/api/v1.0/polls/${id}`, {
             method: 'PUT',
             body: JSON.stringify(command),
         }),
@@ -60,5 +58,11 @@ export const pollsService = {
     deletePoll: (id: string) =>
         fetchJson<void>(`/api/v1.0/polls/${id}`, {
             method: 'DELETE',
+        }),
+
+    voteOnPoll: (pollId: string, optionId: string) =>
+        fetchJson<void>(`/api/v1.0/polls/${pollId}/vote`, {
+            method: 'POST',
+            body: JSON.stringify({ optionId }),
         }),
 };
