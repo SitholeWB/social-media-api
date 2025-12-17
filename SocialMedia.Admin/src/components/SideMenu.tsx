@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import { useAppSelector } from '../store/hooks';
+import { useAuth } from '../hooks/useAuth';
 
 const drawerWidth = 240;
 
@@ -23,7 +24,16 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
-  const { user } = useAppSelector((state) => state.auth);
+  const {
+    user,
+    logout,
+    isLoading,
+    isAdmin,
+    isModerator,
+    isUser,
+    hasRole,
+    hasPermission
+  } = useAuth();
 
   return (
     <Drawer

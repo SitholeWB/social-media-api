@@ -21,9 +21,19 @@ import {
     setPageSize
 } from '../store/slices/postsSlice';
 import { formatDateTime } from '../utils/dateTime';
+import { useAuth } from '../hooks/useAuth';
 
 export default function PostsPage() {
-    const { user } = useAppSelector((state) => state.auth);
+    const {
+        user,
+        logout,
+        isLoading,
+        isAdmin,
+        isModerator,
+        isUser,
+        hasRole,
+        hasPermission
+    } = useAuth();
     const { groupId } = useParams<{ groupId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -119,7 +129,7 @@ export default function PostsPage() {
                 <Stack direction="row" spacing={1}>
                     {params.row.authorId === user?.id &&
                         <>
-                        
+
                             <IconButton
                                 onClick={() => navigate(`/groups/${groupId}/posts/${params.row.id}/edit`)}
                                 size="small"
@@ -136,7 +146,7 @@ export default function PostsPage() {
             ),
         },
     ];
-    
+
     if (!groupId) {
         return <Typography>Group ID is required</Typography>;
     }
