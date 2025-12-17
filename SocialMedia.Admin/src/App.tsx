@@ -20,8 +20,6 @@ import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
-import AboutPage from './pages/AboutPage';
-import FeedbackPage from './pages/FeedbackPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { store, RootState } from './store/store';
@@ -75,9 +73,7 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                         <Route path="/polls/:pollId/edit" element={<EditPollPage />} />
                         <Route path="reports" element={<ReportsPage />} />
                         <Route path="settings" element={<SettingsPage />} />
-                        <Route path="about" element={<AboutPage />} />
-                        <Route path="feedback" element={<FeedbackPage />} />
-                        <Route path="profile" element={<ProfilePage />} />
+                        <Route path="profile" element={<ProfilePage/>} />
                         <Route path="/groups/:groupId/posts" element={<PostsPage />} />
                         <Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
                         <Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
