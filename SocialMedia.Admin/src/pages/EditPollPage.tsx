@@ -12,14 +12,14 @@ import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageHeader from '../components/PageHeader';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchPolls, updatePoll } from '../store/slices/pollsSlice';
+import { fetchPoll, updatePoll } from '../store/slices/pollsSlice';
 import { UpdatePollCommand } from '../services/pollsService';
 
 export default function EditPollPage() {
     const { pollId } = useParams<{ pollId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { items: polls, loading: reduxLoading } = useAppSelector((state) => state.polls);
+    const { currentPoll, loading: reduxLoading } = useAppSelector((state) => state.polls);
 
     const [question, setQuestion] = React.useState('');
     const [isActive, setIsActive] = React.useState(true);
@@ -28,19 +28,16 @@ export default function EditPollPage() {
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        dispatch(fetchPolls());
+        dispatch(fetchPoll(pollId!));
     }, [dispatch]);
 
     React.useEffect(() => {
-        if (pollId && polls.length > 0) {
-            const poll = polls.find(p => p.id === pollId);
-            if (poll) {
-                setQuestion(poll.question);
-                setIsActive(poll.isActive);
-                setExpiresAt(poll.expiresAt || undefined);
-            }
+        if (pollId && currentPoll) {
+            setQuestion(currentPoll.question);
+            setIsActive(currentPoll.isActive);
+            setExpiresAt(currentPoll.expiresAt || undefined);
         }
-    }, [pollId, polls]);
+    }, [pollId, currentPoll]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,7 +53,6 @@ export default function EditPollPage() {
 
             if (pollId) {
                 const command: UpdatePollCommand = {
-                    pollId,
                     question,
                     isActive,
                     expiresAt: expiresAt || undefined,
@@ -80,7 +76,6 @@ export default function EditPollPage() {
         navigate('/polls');
     };
 
-    const currentPoll = polls.find(p => p.id === pollId);
 
     if (!pollId) {
         return <Typography>Poll ID is required</Typography>;

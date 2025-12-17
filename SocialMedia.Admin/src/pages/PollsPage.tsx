@@ -13,8 +13,8 @@ import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import PageHeader from '../components/PageHeader';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { 
-    fetchPolls, 
+import {
+    fetchPolls,
     deletePoll,
     clearPolls,
     setPageNumber,
@@ -24,16 +24,16 @@ import {
 export default function PollsPage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { 
-        items: polls, 
-        loading, 
-        pagination 
+    const {
+        items: polls,
+        loading,
+        pagination
     } = useAppSelector((state) => state.polls);
 
     React.useEffect(() => {
-        dispatch(fetchPolls({ 
-            pageNumber: pagination.pageNumber, 
-            pageSize: pagination.pageSize 
+        dispatch(fetchPolls({
+            pageNumber: pagination.pageNumber,
+            pageSize: pagination.pageSize
         }));
 
         return () => {
@@ -71,17 +71,17 @@ export default function PollsPage() {
     };
 
     const columns: GridColDef[] = [
-        { 
-            field: 'question', 
-            headerName: 'Question', 
-            flex: 2, 
+        {
+            field: 'question',
+            headerName: 'Question',
+            flex: 2,
             minWidth: 250,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <Typography
                     variant="body1"
-                    sx={{ 
+                    sx={{
                         cursor: 'pointer',
-                        '&:hover': { 
+                        '&:hover': {
                             textDecoration: 'underline',
                             color: 'primary.main'
                         }
@@ -92,10 +92,10 @@ export default function PollsPage() {
                 </Typography>
             )
         },
-        { 
-            field: 'isActive', 
-            headerName: 'Active', 
-            type: 'boolean', 
+        {
+            field: 'isActive',
+            headerName: 'Active',
+            type: 'boolean',
             width: 100,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <Typography
@@ -113,9 +113,9 @@ export default function PollsPage() {
                 </Typography>
             )
         },
-        { 
-            field: 'options', 
-            headerName: 'Options', 
+        {
+            field: 'options',
+            headerName: 'Options',
             width: 100,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <>
@@ -123,16 +123,20 @@ export default function PollsPage() {
                 </>
             )
         },
-        { 
-            field: 'totalVotes', 
-            headerName: 'Votes', 
+        {
+            field: 'totalVotes',
+            headerName: 'Votes',
             width: 100
         },
         {
             field: 'expiresAt',
             headerName: 'Expires At',
             width: 180,
-            valueFormatter: (params) => formatDate(params.value)
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <>
+                    {formatDate(params.value)}
+                </>
+            )
         },
         {
             field: 'actions',
@@ -149,16 +153,16 @@ export default function PollsPage() {
                     >
                         View
                     </Button>
-                    <IconButton 
-                        onClick={() => navigate(`/polls/${params.row.id}/edit`)} 
-                        size="small" 
+                    <IconButton
+                        onClick={() => navigate(`/polls/${params.row.id}/edit`)}
+                        size="small"
                         color="primary"
                     >
                         <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton 
-                        onClick={() => handleDelete(params.row.id)} 
-                        size="small" 
+                    <IconButton
+                        onClick={() => handleDelete(params.row.id)}
+                        size="small"
                         color="error"
                     >
                         <DeleteIcon fontSize="small" />
