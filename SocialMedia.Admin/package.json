@@ -23,6 +23,7 @@
     "@reduxjs/toolkit": "^2.11.0",
     "axios": "^1.13.2",
     "clsx": "latest",
+    "date-fns": "^4.1.0",
     "dayjs": "latest",
     "firebase": "^12.6.0",
     "react": "latest",

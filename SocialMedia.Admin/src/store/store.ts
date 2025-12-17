@@ -5,6 +5,7 @@ import authReducer from './slices/authSlice';
 import settingsReducer from './slices/settingsSlice';
 import postsReducer from './slices/postsSlice';
 import reportsSlice from './slices/reportsSlice';
+import dashboardSlice from './slices/dashboardSlice';
 
 export const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
         settings: settingsReducer,
         posts: postsReducer,
         reports: reportsSlice,
+        dashboard: dashboardSlice,
     },
 });
 

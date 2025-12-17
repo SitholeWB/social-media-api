@@ -10,7 +10,6 @@ import {
     treeViewCustomizations,
 } from './theme/customizations';
 import Layout from './Layout';
-import MainGrid from './components/MainGrid';
 import GroupsPage from './pages/GroupsPage';
 import CreateGroupPage from './pages/CreateGroupPage';
 import UsersPage from './pages/UsersPage';
@@ -29,6 +28,7 @@ import EditGroupPage from './pages/EditGroupPage';
 import EditPollPage from './pages/EditPollPage';
 import ViewPollPage from './pages/ViewPollPage';
 import ReportedPostsPage from './pages/ReportedPostsPage';
+import DashboardPage from './pages/DashboardPage';
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -64,7 +64,7 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                             </ProtectedRoute>
                         }
                     >
-                        <Route index element={<MainGrid />} />
+                        <Route index element={<DashboardPage />} />
                         <Route path="/groups" element={<GroupsPage />} />
                         <Route path="/groups/create" element={<CreateGroupPage />} />
                         <Route path="/groups/:groupId/edit" element={<EditGroupPage />} />
