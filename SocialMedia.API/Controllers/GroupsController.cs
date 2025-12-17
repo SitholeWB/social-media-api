@@ -45,7 +45,7 @@ public class GroupsController : ControllerBase
         {
             return BadRequest("Failed to get user from auth token");
         }
-        createPostDto.GroupId = userId.Value;
+        createPostDto.AuthorId = userId.Value;
         var command = new CreatePostCommand(createPostDto);
         var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);
