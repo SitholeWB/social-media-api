@@ -13,6 +13,18 @@ public class IdentityService : IIdentityService
         _configuration = configuration;
     }
 
+    public async Task<AuthResponse> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user == null)
+        {
+            throw new Exception("User Not Found");
+        }
+        var token = GenerateJwtToken(user);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
+    }
+
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
         var username = request.Username.Trim();
@@ -33,7 +45,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
 
     public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default)
@@ -83,7 +95,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -111,7 +123,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
 
     private string GenerateJwtToken(User user)

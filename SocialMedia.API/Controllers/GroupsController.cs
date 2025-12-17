@@ -40,6 +40,12 @@ public class GroupsController : ControllerBase
     public async Task<IActionResult> CreatePost([FromBody] CreatePostDto createPostDto, [FromRoute] Guid groupId, CancellationToken cancellationToken)
     {
         createPostDto.GroupId = groupId;
+        var userId = this.GetUserId();
+        if (!userId.HasValue)
+        {
+            return BadRequest("Failed to get user from auth token");
+        }
+        createPostDto.GroupId = userId.Value;
         var command = new CreatePostCommand(createPostDto);
         var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);

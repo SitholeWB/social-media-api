@@ -76,9 +76,29 @@ export default function PostsPage() {
             )
         },
         {
-            field: 'createdBy',
+            field: 'commentCount',
+            headerName: 'Comments',
+            minWidth: 110
+        },
+        {
+            field: 'authorName',
             headerName: 'Author',
             minWidth: 150,
+        },
+        {
+            field: 'likeCount',
+            headerName: 'Reactions Count',
+            minWidth: 130
+        },
+        {
+            field: 'reactions',
+            headerName: 'Reactions',
+            minWidth: 250,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography variant="body2" noWrap>
+                    {params?.value?.map((r: any) => <span key={r.emoji}>{r.emoji} ({r.count}) </span>)}
+                </Typography>
+            )
         },
         {
             field: 'createdAt',

@@ -62,6 +62,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<BlockUserCommand, bool>, BlockUserCommandHandler>();
         services.AddScoped<ICommandHandler<AdminBlockUserCommand, bool>, AdminBlockUserCommandHandler>();
         services.AddScoped<IQueryHandler<GetReportedUsersQuery, List<ReportedUserDto>>, GetReportedUsersQueryHandler>();
+        services.AddScoped<IQueryHandler<GetUserByIdQuery, AuthResponse>, GetUserByIdQueryHandler>();
 
         // Moderation
         services.AddScoped<ICommandHandler<DeleteReportedContentCommand, int>, DeleteReportedContentCommandHandler>();
