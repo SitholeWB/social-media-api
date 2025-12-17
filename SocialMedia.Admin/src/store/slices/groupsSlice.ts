@@ -7,6 +7,12 @@ interface GroupsState {
     loading: boolean;
     error: string | null;
     currentGroup: Group | null;
+    pagination: {
+        pageNumber: number;
+        pageSize: number;
+        totalCount: number;
+        totalPages: number;
+    };
 }
 
 const initialState: GroupsState = {
@@ -14,12 +20,21 @@ const initialState: GroupsState = {
     loading: false,
     error: null,
     currentGroup: null,
+    pagination: {
+        pageNumber: 1,
+        pageSize: 10,
+        totalCount: 0,
+        totalPages: 0,
+    },
 };
 
-export const fetchGroups = createAsyncThunk('groups/fetchGroups', async () => {
-    const response = await groupsService.getGroups();
-    return response.items;
-});
+export const fetchGroups = createAsyncThunk(
+    'groups/fetchGroups',
+    async ({ pageNumber = 1, pageSize = 10 }: { pageNumber?: number; pageSize?: number } = {}) => {
+        const response = await groupsService.getGroups(pageNumber, pageSize);
+        return response;
+    }
+);
 
 export const fetchGroup = createAsyncThunk('groups/fetchGroup', async (id: string) => {
     const group = await groupsService.getGroup(id);
@@ -44,7 +59,13 @@ const groupsSlice = createSlice({
     reducers: {
         clearCurrentGroup: (state) => {
             state.currentGroup = null;
-        }
+        },
+        setPageNumber: (state, action: PayloadAction<number>) => {
+            state.pagination.pageNumber = action.payload;
+        },
+        setPageSize: (state, action: PayloadAction<number>) => {
+            state.pagination.pageSize = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -52,9 +73,15 @@ const groupsSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchGroups.fulfilled, (state, action: PayloadAction<Group[]>) => {
+            .addCase(fetchGroups.fulfilled, (state, action: PayloadAction<any>) => {
                 state.loading = false;
-                state.items = action.payload;
+                state.items = action.payload.items;
+                state.pagination = {
+                    pageNumber: action.payload.pageNumber,
+                    pageSize: action.payload.pageSize,
+                    totalCount: action.payload.totalCount,
+                    totalPages: action.payload.totalPages,
+                };
             })
             .addCase(fetchGroups.rejected, (state, action) => {
                 state.loading = false;
@@ -84,5 +111,5 @@ const groupsSlice = createSlice({
     },
 });
 
-export const { clearCurrentGroup } = groupsSlice.actions;
+export const { clearCurrentGroup, setPageNumber, setPageSize } = groupsSlice.actions;
 export default groupsSlice.reducer;

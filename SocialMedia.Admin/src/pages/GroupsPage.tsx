@@ -1,4 +1,4 @@
-// pages/GroupsPage.tsx - Updated version
+// pages/GroupsPage.tsx - With Server-Side Pagination
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -13,33 +13,89 @@ import Typography from '@mui/material/Typography';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import PageHeader from '../components/PageHeader';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchGroups, deleteGroup } from '../store/slices/groupsSlice';
+import { fetchGroups, deleteGroup, setPageNumber, setPageSize } from '../store/slices/groupsSlice';
 
 export default function GroupsPage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { items: groups, loading } = useAppSelector((state) => state.groups);
+    const { 
+        items: groups, 
+        loading, 
+        pagination 
+    } = useAppSelector((state) => state.groups);
 
+    // Fetch groups with current pagination
     React.useEffect(() => {
-        dispatch(fetchGroups());
-    }, [dispatch]);
+        dispatch(fetchGroups({ 
+            pageNumber: pagination.pageNumber, 
+            pageSize: pagination.pageSize 
+        }));
+    }, [dispatch, pagination.pageNumber, pagination.pageSize]);
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this group?')) {
             try {
                 await dispatch(deleteGroup(id)).unwrap();
-                dispatch(fetchGroups());
+                // Refetch current page after deletion
+                dispatch(fetchGroups({ 
+                    pageNumber: pagination.pageNumber, 
+                    pageSize: pagination.pageSize 
+                }));
             } catch (error) {
                 console.error('Failed to delete group', error);
             }
         }
     };
 
+    const handlePaginationModelChange = (model: { page: number; pageSize: number }) => {
+        // MUI DataGrid uses 0-based page index, convert to 1-based
+        dispatch(setPageNumber(model.page + 1));
+        dispatch(setPageSize(model.pageSize));
+    };
+
     const columns: GridColDef[] = [
         { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
         { field: 'description', headerName: 'Description', flex: 2, minWidth: 200 },
-        { field: 'isPublic', headerName: 'Public', type: 'boolean', width: 100 },
-        { field: 'isAutoAdd', headerName: 'Auto Add', type: 'boolean', width: 100 },
+        { 
+            field: 'isPublic', 
+            headerName: 'Public', 
+            width: 100,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography
+                    sx={{
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        backgroundColor: params.value ? 'success.light' : 'error.light',
+                        color: params.value ? 'success.contrastText' : 'error.contrastText',
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                    }}
+                >
+                    {params.value ? 'Yes' : 'No'}
+                </Typography>
+            )
+        },
+        { 
+            field: 'isAutoAdd', 
+            headerName: 'Auto Add', 
+            width: 100,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography
+                    sx={{
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        backgroundColor: params.value ? 'success.light' : 'action.disabledBackground',
+                        color: params.value ? 'success.contrastText' : 'text.secondary',
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                    }}
+                >
+                    {params.value ? 'Yes' : 'No'}
+                </Typography>
+            )
+        },
         {
             field: 'posts',
             headerName: 'Posts',
@@ -97,6 +153,30 @@ export default function GroupsPage() {
                 }
             />
 
+            {/* Summary Stats */}
+            {groups.length > 0 && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mb: 2,
+                        p: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">
+                        Showing {groups.length} of {pagination.totalCount} groups
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Page {pagination.pageNumber} of {pagination.totalPages}
+                    </Typography>
+                </Paper>
+            )}
+
             <Paper
                 elevation={0}
                 sx={{
@@ -111,12 +191,14 @@ export default function GroupsPage() {
                     columns={columns}
                     loading={loading}
                     autoHeight
-                    initialState={{
-                        pagination: {
-                            paginationModel: { pageSize: 10 },
-                        },
-                    }}
+                    paginationMode="server"
+                    rowCount={pagination.totalCount}
                     pageSizeOptions={[10, 25, 50]}
+                    paginationModel={{
+                        page: pagination.pageNumber - 1, // Convert to 0-based
+                        pageSize: pagination.pageSize,
+                    }}
+                    onPaginationModelChange={handlePaginationModelChange}
                     disableRowSelectionOnClick
                     sx={{
                         border: 'none',
@@ -128,9 +210,43 @@ export default function GroupsPage() {
                             borderBottom: '1px solid',
                             borderColor: 'divider',
                         },
+                        '& .MuiDataGrid-footerContainer': {
+                            borderTop: '1px solid',
+                            borderColor: 'divider',
+                        },
                     }}
                 />
             </Paper>
+
+            {/* Empty State */}
+            {groups.length === 0 && !loading && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mt: 2,
+                        p: 4,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                        No groups found
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        Create your first group to get started
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate('/groups/create')}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Create First Group
+                    </Button>
+                </Paper>
+            )}
         </Box>
     );
 }

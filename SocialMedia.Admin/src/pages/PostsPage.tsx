@@ -1,4 +1,4 @@
-// pages/PostsPage.tsx
+// pages/PostsPage.tsx - Complete Cleaner Version
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -24,16 +24,7 @@ import { formatDateTime } from '../utils/dateTime';
 import { useAuth } from '../hooks/useAuth';
 
 export default function PostsPage() {
-    const {
-        user,
-        logout,
-        isLoading,
-        isAdmin,
-        isModerator,
-        isUser,
-        hasRole,
-        hasPermission
-    } = useAuth();
+    const { user } = useAuth();
     const { groupId } = useParams<{ groupId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -43,16 +34,41 @@ export default function PostsPage() {
         pagination
     } = useAppSelector((state) => state.posts);
 
+    // Store previous values to detect changes
+    const prevValues = React.useRef({
+        pageNumber: pagination.pageNumber,
+        pageSize: pagination.pageSize,
+        groupId: groupId
+    });
+
     React.useEffect(() => {
-        if (groupId) {
+        if (!groupId) return;
+
+        const hasPageNumberChanged = prevValues.current.pageNumber !== pagination.pageNumber;
+        const hasPageSizeChanged = prevValues.current.pageSize !== pagination.pageSize;
+        const hasGroupIdChanged = prevValues.current.groupId !== groupId;
+
+        // Only fetch if something relevant changed
+        if (hasPageNumberChanged || hasPageSizeChanged || hasGroupIdChanged) {
             dispatch(fetchPostsByGroup({
                 groupId,
                 pageNumber: pagination.pageNumber,
                 pageSize: pagination.pageSize
             }));
+
+            // Update stored values
+            prevValues.current = {
+                pageNumber: pagination.pageNumber,
+                pageSize: pagination.pageSize,
+                groupId
+            };
         }
+
+        // Cleanup: only clear posts when groupId changes
         return () => {
-            dispatch(clearPosts());
+            if (hasGroupIdChanged) {
+                dispatch(clearPosts());
+            }
         };
     }, [dispatch, groupId, pagination.pageNumber, pagination.pageSize]);
 
@@ -61,6 +77,12 @@ export default function PostsPage() {
             try {
                 if (groupId) {
                     await dispatch(deletePost({ groupId, postId })).unwrap();
+                    // Refetch to update the list
+                    dispatch(fetchPostsByGroup({
+                        groupId,
+                        pageNumber: pagination.pageNumber,
+                        pageSize: pagination.pageSize
+                    }));
                 }
             } catch (error) {
                 console.error('Failed to delete post', error);
@@ -68,19 +90,38 @@ export default function PostsPage() {
         }
     };
 
-    const handlePaginationModelChange = (model: { page: number; pageSize: number }) => {
-        dispatch(setPageNumber(model.page + 1));
-        dispatch(setPageSize(model.pageSize));
-    };
+    const handlePaginationModelChange = React.useCallback((model: { page: number; pageSize: number }) => {
+        const newPageNumber = model.page + 1;
+        const newPageSize = model.pageSize;
 
-    const columns: GridColDef[] = [
+        // Only dispatch if values actually changed
+        if (newPageNumber !== pagination.pageNumber) {
+            dispatch(setPageNumber(newPageNumber));
+        }
+        if (newPageSize !== pagination.pageSize) {
+            dispatch(setPageSize(newPageSize));
+        }
+    }, [dispatch, pagination.pageNumber, pagination.pageSize]);
+
+    // Memoize columns to prevent unnecessary re-renders
+    const columns = React.useMemo<GridColDef[]>(() => [
         {
             field: 'content',
             headerName: 'Content',
             flex: 2,
             minWidth: 300,
             renderCell: (params: GridRenderCellParams<any>) => (
-                <Typography variant="body2" noWrap>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                            textDecoration: 'underline',
+                            color: 'primary.main'
+                        }
+                    }}
+                    onClick={() => navigate(`/groups/${groupId}/posts/${params.row.id}`)}
+                >
                     {params.value?.length > 100 ? `${params.value.substring(0, 100)}...` : params.value}
                 </Typography>
             )
@@ -88,87 +129,182 @@ export default function PostsPage() {
         {
             field: 'commentCount',
             headerName: 'Comments',
-            minWidth: 110
+            width: 110,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography variant="body2" align="center">
+                    {params.value || 0}
+                </Typography>
+            )
         },
         {
             field: 'authorName',
             headerName: 'Author',
-            minWidth: 150,
+            width: 150,
         },
         {
             field: 'likeCount',
-            headerName: 'Reactions Count',
-            minWidth: 130
+            headerName: 'Reactions',
+            width: 100,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography variant="body2" align="center">
+                    {params.value || 0}
+                </Typography>
+            )
         },
         {
             field: 'reactions',
-            headerName: 'Reactions',
-            minWidth: 250,
+            headerName: 'Reaction Details',
+            width: 200,
             renderCell: (params: GridRenderCellParams<any>) => (
-                <Typography variant="body2" noWrap>
-                    {params?.value?.map((r: any) => <span key={r.emoji}>{r.emoji} ({r.count}) </span>)}
-                </Typography>
+                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                    {params?.value?.map((r: any) => (
+                        <Box key={r.emoji} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                            <Typography variant="body2">{r.emoji}</Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                                ({r.count})
+                            </Typography>
+                        </Box>
+                    )) || (
+                        <Typography variant="caption" color="text.secondary">
+                            No reactions
+                        </Typography>
+                    )}
+                </Stack>
             )
         },
         {
             field: 'createdAt',
             headerName: 'Created At',
-            minWidth: 250,
-            renderCell: (params: GridRenderCellParams<any>) => (
-                <Typography variant="body2" noWrap>
-                    {formatDateTime(params?.value)}
-                </Typography>
-            )
+            width: 180,
+            renderCell: (params) => formatDateTime(params.value)
         },
         {
             field: 'actions',
             headerName: 'Actions',
-            minWidth: 200,
+            width: 120,
             sortable: false,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <Stack direction="row" spacing={1}>
-                    {params.row.authorId === user?.id &&
+                    {params.row.authorId === user?.id && (
                         <>
-
                             <IconButton
                                 onClick={() => navigate(`/groups/${groupId}/posts/${params.row.id}/edit`)}
                                 size="small"
                                 color="primary"
+                                title="Edit post"
                             >
                                 <EditIcon fontSize="small" />
                             </IconButton>
-                            <IconButton onClick={() => handleDelete(params.row.id)} size="small" color="error">
+                            <IconButton 
+                                onClick={() => handleDelete(params.row.id)} 
+                                size="small" 
+                                color="error"
+                                title="Delete post"
+                            >
                                 <DeleteIcon fontSize="small" />
                             </IconButton>
                         </>
-                    }
+                    )}
+                    {params.row.authorId !== user?.id && (
+                        <Typography variant="caption" color="text.secondary">
+                            Not your post
+                        </Typography>
+                    )}
                 </Stack>
             ),
         },
-    ];
+    ], [groupId, user?.id, navigate]);
+
+    // Handle navigation to create post
+    const handleCreatePost = React.useCallback(() => {
+        navigate(`/groups/${groupId}/posts/create`);
+    }, [groupId, navigate]);
+
+    // Handle back to groups
+    const handleBackToGroups = React.useCallback(() => {
+        navigate('/groups');
+    }, [navigate]);
 
     if (!groupId) {
-        return <Typography>Group ID is required</Typography>;
+        return (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h6" color="error" gutterBottom>
+                    Group ID is required
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Please select a group to view posts
+                </Typography>
+                <Button 
+                    onClick={handleBackToGroups}
+                    variant="contained"
+                    sx={{ textTransform: 'none' }}
+                >
+                    Back to Groups
+                </Button>
+            </Box>
+        );
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', p: { xs: 1, sm: 2, md: 3 } }}>
             <PageHeader
                 title="Posts"
+                subtitle={`Group ID: ${groupId.substring(0, 8)}...`}
                 action={
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => navigate(`/groups/${groupId}/posts/create`)}
-                        sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-                    >
-                        Create Post
-                    </Button>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Button
+                            onClick={handleBackToGroups}
+                            variant="outlined"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Back to Groups
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={handleCreatePost}
+                            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+                            disabled={loading}
+                        >
+                            Create Post
+                        </Button>
+                    </Stack>
                 }
             />
 
-            <Typography variant="body2" color="text.secondary">
-                NOTE: New added posts may take a few moments to appear in the list.
+            {/* Summary Stats */}
+            {posts.length > 0 && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mb: 2,
+                        p: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">
+                        Showing <strong>{posts.length}</strong> of <strong>{pagination.totalCount}</strong> posts
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Page <strong>{pagination.pageNumber}</strong> of <strong>{pagination.totalPages}</strong>
+                    </Typography>
+                    {user && (
+                        <Typography variant="body2" color="text.secondary">
+                            Your posts: <strong>{posts.filter(p => p.authorId === user.id).length}</strong>
+                        </Typography>
+                    )}
+                </Paper>
+            )}
+
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: 'italic' }}>
+                💡 Note: New posts may take a few moments to appear. Click on post content to view details.
             </Typography>
 
             <Paper
@@ -194,19 +330,88 @@ export default function PostsPage() {
                     }}
                     onPaginationModelChange={handlePaginationModelChange}
                     disableRowSelectionOnClick
+                    getRowHeight={() => 'auto'}
                     sx={{
                         border: 'none',
-                        '& .MuiDataGrid-cell:focus': {
-                            outline: 'none',
+                        '& .MuiDataGrid-cell': {
+                            py: 1.5,
+                            '&:focus': {
+                                outline: 'none',
+                            },
                         },
                         '& .MuiDataGrid-columnHeaders': {
                             backgroundColor: 'background.default',
                             borderBottom: '1px solid',
                             borderColor: 'divider',
                         },
+                        '& .MuiDataGrid-footerContainer': {
+                            borderTop: '1px solid',
+                            borderColor: 'divider',
+                        },
+                        '& .MuiDataGrid-row': {
+                            '&:hover': {
+                                backgroundColor: 'action.hover',
+                            },
+                        },
                     }}
                 />
             </Paper>
+
+            {/* Empty State */}
+            {posts.length === 0 && !loading && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mt: 2,
+                        p: 4,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                        No posts found in this group
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        Be the first to create a post in this group
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreatePost}
+                        sx={{ textTransform: 'none', mr: 2 }}
+                    >
+                        Create First Post
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleBackToGroups}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Back to Groups
+                    </Button>
+                </Paper>
+            )}
+
+            {/* Loading State */}
+            {loading && posts.length === 0 && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        mt: 2,
+                        p: 4,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">
+                        Loading posts...
+                    </Typography>
+                </Paper>
+            )}
         </Box>
     );
 }
