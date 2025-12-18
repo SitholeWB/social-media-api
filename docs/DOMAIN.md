@@ -45,6 +45,7 @@ classDiagram
         +DateTime? ExpiresAt
         +Guid CreatorId
         +bool IsAnonymous
+        +Guid GroupId
     }
 
     class PollOption {
@@ -132,6 +133,7 @@ classDiagram
     Comment "1" -- "*" Report : Reported By
 
     Group "1" -- "*" GroupMember : Has
+    Group "1" -- "*" Poll : Contains
     User "1" -- "*" GroupMember : Member Of
     User "1" -- "*" Notification : Receives
     User "1" -- "*" UserBlock : Blocks/Blocked By
@@ -172,8 +174,8 @@ classDiagram
 - **Post**: A content item created by a user, which can contain text and media.
 - **Comment**: A response to a post, which can also contain text and media.
 - **Like**: Represents a user's positive reaction to a post or comment.
-- **Poll**: A question with multiple options for users to vote on.
-- **Group**: A collection of users and posts. Supports three types: **Public** (members only post, anyone views), **Private** (members only view/post), and **Everyone** (anyone views/posts).
+- **Poll**: A question with multiple options for users to vote on. Every poll belongs to a **Group**.
+- **Group**: A collection of users, posts, and polls. Supports three types: **Public** (members only post, anyone views), **Private** (members only view/post), and **Everyone** (anyone views/posts).
 - **MediaFile**: Represents an uploaded file (image, video, etc.).
 - **Notification**: A system message sent to a user.
 - **Report**: A user's report of inappropriate content (Post or Comment).

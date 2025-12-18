@@ -261,14 +261,22 @@ All API responses follow a consistent structure with appropriate HTTP status cod
 
 The API enforces access rules based on the `GroupType`:
 
-| Group Type | Viewing Posts | Creating Posts | Membership |
-|------------|---------------|----------------|------------|
-| **Everyone** | Anyone | Anyone | Open |
-| **Public** | Anyone | Members Only | Auto-join (if enabled) |
-| **Private** | Members Only | Members Only | Invitation/Approval |
+| Group Type | Viewing Posts/Polls | Creating Posts/Polls | Voting on Polls | Membership |
+|------------|---------------|----------------|----------------|------------|
+| **Everyone** | Anyone | Anyone | Anyone | Open |
+| **Public** | Anyone | Members Only | Members Only | Auto-join (if enabled) |
+| **Private** | Members Only | Members Only | Members Only | Invitation/Approval |
 
 ### Implementation Details
 
-- **Viewing Posts**: Handled in `GetPostsQueryHandler`. For **Private** groups, the `UserId` must be provided in the query and the user must be a member.
-- **Creating Posts**: Handled in `CreatePostCommandHandler`. For **Public** and **Private** groups, the user must be a member to create a post.
+- **Viewing Posts/Polls**: Handled in `GetPostsQueryHandler` and `GetActivePollsQueryHandler` / `GetPollQueryHandler`. For **Private** groups, the `UserId` must be provided and the user must be a member.
+- **Creating Posts/Polls**: Handled in `CreatePostCommandHandler` and `CreatePollCommandHandler`. For **Public** and **Private** groups, the user must be a member to create content.
+- **Voting on Polls**: Handled in `VoteOnPollCommandHandler`. Users must have posting permissions in the group to vote.
 - **Group Creation**: The user creating a group is automatically assigned as the `CreatorId`.
+
+### New Group Poll Endpoints
+
+| Method | Path | Description | Access |
+|--------|------|-------------|--------|
+| **POST** | `/api/v1/groups/{groupId}/polls` | Create a new poll in a group. | Group Member |
+| **GET** | `/api/v1/groups/{groupId}/polls` | Get active polls for a group. | Group Viewer |
