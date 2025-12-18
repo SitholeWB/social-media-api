@@ -37,8 +37,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
-                    IsAutoAdd = table.Column<bool>(type: "bit", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
@@ -83,20 +83,18 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Polls",
+                name: "PollVoteRecords",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Polls", x => x.Id);
+                    table.PrimaryKey("PK_PollVoteRecords", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,6 +116,31 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Polls",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsAnonymous = table.Column<bool>(type: "bit", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Polls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Polls_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -151,27 +174,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         column: x => x.FileId,
                         principalTable: "MediaFiles",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PollOptions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PollOptions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PollOptions_Polls_PollId",
-                        column: x => x.PollId,
-                        principalTable: "Polls",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -253,6 +255,27 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "PollOptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PollId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PollOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PollOptions_Polls_PollId",
+                        column: x => x.PollId,
+                        principalTable: "Polls",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
@@ -289,7 +312,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PollOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
@@ -401,6 +424,17 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 column: "PollId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Polls_GroupId",
+                table: "Polls",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollVoteRecords_PollId_UserId",
+                table: "PollVoteRecords",
+                columns: new[] { "PollId", "UserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_FileId",
                 table: "Posts",
                 column: "FileId");
@@ -455,6 +489,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "OutboxEvents");
 
             migrationBuilder.DropTable(
+                name: "PollVoteRecords");
+
+            migrationBuilder.DropTable(
                 name: "Reports");
 
             migrationBuilder.DropTable(
@@ -479,10 +516,10 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "Polls");
 
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "MediaFiles");
 
             migrationBuilder.DropTable(
-                name: "MediaFiles");
+                name: "Groups");
         }
     }
 }

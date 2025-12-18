@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     [DbContext(typeof(SocialMediaDbContext))]
-    [Migration("20251215175437_InitialCreate_write")]
+    [Migration("20251218161204_InitialCreate_write")]
     partial class InitialCreate_write
     {
         /// <inheritdoc />
@@ -108,15 +108,12 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAutoAdd")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
@@ -124,6 +121,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -310,7 +310,13 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAnonymous")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
@@ -321,6 +327,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Polls");
                 });
@@ -349,6 +357,32 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.HasIndex("PollId");
 
                     b.ToTable("PollOptions");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.PollVoteRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PollId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("PollVoteRecords");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Post", b =>
@@ -520,7 +554,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<Guid>("PollOptionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -648,6 +682,17 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.Poll", b =>
+                {
+                    b.HasOne("SocialMedia.Domain.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.PollOption", b =>

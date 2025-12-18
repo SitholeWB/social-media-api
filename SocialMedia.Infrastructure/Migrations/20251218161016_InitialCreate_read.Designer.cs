@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251215175412_InitialCreate_read")]
+    [Migration("20251218161016_InitialCreate_read")]
     partial class InitialCreate_read
     {
         /// <inheritdoc />

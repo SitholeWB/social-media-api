@@ -30,7 +30,7 @@ public class IdentityService : IIdentityService
         var username = request.Username.Trim();
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == username, cancellationToken);
 
-        if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+        if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.Id))
         {
             throw new Exception("Invalid credentials");
         }
@@ -64,11 +64,12 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
+            var userId = Guid.NewGuid();
             user = new User
             {
                 Username = payload.Email.Split('@')[0], // Use email prefix as username
                 Email = payload.Email,
-                PasswordHash = HashPassword(Guid.NewGuid().ToString()), // Random password for Google users
+                PasswordHash = HashPassword(Guid.NewGuid().ToString(), userId), // Random password for Google users
                 CreatedAt = DateTime.UtcNow,
                 Role = UserRole.User,
                 Surname = payload.FamilyName,
@@ -105,12 +106,13 @@ public class IdentityService : IIdentityService
         {
             throw new Exception("Username already exists");
         }
-
+        var userId = Guid.NewGuid();
         var user = new User
         {
+            Id = userId,
             Username = request.Username.Trim(),
             Email = request.Email.Trim(),
-            PasswordHash = HashPassword(request.Password),
+            PasswordHash = HashPassword(request.Password, userId),
             CreatedAt = DateTime.UtcNow,
             Role = UserRole.User, // Explicitly set default
             LastActiveAt = DateTime.UtcNow,
@@ -149,16 +151,16 @@ public class IdentityService : IIdentityService
         return tokenHandler.WriteToken(token);
     }
 
-    private string HashPassword(string password)
+    private static string HashPassword(string password, Guid userId)
     {
-        using var sha256 = SHA256.Create();
-        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        var list = userId.ToString().ToLowerInvariant().ToList();
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{password}_{string.Join("", list)}"));
         return Convert.ToBase64String(bytes);
     }
 
-    private bool VerifyPassword(string password, string storedHash)
+    private static bool VerifyPassword(string password, string storedHash, Guid userId)
     {
-        var hash = HashPassword(password);
+        var hash = HashPassword(password, userId);
         return hash == storedHash;
     }
 }
