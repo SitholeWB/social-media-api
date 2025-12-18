@@ -1,6 +1,6 @@
 // pages/PollsPage.tsx
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +23,7 @@ import {
 import { formatDate } from '../utils/dateTime';
 
 export default function PollsPage() {
+    const { groupId } = useParams<{ groupId: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const {
@@ -33,6 +34,7 @@ export default function PollsPage() {
 
     React.useEffect(() => {
         dispatch(fetchPolls({
+            groupId,
             pageNumber: pagination.pageNumber,
             pageSize: pagination.pageSize
         }));
@@ -40,7 +42,7 @@ export default function PollsPage() {
         return () => {
             dispatch(clearPolls());
         };
-    }, [dispatch, pagination.pageNumber, pagination.pageSize]);
+    }, [dispatch, groupId, pagination.pageNumber, pagination.pageSize]);
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this poll?')) {
@@ -181,16 +183,28 @@ export default function PollsPage() {
     return (
         <Box sx={{ width: '100%' }}>
             <PageHeader
-                title="Polls"
+                title={groupId ? "Group Polls" : "Polls"}
+                subtitle={groupId ? `Group ID: ${groupId.substring(0, 8)}...` : undefined}
                 action={
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => navigate('/polls/create')}
-                        sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-                    >
-                        Create Poll
-                    </Button>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        {groupId && (
+                            <Button
+                                variant="outlined"
+                                onClick={() => navigate('/groups')}
+                                sx={{ textTransform: 'none' }}
+                            >
+                                Back to Groups
+                            </Button>
+                        )}
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => navigate('/polls/create', { state: { groupId } })}
+                            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+                        >
+                            Create Poll
+                        </Button>
+                    </Stack>
                 }
             />
 

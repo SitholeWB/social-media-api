@@ -21,8 +21,6 @@ public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>
             Id = group.Id,
             Name = group.Name,
             Description = group.Description,
-            IsPublic = group.IsPublic,
-            IsAutoAdd = group.IsAutoAdd,
             Type = group.Type,
             CreatorId = group.CreatorId,
             CreatedAt = group.CreatedAt

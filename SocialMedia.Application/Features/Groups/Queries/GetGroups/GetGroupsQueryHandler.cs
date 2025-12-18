@@ -20,8 +20,6 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
             Id = g.Id,
             Name = g.Name,
             Description = g.Description,
-            IsPublic = g.IsPublic,
-            IsAutoAdd = g.IsAutoAdd,
             Type = g.Type,
             CreatorId = g.CreatorId,
             CreatedAt = g.CreatedAt

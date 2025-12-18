@@ -19,10 +19,10 @@ public class DefaultsController : ControllerBase
     {
         var defaultGroups = new List<DefaultGroupDto>
         {
-            new(Guid.Parse("00000000-0000-0000-0000-000000000001"), "Home", true, true, GroupType.Everyone, "This is the home screen or page"),
-            new(Guid.Parse("00000000-0000-0000-0000-000000000002"), "Fans", true, true, GroupType.Everyone, "This is the Fans group or page"),
-            new(Guid.Parse("00000000-0000-0000-0000-000000000003"), "Offers", true, true, GroupType.Everyone, "This is the group or screen or page for our sponsors latest deals"),
-            new(Guid.Parse("00000000-0000-0000-0000-000000000004"), "Latest News", true, true, GroupType.Everyone, "Latest new group"),
+            new(Guid.Parse("00000000-0000-0000-0000-000000000001"), "Home", GroupType.Everyone, "This is the home screen or page"),
+            new(Guid.Parse("00000000-0000-0000-0000-000000000002"), "Fans", GroupType.Everyone, "This is the Fans group or page"),
+            new(Guid.Parse("00000000-0000-0000-0000-000000000003"), "Offers", GroupType.Everyone, "This is the group or screen or page for our sponsors latest deals"),
+            new(Guid.Parse("00000000-0000-0000-0000-000000000004"), "Latest News", GroupType.Everyone, "Latest new group"),
         };
         var command = new CreateDefaultGroupsCommand(defaultGroups);
         var result = await _dispatcher.Send<CreateDefaultGroupsCommand, string>(command, cancellationToken);

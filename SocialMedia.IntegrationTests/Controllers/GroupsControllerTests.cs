@@ -6,7 +6,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     public async Task CreateGroup_ShouldReturnBadRequest_WhenNameIsEmpty()
     {
         // Arrange
-        var command = new CreateGroupCommand("", "Description", true, false, GroupType.Public, Guid.Empty);
+        var command = new CreateGroupCommand("", "Description", GroupType.Public, Guid.Empty);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
@@ -19,7 +19,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     public async Task CreateGroup_ShouldReturnOk()
     {
         // Arrange
-        var command = new CreateGroupCommand("Test Group", "Description", true, false, GroupType.Public, Guid.Empty);
+        var command = new CreateGroupCommand("Test Group", "Description", GroupType.Public, Guid.Empty);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
@@ -35,7 +35,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     public async Task AddUserToGroup_ShouldReturnOk()
     {
         // Arrange
-        var createCommand = new CreateGroupCommand("Test Group 2", "Description", true, false, GroupType.Public, Guid.Empty);
+        var createCommand = new CreateGroupCommand("Test Group 2", "Description", GroupType.Public, Guid.Empty);
         var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
@@ -52,7 +52,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     public async Task RemoveUserFromGroup_ShouldReturnOk()
     {
         // Arrange
-        var createCommand = new CreateGroupCommand("Test Group 3", "Description", true, false, GroupType.Public, Guid.Empty);
+        var createCommand = new CreateGroupCommand("Test Group 3", "Description", GroupType.Public, Guid.Empty);
         var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
@@ -71,7 +71,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     {
         // Arrange
         var groupId = Guid.NewGuid();
-        var command = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", false, true, GroupType.Private);
+        var command = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", GroupType.Private);
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", command, TestContext.Current.CancellationToken);
@@ -97,11 +97,11 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     public async Task UpdateGroup_ShouldReturnNoContent_WhenGroupExists()
     {
         // Arrange
-        var createCommand = new CreateGroupCommand("Group to Update", "Desc", true, false, GroupType.Public, Guid.Empty);
+        var createCommand = new CreateGroupCommand("Group to Update", "Desc", GroupType.Public, Guid.Empty);
         var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-        var updateCommand = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", false, true, GroupType.Private);
+        var updateCommand = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", GroupType.Private);
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", updateCommand, TestContext.Current.CancellationToken);

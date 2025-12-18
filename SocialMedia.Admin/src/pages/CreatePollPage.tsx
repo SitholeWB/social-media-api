@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -18,13 +18,17 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function CreatePollPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
     const { items: groups, loading: groupsLoading } = useAppSelector((state) => state.groups);
+
+    const stateGroupId = location.state?.groupId as string | undefined;
+
     const [formData, setFormData] = React.useState<CreatePollCommand>({
         question: '',
         options: ['', ''],
         expiresAt: undefined,
-        groupId: '',
+        groupId: stateGroupId || '',
         isAnonymous: false,
     });
 

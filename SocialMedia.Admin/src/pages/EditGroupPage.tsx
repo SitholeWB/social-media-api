@@ -3,8 +3,6 @@ import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -13,7 +11,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PageHeader from '../components/PageHeader';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchGroups, updateGroup } from '../store/slices/groupsSlice';
-import { UpdateGroupCommand } from '../services/groupsService';
+import { UpdateGroupCommand, GroupType } from '../services/groupsService';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 export default function EditGroupPage() {
     const { groupId } = useParams<{ groupId: string }>();
@@ -23,8 +22,7 @@ export default function EditGroupPage() {
 
     const [name, setName] = React.useState('');
     const [description, setDescription] = React.useState('');
-    const [isPublic, setIsPublic] = React.useState(true);
-    const [isAutoAdd, setIsAutoAdd] = React.useState(false);
+    const [type, setType] = React.useState<GroupType>(GroupType.Public);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
 
@@ -38,15 +36,14 @@ export default function EditGroupPage() {
             if (group) {
                 setName(group.name);
                 setDescription(group.description);
-                setIsPublic(group.isPublic);
-                setIsAutoAdd(group.isAutoAdd);
+                setType(group.type);
             }
         }
     }, [groupId, groups]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!name.trim()) {
             setError('Name is required');
             return;
@@ -66,15 +63,14 @@ export default function EditGroupPage() {
                     groupId,
                     name,
                     description,
-                    isPublic,
-                    isAutoAdd,
+                    type,
                 };
-                
-                await dispatch(updateGroup({ 
-                    id: groupId, 
-                    command 
+
+                await dispatch(updateGroup({
+                    id: groupId,
+                    command
                 })).unwrap();
-                
+
                 navigate('/groups');
             }
         } catch (err: any) {
@@ -156,38 +152,22 @@ export default function EditGroupPage() {
                             required
                         />
 
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                p: 2,
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                borderRadius: 1,
-                            }}
-                        >
-                            <Stack spacing={1}>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={isPublic}
-                                            onChange={(e) => setIsPublic(e.target.checked)}
-                                            disabled={loading || reduxLoading}
-                                        />
-                                    }
-                                    label="Public Group"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={isAutoAdd}
-                                            onChange={(e) => setIsAutoAdd(e.target.checked)}
-                                            disabled={loading || reduxLoading}
-                                        />
-                                    }
-                                    label="Auto-add new users"
-                                />
-                            </Stack>
-                        </Paper>
+                        <FormControl fullWidth variant="standard">
+                            <InputLabel>Group Type</InputLabel>
+                            <Select
+                                value={type}
+                                onChange={(e) => {
+                                    const newType = e.target.value as GroupType;
+                                    setType(newType);
+                                }}
+                                disabled={loading || reduxLoading}
+                            >
+                                <MenuItem value={GroupType.Public}>Public</MenuItem>
+                                <MenuItem value={GroupType.Private}>Private</MenuItem>
+                                <MenuItem value={GroupType.Everyone}>Everyone</MenuItem>
+                            </Select>
+                        </FormControl>
+
 
                         <Stack direction="row" spacing={2} justifyContent="flex-end">
                             <Button

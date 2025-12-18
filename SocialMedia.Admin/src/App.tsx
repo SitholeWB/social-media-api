@@ -77,6 +77,7 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
                         <Route path="/groups/:groupId/posts" element={<PostsPage />} />
                         <Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
                         <Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
+                        <Route path="/groups/:groupId/polls" element={<PollsPage />} />
                         <Route path="/polls/:pollId" element={<ViewPollPage />} />
                         <Route path="/reports" element={<ReportedPostsPage />} />
                     </Route>

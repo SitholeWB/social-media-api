@@ -1,11 +1,16 @@
 import { fetchJson } from './api';
 
+export enum GroupType {
+    Public = 0,
+    Private = 1,
+    Everyone = 2
+}
+
 export interface Group {
     id: string;
     name: string;
     description: string;
-    isPublic: boolean;
-    isAutoAdd: boolean;
+    type: GroupType;
     creatorId: string;
     createdAt: string;
 }
@@ -13,16 +18,14 @@ export interface Group {
 export interface CreateGroupCommand {
     name: string;
     description: string;
-    isPublic: boolean;
-    isAutoAdd: boolean;
+    type: GroupType;
 }
 
 export interface UpdateGroupCommand {
     groupId: string;
     name: string;
     description: string;
-    isPublic: boolean;
-    isAutoAdd: boolean;
+    type: GroupType;
 }
 
 export interface PagedResult<T> {

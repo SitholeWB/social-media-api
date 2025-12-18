@@ -138,6 +138,7 @@ export default function EditPollPage() {
                             multiline
                             variant="standard"
                             value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
                             required
                         />
 

@@ -14,21 +14,22 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import PageHeader from '../components/PageHeader';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchGroups, deleteGroup, setPageNumber, setPageSize } from '../store/slices/groupsSlice';
+import { GroupType } from '../services/groupsService';
 
 export default function GroupsPage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { 
-        items: groups, 
-        loading, 
-        pagination 
+    const {
+        items: groups,
+        loading,
+        pagination
     } = useAppSelector((state) => state.groups);
 
     // Fetch groups with current pagination
     React.useEffect(() => {
-        dispatch(fetchGroups({ 
-            pageNumber: pagination.pageNumber, 
-            pageSize: pagination.pageSize 
+        dispatch(fetchGroups({
+            pageNumber: pagination.pageNumber,
+            pageSize: pagination.pageSize
         }));
     }, [dispatch, pagination.pageNumber, pagination.pageSize]);
 
@@ -37,9 +38,9 @@ export default function GroupsPage() {
             try {
                 await dispatch(deleteGroup(id)).unwrap();
                 // Refetch current page after deletion
-                dispatch(fetchGroups({ 
-                    pageNumber: pagination.pageNumber, 
-                    pageSize: pagination.pageSize 
+                dispatch(fetchGroups({
+                    pageNumber: pagination.pageNumber,
+                    pageSize: pagination.pageSize
                 }));
             } catch (error) {
                 console.error('Failed to delete group', error);
@@ -56,43 +57,23 @@ export default function GroupsPage() {
     const columns: GridColDef[] = [
         { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
         { field: 'description', headerName: 'Description', flex: 2, minWidth: 200 },
-        { 
-            field: 'isPublic', 
-            headerName: 'Public', 
-            width: 100,
+        {
+            field: 'type',
+            headerName: 'Type',
+            width: 120,
             renderCell: (params: GridRenderCellParams<any>) => (
                 <Typography
                     sx={{
                         px: 1,
                         py: 0.5,
                         borderRadius: 1,
-                        backgroundColor: params.value ? 'success.light' : 'error.light',
-                        color: params.value ? 'success.contrastText' : 'error.contrastText',
+                        backgroundColor: params.value === GroupType.Private ? 'error.light' : (params.value === GroupType.Everyone ? 'info.light' : 'success.light'),
+                        color: 'white',
                         fontSize: '0.75rem',
                         fontWeight: 500,
                     }}
                 >
-                    {params.value ? 'Yes' : 'No'}
-                </Typography>
-            )
-        },
-        { 
-            field: 'isAutoAdd', 
-            headerName: 'Auto Add', 
-            width: 100,
-            renderCell: (params: GridRenderCellParams<any>) => (
-                <Typography
-                    sx={{
-                        px: 1,
-                        py: 0.5,
-                        borderRadius: 1,
-                        backgroundColor: params.value ? 'success.light' : 'action.disabledBackground',
-                        color: params.value ? 'success.contrastText' : 'text.secondary',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                    }}
-                >
-                    {params.value ? 'Yes' : 'No'}
+                    {params.value === GroupType.Private ? 'Private' : (params.value === GroupType.Everyone ? 'Everyone' : 'Public')}
                 </Typography>
             )
         },
@@ -108,6 +89,21 @@ export default function GroupsPage() {
                     sx={{ textTransform: 'none' }}
                 >
                     View Posts
+                </Button>
+            ),
+        },
+        {
+            field: 'polls',
+            headerName: 'Polls',
+            width: 130,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate(`/groups/${params.row.id}/polls`)}
+                    sx={{ textTransform: 'none' }}
+                >
+                    View Polls
                 </Button>
             ),
         },
