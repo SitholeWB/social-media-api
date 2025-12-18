@@ -115,6 +115,14 @@ graph LR
 
 In-memory repositories use `ConcurrentDictionary<Guid, T>` for thread-safe concurrent access during background event processing.
 
+## Blockchain Integration
+
+The system includes a **Blockchain** component to ensure the integrity of the voting process.
+
+- **`IBlockchainService`**: Interface for interacting with the blockchain.
+- **Vote Recording**: Every vote is added to the blockchain when cast, creating an immutable record.
+- **Verification**: The system can verify the entire chain to ensure no votes have been tampered with.
+
 ## Key Design Decisions
 
 

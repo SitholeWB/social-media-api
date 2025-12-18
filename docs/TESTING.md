@@ -29,9 +29,9 @@ graph TB
 
 Custom factory that configures the test environment:
 
-- **Unique Database**: Each factory instance uses a unique in-memory database (`Guid.NewGuid().ToString()`) to ensure test isolation
-- **Service Overrides**: Replaces production services with test-specific implementations
-- **Singleton Repositories**: In-memory read repositories are registered as singletons and use `ConcurrentDictionary<Guid, T>` for thread safety
+- **In-Memory Database**: Each factory instance uses a unique in-memory database name (`Guid.NewGuid().ToString()`) to ensure test isolation between different test classes.
+- **Service Overrides**: Replaces production SQL Server contexts with `InMemoryDatabase` providers.
+- **Read Model Isolation**: Both write and read DbContexts are replaced with in-memory versions, maintaining the CQRS separation even in tests.
 
 #### TestHelpers
 

@@ -60,6 +60,21 @@ classDiagram
         +Guid Id
         +string Name
         +string Description
+        +GroupType Type
+        +Guid CreatorId
+    }
+
+    class GroupMember {
+        +Guid Id
+        +Guid GroupId
+        +Guid UserId
+    }
+
+    class GroupType {
+        <<enumeration>>
+        Public
+        Private
+        Everyone
     }
 
     class MediaFile {
@@ -67,6 +82,29 @@ classDiagram
         +string FileName
         +string ContentType
         +long Size
+    }
+
+    class Notification {
+        +Guid Id
+        +Guid UserId
+        +string Message
+        +bool IsRead
+        +DateTime CreatedAt
+    }
+
+    class Report {
+        +Guid Id
+        +Guid ReporterId
+        +string Reason
+        +ReportStatus Status
+        +Guid? PostId
+        +Guid? CommentId
+    }
+
+    class UserBlock {
+        +Guid Id
+        +Guid BlockerId
+        +Guid BlockedId
     }
 
     User "1" -- "*" Post : Creates
@@ -77,9 +115,16 @@ classDiagram
     Post "1" -- "*" Comment : Has
     Post "1" -- "*" Like : Has
     Post "1" -- "0..1" MediaFile : Contains
+    Post "1" -- "*" Report : Reported By
     
     Comment "1" -- "*" Like : Has
     Comment "1" -- "0..1" MediaFile : Contains
+    Comment "1" -- "*" Report : Reported By
+
+    Group "1" -- "*" GroupMember : Has
+    User "1" -- "*" GroupMember : Member Of
+    User "1" -- "*" Notification : Receives
+    User "1" -- "*" UserBlock : Blocks/Blocked By
 
 
     class OutboxEvent {
@@ -90,6 +135,21 @@ classDiagram
         +int RetryCount
         +DateTime CreatedAt
         +DateTime? ProcessedAt
+    }
+
+    class OutboxEventStatus {
+        <<enumeration>>
+        Pending
+        Processing
+        Completed
+        Failed
+    }
+
+    class ReportStatus {
+        <<enumeration>>
+        Pending
+        Reviewed
+        Dismissed
     }
 
     Poll "1" -- "*" PollOption : Has
@@ -103,9 +163,13 @@ classDiagram
 - **Comment**: A response to a post, which can also contain text and media.
 - **Like**: Represents a user's positive reaction to a post or comment.
 - **Poll**: A question with multiple options for users to vote on.
-- **Group**: A collection of users and posts (if applicable).
+- **Group**: A collection of users and posts. Supports three types: **Public** (members only post, anyone views), **Private** (members only view/post), and **Everyone** (anyone views/posts).
 - **MediaFile**: Represents an uploaded file (image, video, etc.).
+- **Notification**: A system message sent to a user.
+- **Report**: A user's report of inappropriate content (Post or Comment).
+- **UserBlock**: Represents a block relationship between two users.
 - **OutboxEvent**: Stores domain events for reliable asynchronous processing using the Outbox pattern.
+- **GroupMember**: Represents a user's membership in a group.
 
 
 ## Read Models

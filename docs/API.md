@@ -7,15 +7,17 @@ The SocialMedia API is a RESTful interface built with ASP.NET Core. It uses stan
 | Controller | Description | Base Path |
 |------------|-------------|-----------|
 | **Auth** | User registration and login. | `/api/v1/Auth` |
-| **Posts** | Manage posts (create, read, report). | `/api/v1/Posts` |
+| **Posts** | Manage posts (read, report, delete). | `/api/v1/Posts` |
 | **Comments** | Manage comments on posts. | `/api/v1/Comments` |
-| **Likes** | Like/unlike posts and comments. | `/api/v1/Likes` |
+| **Likes** | Like/unlike posts and comments. | `/api/v1/reactions` |
 | **Polls** | Create and vote on polls. | `/api/v1/Polls` |
 | **Users** | User profile management. | `/api/v1/Users` |
-| **Groups** | Group management. | `/api/v1/Groups` |
+| **Groups** | Group management and group-specific posts. | `/api/v1/Groups` |
 | **Notifications** | User notifications. | `/api/v1/Notifications` |
 | **Moderation** | Content moderation tools. | `/api/v1/Moderation` |
 | **Reports** | Handling user reports. | `/api/v1/Reports` |
+| **Defaults** | System initialization and defaults. | `/api/v1/Defaults` |
+| **Stats** | Dashboard and usage statistics. | `/api/v1/Stats` |
 
 ## Authentication Flow
 
@@ -49,16 +51,18 @@ sequenceDiagram
 
 ### Create Post Sequence
 
+Posts are created within the context of a Group.
+
 ```mermaid
 sequenceDiagram
     participant Client
-    participant API as PostsController
+    participant API as GroupsController
     participant Dispatcher
     participant Handler as CreatePostCommandHandler
     participant Repo as PostRepository
     participant DB as Database
 
-    Client->>API: POST /api/v1/Posts
+    Client->>API: POST /api/v1/groups/{groupId}/posts
     API->>Dispatcher: Send(CreatePostCommand)
     Dispatcher->>Handler: Handle(CreatePostCommand)
     Handler->>Handler: Validate Request
@@ -88,7 +92,7 @@ sequenceDiagram
     participant ReadRepo
     participant ReadDB
 
-    Client->>Controller: POST /api/v1/posts
+    Client->>Controller: POST /api/v1/groups/{groupId}/posts
     Controller->>Dispatcher: Send(CreatePostCommand)
     Dispatcher->>CommandHandler: Handle(command)
     CommandHandler->>Repository: AddAsync(post)
@@ -124,7 +128,7 @@ sequenceDiagram
     participant ReadRepo
     participant ReadDB
 
-    Client->>Controller: GET /api/v1/posts?page=1&pageSize=10
+    Client->>Controller: GET /api/v1/groups/{groupId}/posts?page=1&pageSize=10
     Controller->>Dispatcher: Query(GetPostsQuery)
     Dispatcher->>QueryHandler: Handle(query)
     QueryHandler->>ReadRepo: GetLatestAsync(page, pageSize)
@@ -186,7 +190,7 @@ sequenceDiagram
     participant EventHandler
     participant ReadRepo
 
-    Client->>Controller: POST /api/v1/likes/toggle
+    Client->>Controller: POST /api/v1/reactions/toggle
     Controller->>Dispatcher: Send(ToggleLikeCommand)
     Dispatcher->>CommandHandler: Handle(command)
     
@@ -252,3 +256,19 @@ sequenceDiagram
 ## Response Formats
 
 All API responses follow a consistent structure with appropriate HTTP status codes.
+
+## Group Access Control
+
+The API enforces access rules based on the `GroupType`:
+
+| Group Type | Viewing Posts | Creating Posts | Membership |
+|------------|---------------|----------------|------------|
+| **Everyone** | Anyone | Anyone | Open |
+| **Public** | Anyone | Members Only | Auto-join (if enabled) |
+| **Private** | Members Only | Members Only | Invitation/Approval |
+
+### Implementation Details
+
+- **Viewing Posts**: Handled in `GetPostsQueryHandler`. For **Private** groups, the `UserId` must be provided in the query and the user must be a member.
+- **Creating Posts**: Handled in `CreatePostCommandHandler`. For **Public** and **Private** groups, the user must be a member to create a post.
+- **Group Creation**: The user creating a group is automatically assigned as the `CreatorId`.
