@@ -13,6 +13,7 @@ public class PollRepository : IPollRepository
     public async Task<Poll?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Polls
+            .Include(p => p.Group)
             .Include(p => p.Options)
             .ThenInclude(o => o.Votes)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
@@ -42,19 +43,32 @@ public class PollRepository : IPollRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<Poll>> GetActivePollsAsync(Guid groupId, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Polls
-            .Include(p => p.Options)
-            .Where(p => p.GroupId == groupId && p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow))
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<List<Poll>> GetActivePollsAsync(Guid? groupId, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Polls
+            .Include(p => p.Group)
             .Include(p => p.Options)
-            .Where(p => p.GroupId == groupId && p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
+            .Where(p => p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
+
+        if (groupId.HasValue)
+        {
+            query = query.Where(p => p.GroupId == groupId.Value);
+        }
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid? groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _dbContext.Polls
+            .Include(p => p.Group)
+            .Include(p => p.Options)
+            .Where(p => p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
+
+        if (groupId.HasValue)
+        {
+            query = query.Where(p => p.GroupId == groupId.Value);
+        }
 
         var totalCount = await query.LongCountAsync(cancellationToken);
         var items = await query

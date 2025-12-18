@@ -10,18 +10,33 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PageHeader from '../components/PageHeader';
-import { useAppDispatch } from '../store/hooks';
 import { createPoll } from '../store/slices/pollsSlice';
+import { fetchGroups } from '../store/slices/groupsSlice';
 import { CreatePollCommand } from '../services/pollsService';
+import { FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function CreatePollPage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { items: groups, loading: groupsLoading } = useAppSelector((state) => state.groups);
     const [formData, setFormData] = React.useState<CreatePollCommand>({
         question: '',
         options: ['', ''],
         expiresAt: undefined,
+        groupId: '',
+        isAnonymous: false,
     });
+
+    React.useEffect(() => {
+        dispatch(fetchGroups({ pageNumber: 1, pageSize: 100 }));
+    }, [dispatch]);
+
+    React.useEffect(() => {
+        if (groups.length > 0 && !formData.groupId) {
+            setFormData(prev => ({ ...prev, groupId: groups[0].id }));
+        }
+    }, [groups]);
 
     const handleOptionChange = (index: number, value: string) => {
         const newOptions = [...formData.options];
@@ -65,6 +80,32 @@ export default function CreatePollPage() {
                         multiline
                         value={formData.question}
                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                    />
+
+                    <FormControl fullWidth variant="standard">
+                        <InputLabel>Group</InputLabel>
+                        <Select
+                            value={formData.groupId}
+                            onChange={(e) => setFormData({ ...formData, groupId: e.target.value as string })}
+                            label="Group"
+                            disabled={groupsLoading}
+                        >
+                            {groups.map((group) => (
+                                <MenuItem key={group.id} value={group.id}>
+                                    {group.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={formData.isAnonymous}
+                                onChange={(e) => setFormData({ ...formData, isAnonymous: e.target.checked })}
+                            />
+                        }
+                        label="Anonymous Voting"
                     />
 
                     <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
@@ -116,7 +157,7 @@ export default function CreatePollPage() {
                             onClick={handleSave}
                             variant="contained"
                             sx={{ textTransform: 'none' }}
-                            disabled={!formData.question || formData.options.some(o => !o)}
+                            disabled={!formData.question || formData.options.some(o => !o) || !formData.groupId}
                         >
                             Create Poll
                         </Button>

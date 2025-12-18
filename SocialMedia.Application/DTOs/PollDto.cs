@@ -8,6 +8,7 @@ public class PollDto
     public DateTimeOffset? ExpiresAt { get; set; }
     public Guid CreatorId { get; set; }
     public Guid GroupId { get; set; }
+    public string GroupName { get; set; } = string.Empty;
     public bool IsAnonymous { get; set; }
     public List<PollOptionDto> Options { get; set; } = new List<PollOptionDto>();
     public int TotalVotes => Options.Sum(x => x.VoteCount);

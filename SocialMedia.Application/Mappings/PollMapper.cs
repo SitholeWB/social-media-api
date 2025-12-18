@@ -13,6 +13,7 @@ public static class PollMapper
             ExpiresAt = poll.ExpiresAt,
             CreatorId = poll.CreatorId,
             GroupId = poll.GroupId,
+            GroupName = poll.Group?.Name ?? string.Empty,
             IsAnonymous = poll.IsAnonymous,
             Options = poll.Options.Select(o => o.ToDto()).ToList()
         };

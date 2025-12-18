@@ -45,7 +45,7 @@ public class PollsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("active")]
-    public async Task<IActionResult> GetActivePolls([FromQuery] Guid groupId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetActivePolls([FromQuery] Guid? groupId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var query = new GetActivePollsQuery(groupId, pageNumber, pageSize)
         {

@@ -1,7 +1,8 @@
 // pages/ViewPollPage.tsx
 import * as React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -31,7 +32,7 @@ export default function ViewPollPage() {
     React.useEffect(() => {
         if (pollId) {
             dispatch(fetchPoll(pollId));
-            
+
             // Check if user has already voted
             const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '{}');
             if (votedPolls[pollId]) {
@@ -70,20 +71,20 @@ export default function ViewPollPage() {
 
         try {
             setVoteLoading(true);
-            
+
             // Call the vote API
-            await dispatch(voteOnPoll({ 
-                pollId, 
-                optionId: selectedOptionId 
+            await dispatch(voteOnPoll({
+                pollId,
+                optionId: selectedOptionId
             })).unwrap();
-            
+
             // Mark as voted in localStorage
             const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '{}');
             votedPolls[pollId] = selectedOptionId;
             localStorage.setItem('votedPolls', JSON.stringify(votedPolls));
-            
+
             setHasVoted(true);
-            
+
             // Refresh poll data to get updated vote counts
             dispatch(fetchPoll(pollId));
         } catch (error) {
@@ -192,11 +193,11 @@ export default function ViewPollPage() {
 
                     {/* Poll Status */}
                     <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-                        <Typography 
-                            variant="body2" 
-                            sx={{ 
-                                px: 2, 
-                                py: 0.5, 
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                px: 2,
+                                py: 0.5,
                                 borderRadius: 1,
                                 backgroundColor: currentPoll.isActive ? 'success.light' : 'error.light',
                                 color: currentPoll.isActive ? 'success.contrastText' : 'error.contrastText',
@@ -204,17 +205,41 @@ export default function ViewPollPage() {
                         >
                             {currentPoll.isActive ? 'Active' : 'Inactive'}
                         </Typography>
-                        
+
                         {currentPoll.expiresAt && (
                             <Typography variant="body2" color="text.secondary">
                                 {isExpired ? 'Expired on ' : 'Expires on '}
                                 {formatDate(currentPoll.expiresAt)}
                             </Typography>
                         )}
-                        
+
                         <Typography variant="body2" color="text.secondary">
                             Poll ID: {currentPoll.id.substring(0, 8)}...
                         </Typography>
+
+                        {currentPoll.groupName && (
+                            <Typography variant="body2" color="text.secondary">
+                                Group: <Link component={RouterLink} to={`/groups`} sx={{ fontWeight: 600 }}>{currentPoll.groupName}</Link>
+                            </Typography>
+                        )}
+
+                        {currentPoll.isAnonymous && (
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    px: 1,
+                                    py: 0.25,
+                                    borderRadius: 0.5,
+                                    backgroundColor: 'info.lighter',
+                                    color: 'info.dark',
+                                    fontWeight: 600,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 0.5
+                                }}
+                            >
+                                Anonymous Poll
+                            </Typography>
+                        )}
                     </Stack>
 
                     {/* Total Votes */}
@@ -228,7 +253,7 @@ export default function ViewPollPage() {
                             const isSelected = selectedOptionId === option.id;
                             const percentage = getPercentage(option.voteCount);
                             const isWinning = index === 0 && sortedOptions.length > 1 && totalVotes > 0;
-                            
+
                             return (
                                 <Card
                                     key={option.id}
@@ -265,45 +290,45 @@ export default function ViewPollPage() {
                                             </Typography>
                                         </Box>
                                     )}
-                                    
+
                                     <CardContent>
                                         <Stack spacing={1.5}>
-                                            <Stack 
-                                                direction="row" 
-                                                spacing={1.5} 
+                                            <Stack
+                                                direction="row"
+                                                spacing={1.5}
                                                 alignItems="center"
                                                 justifyContent="space-between"
                                             >
                                                 <Stack direction="row" spacing={1.5} alignItems="center">
                                                     {canVote ? (
                                                         isSelected ? (
-                                                            <RadioButtonUncheckedIcon 
-                                                                color="primary" 
-                                                                sx={{ 
+                                                            <RadioButtonUncheckedIcon
+                                                                color="primary"
+                                                                sx={{
                                                                     border: '2px solid',
                                                                     borderColor: 'primary.main',
                                                                     borderRadius: '50%',
-                                                                    p: 0.25 
+                                                                    p: 0.25
                                                                 }}
                                                             />
                                                         ) : (
                                                             <RadioButtonUncheckedIcon color="action" />
                                                         )
                                                     ) : (
-                                                        <Typography 
-                                                            variant="h5" 
+                                                        <Typography
+                                                            variant="h5"
                                                             color="primary"
                                                             fontWeight="bold"
                                                         >
                                                             #{index + 1}
                                                         </Typography>
                                                     )}
-                                                    
+
                                                     <Typography variant="h6">
                                                         {option.text}
                                                     </Typography>
                                                 </Stack>
-                                                
+
                                                 <Stack alignItems="flex-end">
                                                     <Typography variant="h6" color="primary">
                                                         {option.voteCount} {option.voteCount === 1 ? 'vote' : 'votes'}
@@ -313,13 +338,13 @@ export default function ViewPollPage() {
                                                     </Typography>
                                                 </Stack>
                                             </Stack>
-                                            
+
                                             {/* Progress Bar */}
                                             <Box sx={{ width: '100%' }}>
-                                                <LinearProgress 
-                                                    variant="determinate" 
+                                                <LinearProgress
+                                                    variant="determinate"
                                                     value={percentage}
-                                                    sx={{ 
+                                                    sx={{
                                                         height: 8,
                                                         borderRadius: 4,
                                                         backgroundColor: 'action.hover',
@@ -329,7 +354,7 @@ export default function ViewPollPage() {
                                                     }}
                                                 />
                                             </Box>
-                                            
+
                                             {/* Option ID (for debugging) */}
                                             <Typography variant="caption" color="text.disabled">
                                                 Option ID: {option.id.substring(0, 8)}...
@@ -349,7 +374,7 @@ export default function ViewPollPage() {
                                 size="large"
                                 onClick={handleVote}
                                 disabled={!selectedOptionId || voteLoading}
-                                sx={{ 
+                                sx={{
                                     textTransform: 'none',
                                     px: 4,
                                     py: 1.5,

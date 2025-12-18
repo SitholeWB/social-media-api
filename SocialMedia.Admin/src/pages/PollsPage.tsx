@@ -103,6 +103,23 @@ export default function PollsPage() {
             )
         },
         {
+            field: 'groupName',
+            headerName: 'Group',
+            flex: 1,
+            minWidth: 150,
+        },
+        {
+            field: 'isAnonymous',
+            headerName: 'Anonymous',
+            type: 'boolean',
+            width: 100,
+            renderCell: (params: GridRenderCellParams<any>) => (
+                <Typography variant="body2">
+                    {params.value ? 'Yes' : 'No'}
+                </Typography>
+            )
+        },
+        {
             field: 'options',
             headerName: 'Options',
             width: 100,

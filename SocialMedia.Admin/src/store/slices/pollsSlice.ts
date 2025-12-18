@@ -1,11 +1,11 @@
 // store/slices/pollsSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { 
-    pollsService, 
-    Poll, 
-    CreatePollCommand, 
+import {
+    pollsService,
+    Poll,
+    CreatePollCommand,
     UpdatePollCommand,
-    PagedResult 
+    PagedResult
 } from '../../services/pollsService';
 
 interface PollsState {
@@ -37,8 +37,8 @@ const initialState: PollsState = {
 // Fetch all polls with pagination
 export const fetchPolls = createAsyncThunk(
     'polls/fetchPolls',
-    async ({ pageNumber = 1, pageSize = 10 }: { pageNumber?: number; pageSize?: number } = {}) => {
-        const response = await pollsService.getPolls(pageNumber, pageSize);
+    async ({ pageNumber = 1, pageSize = 10, groupId }: { pageNumber?: number; pageSize?: number; groupId?: string } = {}) => {
+        const response = await pollsService.getPolls(pageNumber, pageSize, groupId);
         return response;
     }
 );
@@ -137,7 +137,7 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to fetch polls';
             })
-            
+
             // Fetch single poll
             .addCase(fetchPoll.pending, (state) => {
                 state.loading = true;
@@ -146,7 +146,7 @@ const pollsSlice = createSlice({
             .addCase(fetchPoll.fulfilled, (state, action: PayloadAction<Poll>) => {
                 state.loading = false;
                 state.currentPoll = action.payload;
-                
+
                 // Update the poll in items array if it exists there
                 const index = state.items.findIndex(poll => poll.id === action.payload.id);
                 if (index !== -1) {
@@ -157,7 +157,7 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to fetch poll';
             })
-            
+
             // Create poll
             .addCase(createPoll.pending, (state) => {
                 state.loading = true;
@@ -173,7 +173,7 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to create poll';
             })
-            
+
             // Update poll
             .addCase(updatePoll.pending, (state) => {
                 state.loading = true;
@@ -181,13 +181,13 @@ const pollsSlice = createSlice({
             })
             .addCase(updatePoll.fulfilled, (state, action: PayloadAction<Poll>) => {
                 state.loading = false;
-                
+
                 // Update in items array
                 const index = state.items.findIndex(poll => poll.id === action.payload.id);
                 if (index !== -1) {
                     state.items[index] = action.payload;
                 }
-                
+
                 // Update current poll if it's the one being edited
                 if (state.currentPoll?.id === action.payload.id) {
                     state.currentPoll = action.payload;
@@ -197,7 +197,7 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to update poll';
             })
-            
+
             // Delete poll
             .addCase(deletePoll.pending, (state) => {
                 state.loading = true;
@@ -207,12 +207,12 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 // Remove from items array
                 state.items = state.items.filter(poll => poll.id !== action.payload);
-                
+
                 // Clear current poll if it's the one being deleted
                 if (state.currentPoll?.id === action.payload) {
                     state.currentPoll = null;
                 }
-                
+
                 // Update pagination count
                 state.pagination.totalCount = Math.max(0, state.pagination.totalCount - 1);
             })
@@ -220,7 +220,7 @@ const pollsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to delete poll';
             })
-            
+
             // Vote on poll
             .addCase(voteOnPoll.pending, (state) => {
                 state.loading = true;
@@ -238,10 +238,10 @@ const pollsSlice = createSlice({
     },
 });
 
-export const { 
-    clearCurrentPoll, 
-    clearPolls, 
-    setPageNumber, 
+export const {
+    clearCurrentPoll,
+    clearPolls,
+    setPageNumber,
     setPageSize,
     updatePollInList,
     removePollFromList

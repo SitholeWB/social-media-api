@@ -10,10 +10,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PageHeader from '../components/PageHeader';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchPoll, updatePoll } from '../store/slices/pollsSlice';
+import { fetchGroups } from '../store/slices/groupsSlice';
 import { UpdatePollCommand } from '../services/pollsService';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 export default function EditPollPage() {
     const { pollId } = useParams<{ pollId: string }>();
@@ -24,18 +24,25 @@ export default function EditPollPage() {
     const [question, setQuestion] = React.useState('');
     const [isActive, setIsActive] = React.useState(true);
     const [expiresAt, setExpiresAt] = React.useState<string | undefined>(undefined);
+    const [groupId, setGroupId] = React.useState('');
+    const [isAnonymous, setIsAnonymous] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
 
+    const { items: groups } = useAppSelector((state) => state.groups);
+
     React.useEffect(() => {
         dispatch(fetchPoll(pollId!));
-    }, [dispatch]);
+        dispatch(fetchGroups({ pageNumber: 1, pageSize: 100 }));
+    }, [dispatch, pollId]);
 
     React.useEffect(() => {
         if (pollId && currentPoll) {
             setQuestion(currentPoll.question);
             setIsActive(currentPoll.isActive);
             setExpiresAt(currentPoll.expiresAt || undefined);
+            setGroupId(currentPoll.groupId || '');
+            setIsAnonymous(currentPoll.isAnonymous || false);
         }
     }, [pollId, currentPoll]);
 
@@ -53,9 +60,12 @@ export default function EditPollPage() {
 
             if (pollId) {
                 const command: UpdatePollCommand = {
+                    pollId,
                     question,
                     isActive,
                     expiresAt: expiresAt || undefined,
+                    groupId,
+                    isAnonymous,
                 };
 
                 await dispatch(updatePoll({
@@ -128,9 +138,34 @@ export default function EditPollPage() {
                             multiline
                             variant="standard"
                             value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            disabled={loading || reduxLoading}
                             required
+                        />
+
+                        <FormControl fullWidth variant="standard">
+                            <InputLabel>Group</InputLabel>
+                            <Select
+                                value={groupId}
+                                onChange={(e) => setGroupId(e.target.value as string)}
+                                label="Group"
+                                disabled={loading || reduxLoading}
+                            >
+                                {groups.map((group) => (
+                                    <MenuItem key={group.id} value={group.id}>
+                                        {group.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={isAnonymous}
+                                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                                    disabled={loading || reduxLoading}
+                                />
+                            }
+                            label="Anonymous Voting"
                         />
 
                         <Paper

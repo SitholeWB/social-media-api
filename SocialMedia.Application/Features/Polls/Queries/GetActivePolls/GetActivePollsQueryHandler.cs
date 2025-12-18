@@ -19,18 +19,21 @@ public class GetActivePollsQueryHandler : IQueryHandler<GetActivePollsQuery, Pag
     public async Task<PagedResult<PollDto>> Handle(GetActivePollsQuery query, CancellationToken cancellationToken)
     {
         // Visibility Check
-        var group = await _groupRepository.GetByIdAsync(query.GroupId, cancellationToken);
-        if (group != null && group.Type == GroupType.Private)
+        if (query.GroupId.HasValue)
         {
-            if (!query.UserId.HasValue)
+            var group = await _groupRepository.GetByIdAsync(query.GroupId.Value, cancellationToken);
+            if (group != null && group.Type == GroupType.Private)
             {
-                throw new UnauthorizedAccessException("You must be logged in and a member of this group to view polls.");
-            }
+                if (!query.UserId.HasValue)
+                {
+                    throw new UnauthorizedAccessException("You must be logged in and a member of this group to view polls.");
+                }
 
-            var isMember = await _groupMemberRepository.ExistsAsync(query.GroupId, query.UserId.Value, cancellationToken);
-            if (!isMember)
-            {
-                throw new UnauthorizedAccessException("You must be a member of this group to view polls.");
+                var isMember = await _groupMemberRepository.ExistsAsync(query.GroupId.Value, query.UserId.Value, cancellationToken);
+                if (!isMember)
+                {
+                    throw new UnauthorizedAccessException("You must be a member of this group to view polls.");
+                }
             }
         }
 
