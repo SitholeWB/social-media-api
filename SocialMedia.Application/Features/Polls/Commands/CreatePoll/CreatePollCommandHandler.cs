@@ -17,6 +17,7 @@ public class CreatePollCommandHandler : ICommandHandler<CreatePollCommand, Guid>
             Question = command.Question,
             ExpiresAt = command.ExpiresAt,
             CreatorId = command.CreatorId,
+            IsAnonymous = command.IsAnonymous,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };

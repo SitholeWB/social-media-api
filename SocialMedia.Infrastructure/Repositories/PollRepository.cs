@@ -32,9 +32,14 @@ public class PollRepository : IPollRepository
 
     public async Task<bool> HasUserVotedAsync(Guid pollId, Guid userId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Votes
-            .Include(v => v.PollOption)
-            .AnyAsync(v => v.PollOption != null && v.PollOption.PollId == pollId && v.UserId == userId, cancellationToken);
+        return await _dbContext.Set<PollVoteRecord>()
+            .AnyAsync(r => r.PollId == pollId && r.UserId == userId, cancellationToken);
+    }
+
+    public async Task AddVoteRecordAsync(PollVoteRecord record, CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Set<PollVoteRecord>().AddAsync(record, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<List<Poll>> GetActivePollsAsync(CancellationToken cancellationToken = default)

@@ -41,7 +41,10 @@ classDiagram
     class Poll {
         +Guid Id
         +string Question
-        +DateTime EndsAt
+        +bool IsActive
+        +DateTime? ExpiresAt
+        +Guid CreatorId
+        +bool IsAnonymous
     }
 
     class PollOption {
@@ -52,8 +55,15 @@ classDiagram
 
     class Vote {
         +Guid Id
-        +Guid UserId
+        +Guid? UserId
         +Guid PollOptionId
+    }
+
+    class PollVoteRecord {
+        +Guid Id
+        +Guid PollId
+        +Guid UserId
+        +DateTime CreatedAt
     }
 
     class Group {

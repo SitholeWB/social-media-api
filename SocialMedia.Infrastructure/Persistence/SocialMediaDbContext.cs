@@ -25,6 +25,7 @@ public class SocialMediaDbContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<OutboxEvent> OutboxEvents { get; set; }
+    public DbSet<PollVoteRecord> PollVoteRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -122,5 +123,9 @@ public class SocialMediaDbContext : DbContext
             .HasOne(gm => gm.User)
             .WithMany()
             .HasForeignKey(gm => gm.UserId);
+
+        modelBuilder.Entity<PollVoteRecord>()
+            .HasIndex(p => new { p.PollId, p.UserId })
+            .IsUnique();
     }
 }

@@ -148,7 +148,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Arrange
         var pollId = Guid.NewGuid();
-        var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1));
+        var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1), false);
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", command, TestContext.Current.CancellationToken);
@@ -184,7 +184,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-        var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2));
+        var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2), false);
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", updateCommand, TestContext.Current.CancellationToken);

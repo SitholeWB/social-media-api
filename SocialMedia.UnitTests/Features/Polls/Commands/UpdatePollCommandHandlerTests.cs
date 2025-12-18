@@ -26,7 +26,7 @@ public class UpdatePollCommandHandlerTests
         _pollRepositoryMock.Setup(x => x.GetByIdAsync(pollId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(poll);
 
-        var command = new UpdatePollCommand(pollId, "New Question", false, DateTime.UtcNow.AddDays(1));
+        var command = new UpdatePollCommand(pollId, "New Question", false, DateTime.UtcNow.AddDays(1), true);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -46,7 +46,7 @@ public class UpdatePollCommandHandlerTests
         _pollRepositoryMock.Setup(x => x.GetByIdAsync(pollId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Poll?)null);
 
-        var command = new UpdatePollCommand(pollId, "New Question", false, null);
+        var command = new UpdatePollCommand(pollId, "New Question", false, null, false);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

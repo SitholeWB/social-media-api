@@ -27,16 +27,32 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
             throw new InvalidOperationException("User has already voted on this poll.");
         }
 
+        // 1. Record that the user has voted (Anonymized duplicate prevention)
+        var voteRecord = new PollVoteRecord
+        {
+            Id = Guid.NewGuid(),
+            PollId = command.PollId,
+            UserId = command.UserId,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _pollRepository.AddVoteRecordAsync(voteRecord, cancellationToken);
+
+        // 2. Record the actual vote selection
         var vote = new Vote
         {
             Id = Guid.NewGuid(),
             PollOptionId = command.PollOptionId,
-            UserId = command.UserId,
+            UserId = poll.IsAnonymous ? null : command.UserId, // SEPARATION: selection is anonymous if requested
             CreatedAt = DateTime.UtcNow
         };
 
         await _voteRepository.AddAsync(vote, cancellationToken);
-        await _blockchainService.AddVoteAsync(vote.Id, command.UserId, command.PollOptionId, cancellationToken);
+        
+        // 3. Update blockchain (Immutable audit log)
+        // For anonymous polls, we record Guid.Empty as UserId to maintain total anonymity on the ledger
+        var userIdForBlockchain = poll.IsAnonymous ? Guid.Empty : command.UserId;
+        await _blockchainService.AddVoteAsync(vote.Id, userIdForBlockchain, command.PollOptionId, cancellationToken);
+        
         return true;
     }
 }
