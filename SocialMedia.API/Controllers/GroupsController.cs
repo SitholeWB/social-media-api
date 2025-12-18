@@ -16,7 +16,13 @@ public class GroupsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroupCommand command, CancellationToken cancellationToken)
     {
-        var groupId = await _dispatcher.Send<CreateGroupCommand, Guid>(command, cancellationToken);
+        var userId = this.GetUserId();
+        if (!userId.HasValue)
+        {
+            return BadRequest("Failed to get user from auth token");
+        }
+        var commandWithCreator = command with { CreatorId = userId.Value };
+        var groupId = await _dispatcher.Send<CreateGroupCommand, Guid>(commandWithCreator, cancellationToken);
         return Ok(groupId);
     }
 
@@ -65,7 +71,7 @@ public class GroupsController : ControllerBase
             PageNumber = pageNumber,
             PageSize = pageSize,
             SortBy = sortBy,
-            GroupId = groupId
+            UserId = this.GetUserId()
         };
         var result = await _dispatcher.Query<GetPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
         return Ok(result);

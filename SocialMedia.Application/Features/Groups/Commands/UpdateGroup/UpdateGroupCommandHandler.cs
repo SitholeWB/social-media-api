@@ -16,7 +16,7 @@ public class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupCommand, boo
         {
             return false;
         }
-        group.Update(command.Name, command.Description, command.IsPublic, command.IsAutoAdd);
+        group.Update(command.Name, command.Description, command.IsPublic, command.IsAutoAdd, command.Type);
         await _groupRepository.UpdateAsync(group, cancellationToken);
         return true;
     }

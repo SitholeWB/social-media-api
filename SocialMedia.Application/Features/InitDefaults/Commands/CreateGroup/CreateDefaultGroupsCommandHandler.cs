@@ -26,6 +26,8 @@ public class CreateDefaultGroupsCommandHandler : ICommandHandler<CreateDefaultGr
                     Description = defaultGroup.Description,
                     IsPublic = defaultGroup.IsPublic,
                     IsAutoAdd = defaultGroup.IsAutoAdd,
+                    Type = defaultGroup.Type,
+                    CreatorId = Guid.Empty, // Default groups don't have a specific user creator
                     CreatedAt = DateTime.UtcNow,
                     Members = new List<GroupMember>(),
                     Posts = new List<Post>()

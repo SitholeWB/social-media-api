@@ -17,6 +17,8 @@ public class CreateGroupCommandHandler : ICommandHandler<CreateGroupCommand, Gui
             Description = request.Description,
             IsPublic = request.IsPublic,
             IsAutoAdd = request.IsAutoAdd,
+            Type = request.Type,
+            CreatorId = request.CreatorId,
             CreatedAt = DateTime.UtcNow
         };
 

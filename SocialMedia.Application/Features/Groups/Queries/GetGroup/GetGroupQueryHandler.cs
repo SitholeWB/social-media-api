@@ -23,6 +23,8 @@ public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>
             Description = group.Description,
             IsPublic = group.IsPublic,
             IsAutoAdd = group.IsAutoAdd,
+            Type = group.Type,
+            CreatorId = group.CreatorId,
             CreatedAt = group.CreatedAt
         };
     }

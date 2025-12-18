@@ -7,6 +7,7 @@ public class GroupDto
     public string Description { get; set; } = string.Empty;
     public bool IsPublic { get; set; }
     public bool IsAutoAdd { get; set; }
+    public GroupType Type { get; set; }
     public Guid CreatorId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

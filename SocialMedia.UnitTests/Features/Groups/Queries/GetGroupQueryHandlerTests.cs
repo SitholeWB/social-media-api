@@ -28,6 +28,7 @@ public class GetGroupQueryHandlerTests
             Description = "Test Description",
             IsPublic = true,
             IsAutoAdd = false,
+            Type = GroupType.Public,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -46,7 +47,8 @@ public class GetGroupQueryHandlerTests
         result.Description.Should().Be(group.Description);
         result.IsPublic.Should().Be(group.IsPublic);
         result.IsAutoAdd.Should().Be(group.IsAutoAdd);
-        result.CreatorId.Should().Be(Guid.Empty); // As per our fix
+        result.Type.Should().Be(group.Type);
+        result.CreatorId.Should().Be(group.CreatorId);
     }
 
     [Fact]

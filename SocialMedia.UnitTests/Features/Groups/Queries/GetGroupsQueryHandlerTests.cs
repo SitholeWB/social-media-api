@@ -40,7 +40,7 @@ public class GetGroupsQueryHandlerTests
         result.Items.Should().HaveCount(2);
         result.TotalCount.Should().Be(2);
         result.Items.First().Name.Should().Be("Group 1");
-        result.Items.First().CreatorId.Should().Be(Guid.Empty); // As per our fix
+        result.Items.First().CreatorId.Should().Be(groups.First().CreatorId);
     }
 
     [Fact]
