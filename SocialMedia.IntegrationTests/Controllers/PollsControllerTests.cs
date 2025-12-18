@@ -7,8 +7,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         try
         {
+            // Create a group first
+            var groupCommand = new CreateGroupCommand("Double Vote Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
             // Arrange
-            var command = new CreatePollCommand(null, default)
+            var command = new CreatePollCommand(null, default, groupId)
             {
                 Question = "What is your favorite color?",
                 Options = new List<string> { "Red", "Blue", "Green" },
@@ -42,8 +47,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         try
         {
+            // Create a group first
+            var groupCommand = new CreateGroupCommand("Vote Test Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
             // Arrange
-            var createCommand = new CreatePollCommand(null, default)
+            var createCommand = new CreatePollCommand(null, default, groupId)
             {
                 Question = "Vote Test",
                 Options = new List<string> { "Option 1", "Option 2" },
@@ -97,8 +107,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         try
         {
+            // Create a group first
+            var groupCommand = new CreateGroupCommand("Double Vote Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
             // Arrange
-            var createCommand = new CreatePollCommand(null, default)
+            var createCommand = new CreatePollCommand(null, default, groupId)
             {
                 Question = "Double Vote Test",
                 Options = new List<string> { "Yes", "No" },
@@ -148,7 +163,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Arrange
         var pollId = Guid.NewGuid();
-        var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1), false);
+        var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1), false, Guid.NewGuid());
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", command, TestContext.Current.CancellationToken);
@@ -173,8 +188,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     [Fact]
     public async Task UpdatePoll_ShouldReturnNoContent_WhenPollExists()
     {
+        // Create a group first
+        var groupCommand = new CreateGroupCommand("Update Poll Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+        var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+        var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
         // Arrange
-        var createCommand = new CreatePollCommand(null, default)
+        var createCommand = new CreatePollCommand(null, default, groupId)
         {
             Question = "Poll to Update",
             Options = new List<string> { "A", "B" },
@@ -184,7 +204,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-        var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2), false);
+        var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2), false, groupId);
 
         // Act
         var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", updateCommand, TestContext.Current.CancellationToken);
@@ -196,8 +216,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     [Fact]
     public async Task DeletePoll_ShouldReturnNoContent_WhenPollExists()
     {
+        // Create a group first
+        var groupCommand = new CreateGroupCommand("Delete Poll Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+        var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+        var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
         // Arrange
-        var createCommand = new CreatePollCommand(null, default)
+        var createCommand = new CreatePollCommand(null, default, groupId)
         {
             Question = "Poll to Delete",
             Options = new List<string> { "A", "B" },

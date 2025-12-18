@@ -126,4 +126,29 @@ public class GroupsController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpPost("{groupId}/polls")]
+    public async Task<IActionResult> CreatePoll(Guid groupId, [FromBody] CreatePollCommand command, CancellationToken cancellationToken)
+    {
+        var userId = this.GetUserId();
+        if (!userId.HasValue)
+        {
+            return BadRequest("Failed to get user from auth token");
+        }
+        var commandWithGroup = command with { GroupId = groupId, CreatorId = userId.Value };
+        var pollId = await _dispatcher.Send<CreatePollCommand, Guid>(commandWithGroup, cancellationToken);
+        return Ok(pollId);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{groupId}/polls")]
+    public async Task<IActionResult> GetGroupPolls(Guid groupId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var query = new GetActivePollsQuery(groupId, pageNumber, pageSize)
+        {
+            UserId = this.GetUserId()
+        };
+        var result = await _dispatcher.Query<GetActivePollsQuery, PagedResult<PollDto>>(query, cancellationToken);
+        return Ok(result);
+    }
 }

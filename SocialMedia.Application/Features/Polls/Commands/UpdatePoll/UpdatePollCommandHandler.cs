@@ -19,7 +19,7 @@ public class UpdatePollCommandHandler : ICommandHandler<UpdatePollCommand, bool>
             return false;
         }
 
-        poll.Update(command.Question, command.IsActive, command.ExpiresAt, command.IsAnonymous);
+        poll.Update(command.Question, command.IsActive, command.ExpiresAt, command.IsAnonymous, command.GroupId);
         await _pollRepository.UpdateAsync(poll, cancellationToken);
         return true;
     }

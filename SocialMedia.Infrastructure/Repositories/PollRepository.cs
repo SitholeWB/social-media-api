@@ -42,28 +42,23 @@ public class PollRepository : IPollRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<Poll>> GetActivePollsAsync(CancellationToken cancellationToken = default)
+    public async Task<List<Poll>> GetActivePollsAsync(Guid groupId, CancellationToken cancellationToken = default)
     {
-        var now = DateTime.UtcNow;
         return await _dbContext.Polls
             .Include(p => p.Options)
-            .ThenInclude(o => o.Votes)
-            .Where(p => p.IsActive && (!p.ExpiresAt.HasValue || p.ExpiresAt > now))
-            .OrderByDescending(p => p.CreatedAt)
+            .Where(p => p.GroupId == groupId && p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow))
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
-        var now = DateTime.UtcNow;
         var query = _dbContext.Polls
             .Include(p => p.Options)
-            .ThenInclude(o => o.Votes)
-            .Where(p => p.IsActive && (!p.ExpiresAt.HasValue || p.ExpiresAt > now))
-            .OrderByDescending(p => p.CreatedAt);
+            .Where(p => p.GroupId == groupId && p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
 
         var totalCount = await query.LongCountAsync(cancellationToken);
         var items = await query
+            .OrderByDescending(p => p.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

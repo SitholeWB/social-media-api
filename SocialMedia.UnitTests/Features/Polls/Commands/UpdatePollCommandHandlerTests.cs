@@ -8,11 +8,15 @@ namespace SocialMedia.UnitTests.Features.Polls.Commands;
 public class UpdatePollCommandHandlerTests
 {
     private readonly Mock<IPollRepository> _pollRepositoryMock;
+    private readonly Mock<IGroupRepository> _groupRepositoryMock;
+    private readonly Mock<IGroupMemberRepository> _groupMemberRepositoryMock;
     private readonly UpdatePollCommandHandler _handler;
 
     public UpdatePollCommandHandlerTests()
     {
         _pollRepositoryMock = new Mock<IPollRepository>();
+        _groupRepositoryMock = new Mock<IGroupRepository>();
+        _groupMemberRepositoryMock = new Mock<IGroupMemberRepository>();
         _handler = new UpdatePollCommandHandler(_pollRepositoryMock.Object);
     }
 
@@ -26,7 +30,7 @@ public class UpdatePollCommandHandlerTests
         _pollRepositoryMock.Setup(x => x.GetByIdAsync(pollId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(poll);
 
-        var command = new UpdatePollCommand(pollId, "New Question", false, DateTime.UtcNow.AddDays(1), true);
+        var command = new UpdatePollCommand(pollId, "New Question", false, DateTime.UtcNow.AddDays(1), true, Guid.NewGuid());
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -46,7 +50,7 @@ public class UpdatePollCommandHandlerTests
         _pollRepositoryMock.Setup(x => x.GetByIdAsync(pollId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Poll?)null);
 
-        var command = new UpdatePollCommand(pollId, "New Question", false, null, false);
+        var command = new UpdatePollCommand(pollId, "New Question", false, null, false, Guid.NewGuid());
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

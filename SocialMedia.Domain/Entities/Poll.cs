@@ -8,14 +8,17 @@ public class Poll : BaseEntity
     public DateTime? ExpiresAt { get; set; }
     public Guid CreatorId { get; set; }
     public bool IsAnonymous { get; set; } = false;
+    public Guid GroupId { get; set; }
+    public Group? Group { get; set; }
 
     public ICollection<PollOption> Options { get; set; } = new List<PollOption>();
 
-    public void Update(string question, bool isActive, DateTime? expiresAt, bool isAnonymous)
+    public void Update(string question, bool isActive, DateTime? expiresAt, bool isAnonymous, Guid groupId)
     {
         Question = question;
         IsActive = isActive;
         ExpiresAt = expiresAt;
         IsAnonymous = isAnonymous;
+        GroupId = groupId;
     }
 }

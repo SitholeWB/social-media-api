@@ -15,7 +15,11 @@ public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : Bas
     public async Task VerifyChain_ShouldReturnTrue_AfterVotes()
     {
         // Arrange: Create Poll
-        var createCommand = new CreatePollCommand(null, default)
+        var groupCommand = new CreateGroupCommand("BC Group", "Desc", true, false, GroupType.Everyone, Guid.NewGuid());
+        var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+        var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
+
+        var createCommand = new CreatePollCommand(null, default, groupId)
         {
             Question = "Blockchain Test",
             Options = new List<string> { "A", "B" },

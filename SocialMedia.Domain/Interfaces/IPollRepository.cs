@@ -7,7 +7,7 @@ public interface IPollRepository
     Task UpdateAsync(Poll poll, CancellationToken cancellationToken = default);
     Task<bool> HasUserVotedAsync(Guid pollId, Guid userId, CancellationToken cancellationToken = default);
     Task AddVoteRecordAsync(PollVoteRecord record, CancellationToken cancellationToken = default);
-    Task<List<Poll>> GetActivePollsAsync(CancellationToken cancellationToken = default);
-    Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+    Task<List<Poll>> GetActivePollsAsync(Guid groupId, CancellationToken cancellationToken = default);
+    Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
     Task DeleteAsync(Poll poll, CancellationToken cancellationToken = default);
 }

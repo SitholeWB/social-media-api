@@ -1,3 +1,6 @@
 namespace SocialMedia.Application;
 
-public record GetActivePollsQuery(int PageNumber, int PageSize) : IQuery<PagedResult<PollDto>>;
+public record GetActivePollsQuery(Guid GroupId, int PageNumber, int PageSize) : IQuery<PagedResult<PollDto>>
+{
+    public Guid? UserId { get; set; }
+}

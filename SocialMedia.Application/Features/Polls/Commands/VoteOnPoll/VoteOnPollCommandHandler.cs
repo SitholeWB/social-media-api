@@ -5,12 +5,21 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
     private readonly IPollRepository _pollRepository;
     private readonly IRepository<Vote> _voteRepository;
     private readonly IBlockchainService _blockchainService;
+    private readonly IGroupRepository _groupRepository;
+    private readonly IGroupMemberRepository _groupMemberRepository;
 
-    public VoteOnPollCommandHandler(IPollRepository pollRepository, IRepository<Vote> voteRepository, IBlockchainService blockchainService)
+    public VoteOnPollCommandHandler(
+        IPollRepository pollRepository, 
+        IRepository<Vote> voteRepository, 
+        IBlockchainService blockchainService,
+        IGroupRepository groupRepository,
+        IGroupMemberRepository groupMemberRepository)
     {
         _pollRepository = pollRepository;
         _voteRepository = voteRepository;
         _blockchainService = blockchainService;
+        _groupRepository = groupRepository;
+        _groupMemberRepository = groupMemberRepository;
     }
 
     public async Task<bool> Handle(VoteOnPollCommand command, System.Threading.CancellationToken cancellationToken)
@@ -19,6 +28,17 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         if (poll == null || !poll.IsActive || (poll.ExpiresAt.HasValue && poll.ExpiresAt < DateTime.UtcNow))
         {
             return false;
+        }
+
+        // Access Check: If you are allowed to create new post then you can vote.
+        var group = await _groupRepository.GetByIdAsync(poll.GroupId, cancellationToken);
+        if (group != null && group.Type != GroupType.Everyone)
+        {
+            var isMember = await _groupMemberRepository.ExistsAsync(poll.GroupId, command.UserId, cancellationToken);
+            if (!isMember)
+            {
+                throw new UnauthorizedAccessException("You must be a member of this group to vote.");
+            }
         }
 
         var hasVoted = await _pollRepository.HasUserVotedAsync(command.PollId, command.UserId, cancellationToken);

@@ -45,9 +45,12 @@ public class PollsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("active")]
-    public async Task<IActionResult> GetActivePolls([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetActivePolls([FromQuery] Guid groupId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var query = new GetActivePollsQuery(pageNumber, pageSize);
+        var query = new GetActivePollsQuery(groupId, pageNumber, pageSize)
+        {
+            UserId = this.GetUserId()
+        };
         var result = await _dispatcher.Query<GetActivePollsQuery, PagedResult<PollDto>>(query, cancellationToken);
         return Ok(result);
     }
@@ -56,7 +59,7 @@ public class PollsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetPollQuery(Guid.Empty) { PollId = id };
+        var query = new GetPollQuery(id) { UserId = this.GetUserId() };
         var poll = await _dispatcher.Query<GetPollQuery, PollDto?>(query, cancellationToken);
         if (poll == null)
         {
