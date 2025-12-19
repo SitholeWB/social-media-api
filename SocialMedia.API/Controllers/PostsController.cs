@@ -17,7 +17,7 @@ public class PostsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetPostByIdQuery(id);
+        var query = new GetPostByIdQuery(id) { UserId = this.GetUserId() };
         var post = await _dispatcher.Query<GetPostByIdQuery, PostDto?>(query, cancellationToken);
         if (post == null)
         {

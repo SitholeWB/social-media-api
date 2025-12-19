@@ -1,4 +1,3 @@
-// pages/PostsPage.tsx - Complete Cleaner Version
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -34,43 +33,59 @@ export default function PostsPage() {
         pagination
     } = useAppSelector((state) => state.posts);
 
-    // Store previous values to detect changes
-    const prevValues = React.useRef({
-        pageNumber: pagination.pageNumber,
-        pageSize: pagination.pageSize,
-        groupId: groupId
-    });
+    // Track if we've done the initial fetch
+    const hasInitialFetch = React.useRef(false);
 
     React.useEffect(() => {
         if (!groupId) return;
 
-        const hasPageNumberChanged = prevValues.current.pageNumber !== pagination.pageNumber;
-        const hasPageSizeChanged = prevValues.current.pageSize !== pagination.pageSize;
-        const hasGroupIdChanged = prevValues.current.groupId !== groupId;
-
-        // Only fetch if something relevant changed
-        if (hasPageNumberChanged || hasPageSizeChanged || hasGroupIdChanged) {
+        // Force initial fetch when groupId is available
+        if (!hasInitialFetch.current) {
             dispatch(fetchPostsByGroup({
                 groupId,
                 pageNumber: pagination.pageNumber,
                 pageSize: pagination.pageSize
             }));
+            hasInitialFetch.current = true;
+            return;
+        }
 
-            // Update stored values
-            prevValues.current = {
+        // Store previous values to detect changes
+        const hasPageNumberChanged = pagination.pageNumber !== 1; // Compare with initial
+        const hasPageSizeChanged = pagination.pageSize !== 10; // Compare with initial
+
+        // Only fetch if something relevant changed
+        if (hasPageNumberChanged || hasPageSizeChanged) {
+            dispatch(fetchPostsByGroup({
+                groupId,
                 pageNumber: pagination.pageNumber,
-                pageSize: pagination.pageSize,
-                groupId
-            };
+                pageSize: pagination.pageSize
+            }));
         }
 
         // Cleanup: only clear posts when groupId changes
         return () => {
-            if (hasGroupIdChanged) {
-                dispatch(clearPosts());
-            }
+            // Reset initial fetch flag when groupId changes
+            hasInitialFetch.current = false;
         };
     }, [dispatch, groupId, pagination.pageNumber, pagination.pageSize]);
+
+    // Alternative simpler approach - just fetch on mount and when dependencies change
+    // React.useEffect(() => {
+    //     if (groupId) {
+    //         dispatch(fetchPostsByGroup({
+    //             groupId,
+    //             pageNumber: pagination.pageNumber,
+    //             pageSize: pagination.pageSize
+    //         }));
+    //     }
+    //     
+    //     return () => {
+    //         if (groupId) {
+    //             dispatch(clearPosts());
+    //         }
+    //     };
+    // }, [dispatch, groupId, pagination.pageNumber, pagination.pageSize]);
 
     const handleDelete = async (postId: string) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
@@ -165,10 +180,10 @@ export default function PostsPage() {
                             </Typography>
                         </Box>
                     )) || (
-                        <Typography variant="caption" color="text.secondary">
-                            No reactions
-                        </Typography>
-                    )}
+                            <Typography variant="caption" color="text.secondary">
+                                No reactions
+                            </Typography>
+                        )}
                 </Stack>
             )
         },
@@ -195,9 +210,9 @@ export default function PostsPage() {
                             >
                                 <EditIcon fontSize="small" />
                             </IconButton>
-                            <IconButton 
-                                onClick={() => handleDelete(params.row.id)} 
-                                size="small" 
+                            <IconButton
+                                onClick={() => handleDelete(params.row.id)}
+                                size="small"
                                 color="error"
                                 title="Delete post"
                             >
@@ -213,7 +228,7 @@ export default function PostsPage() {
                 </Stack>
             ),
         },
-    ], [groupId, user?.id, navigate]);
+    ], [groupId, user?.id, navigate, handleDelete]); // Added handleDelete to dependencies
 
     // Handle navigation to create post
     const handleCreatePost = React.useCallback(() => {
@@ -234,7 +249,7 @@ export default function PostsPage() {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                     Please select a group to view posts
                 </Typography>
-                <Button 
+                <Button
                     onClick={handleBackToGroups}
                     variant="contained"
                     sx={{ textTransform: 'none' }}

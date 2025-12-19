@@ -5,12 +5,18 @@ public class GetPollQueryHandler : IQueryHandler<GetPollQuery, PollDto?>
     private readonly IPollRepository _pollRepository;
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
 
-    public GetPollQueryHandler(IPollRepository pollRepository, IGroupRepository groupRepository, IGroupMemberRepository groupMemberRepository)
+    public GetPollQueryHandler(
+        IPollRepository pollRepository,
+        IGroupRepository groupRepository,
+        IGroupMemberRepository groupMemberRepository,
+        IUserActivityRepository userActivityRepository)
     {
         _pollRepository = pollRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<PollDto?> Handle(GetPollQuery query, CancellationToken cancellationToken)
@@ -37,6 +43,12 @@ public class GetPollQueryHandler : IQueryHandler<GetPollQuery, PollDto?>
             }
         }
 
-        return poll.ToDto();
+        UserActivity? userActivity = null;
+        if (query.UserId.HasValue)
+        {
+            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, cancellationToken);
+        }
+
+        return poll.ToDto(userActivity);
     }
 }

@@ -10,6 +10,8 @@ public class PollDto
     public Guid GroupId { get; set; }
     public string GroupName { get; set; } = string.Empty;
     public bool IsAnonymous { get; set; }
+    public bool HasVoted { get; set; }
+    public Guid? VotedOptionId { get; set; }
     public List<PollOptionDto> Options { get; set; } = new List<PollOptionDto>();
     public int TotalVotes => Options.Sum(x => x.VoteCount);
 }

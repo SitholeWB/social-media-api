@@ -26,6 +26,7 @@ public class SocialMediaDbContext : DbContext
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<OutboxEvent> OutboxEvents { get; set; }
     public DbSet<PollVoteRecord> PollVoteRecords { get; set; }
+    public DbSet<UserActivity> UserActivities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -127,5 +128,12 @@ public class SocialMediaDbContext : DbContext
         modelBuilder.Entity<PollVoteRecord>()
             .HasIndex(p => new { p.PollId, p.UserId })
             .IsUnique();
+
+        modelBuilder.Entity<UserActivity>(entity =>
+        {
+            entity.HasIndex(ua => ua.UserId).IsUnique();
+            entity.OwnsMany(ua => ua.Reactions, b => b.ToJson());
+            entity.OwnsMany(ua => ua.Votes, b => b.ToJson());
+        });
     }
 }

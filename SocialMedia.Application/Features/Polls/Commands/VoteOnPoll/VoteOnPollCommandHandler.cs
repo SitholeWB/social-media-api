@@ -7,19 +7,22 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
     private readonly IBlockchainService _blockchainService;
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
 
     public VoteOnPollCommandHandler(
         IPollRepository pollRepository, 
         IRepository<Vote> voteRepository, 
         IBlockchainService blockchainService,
         IGroupRepository groupRepository,
-        IGroupMemberRepository groupMemberRepository)
+        IGroupMemberRepository groupMemberRepository,
+        IUserActivityRepository userActivityRepository)
     {
         _pollRepository = pollRepository;
         _voteRepository = voteRepository;
         _blockchainService = blockchainService;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<bool> Handle(VoteOnPollCommand command, System.Threading.CancellationToken cancellationToken)
@@ -72,6 +75,16 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         // For anonymous polls, we record Guid.Empty as UserId to maintain total anonymity on the ledger
         var userIdForBlockchain = poll.IsAnonymous ? Guid.Empty : command.UserId;
         await _blockchainService.AddVoteAsync(vote.Id, userIdForBlockchain, command.PollOptionId, cancellationToken);
+
+        // 4. Update UserActivity 
+        var userActivity = await _userActivityRepository.GetByUserIdAsync(command.UserId, cancellationToken);
+        if (userActivity == null)
+        {
+            userActivity = new UserActivity { UserId = command.UserId };
+            await _userActivityRepository.AddAsync(userActivity, cancellationToken);
+        }
+        userActivity.AddVote(command.PollId, command.PollOptionId);
+        await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
         
         return true;
     }

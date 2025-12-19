@@ -1,14 +1,19 @@
 namespace SocialMedia.Application;
 
-public record GetCommentByIdQuery(Guid Id) : IQuery<CommentReadDto>;
+public record GetCommentByIdQuery(Guid Id) : IQuery<CommentReadDto>
+{
+    public Guid? UserId { get; set; }
+}
 
 public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, CommentReadDto>
 {
     private readonly ICommentReadRepository _commentRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
 
-    public GetCommentByIdQueryHandler(ICommentReadRepository commentRepository)
+    public GetCommentByIdQueryHandler(ICommentReadRepository commentRepository, IUserActivityRepository userActivityRepository)
     {
         _commentRepository = commentRepository;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<CommentReadDto> Handle(GetCommentByIdQuery query, CancellationToken cancellationToken)
@@ -16,9 +21,15 @@ public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, Com
         var comment = await _commentRepository.GetByIdAsync(query.Id, cancellationToken);
         if (comment == null)
         {
-            // Handle not found, maybe return null or throw exception
             return null!;
         }
+
+        UserActivity? userActivity = null;
+        if (query.UserId.HasValue)
+        {
+            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, cancellationToken);
+        }
+
         return new CommentReadDto
         {
             CommentId = comment.Id,
@@ -28,6 +39,7 @@ public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, Com
             AuthorProfilePicUrl = comment.AuthorProfilePicUrl,
             CreatedAt = comment.CreatedAt,
             LikeCount = comment.Stats.LikeCount,
+            UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == comment.Id && r.EntityType == "Comment")?.Emoji,
             Reactions = comment.Reactions,
             Tags = comment.Tags,
             AdminTags = comment.AdminTags

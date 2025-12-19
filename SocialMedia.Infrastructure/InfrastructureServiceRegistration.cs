@@ -37,6 +37,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IDashboardStatsRepository, DashboardStatsRepository>();
+        services.AddScoped<IUserActivityRepository, UserActivityRepository>();
 
         services.AddScoped<IPostReadRepository, PostReadRepository>();
         services.AddScoped<ICommentReadRepository, CommentReadRepository>();

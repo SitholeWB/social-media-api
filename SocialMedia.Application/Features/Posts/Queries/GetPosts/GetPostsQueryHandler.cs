@@ -5,15 +5,18 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
     private readonly IPostReadRepository _readRepository;
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
 
     public GetPostsQueryHandler(
         IPostReadRepository readRepository,
         IGroupRepository groupRepository,
-        IGroupMemberRepository groupMemberRepository)
+        IGroupMemberRepository groupMemberRepository,
+        IUserActivityRepository userActivityRepository)
     {
         _readRepository = readRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<PagedResult<PostDto>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
@@ -37,6 +40,12 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             ? await _readRepository.GetTrendingAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken)
             : await _readRepository.GetLatestAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken);
 
+        UserActivity? userActivity = null;
+        if (request.UserId.HasValue)
+        {
+            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+        }
+
         var dtos = posts.Select(p => new PostDto
         {
             Id = p.Id,
@@ -48,6 +57,7 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             FileUrl = p.FileUrl,
             LikeCount = p.Stats.LikeCount,
             CommentCount = p.Stats.CommentCount,
+            UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == p.Id && r.EntityType == "Post")?.Emoji,
             AdminTags = p.AdminTags,
             Tags = p.Tags,
             Reactions = p.Reactions,

@@ -5,15 +5,18 @@ public class GetActivePollsQueryHandler : IQueryHandler<GetActivePollsQuery, Pag
     private readonly IPollRepository _pollRepository;
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
 
     public GetActivePollsQueryHandler(
         IPollRepository pollRepository,
         IGroupRepository groupRepository,
-        IGroupMemberRepository groupMemberRepository)
+        IGroupMemberRepository groupMemberRepository,
+        IUserActivityRepository userActivityRepository)
     {
         _pollRepository = pollRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<PagedResult<PollDto>> Handle(GetActivePollsQuery query, CancellationToken cancellationToken)
@@ -38,7 +41,14 @@ public class GetActivePollsQueryHandler : IQueryHandler<GetActivePollsQuery, Pag
         }
 
         var (polls, totalCount) = await _pollRepository.GetActivePollsPagedAsync(query.GroupId, query.PageNumber, query.PageSize, cancellationToken);
-        var dtos = polls.Select(p => p.ToDto()).ToList();
+        
+        UserActivity? userActivity = null;
+        if (query.UserId.HasValue)
+        {
+            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, cancellationToken);
+        }
+
+        var dtos = polls.Select(p => p.ToDto(userActivity)).ToList();
         return new PagedResult<PollDto>(dtos, totalCount, query.PageNumber, query.PageSize);
     }
 }

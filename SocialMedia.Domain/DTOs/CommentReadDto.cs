@@ -9,6 +9,7 @@ public class CommentReadDto
     public string? AuthorProfilePicUrl { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
+    public string? UserReaction { get; set; }
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();

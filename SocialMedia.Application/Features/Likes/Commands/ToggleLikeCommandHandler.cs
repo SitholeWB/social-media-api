@@ -6,6 +6,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
     private readonly INotificationRepository _notificationRepository;
     private readonly IPostRepository _postRepository;
     private readonly ICommentRepository _commentRepository;
+    private readonly IUserActivityRepository _userActivityRepository;
     private readonly IDispatcher _dispatcher;
 
     public ToggleLikeCommandHandler(
@@ -13,12 +14,14 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         INotificationRepository notificationRepository,
         IPostRepository postRepository,
         ICommentRepository commentRepository,
+        IUserActivityRepository userActivityRepository,
         IDispatcher dispatcher)
     {
         _likeRepository = likeRepository;
         _notificationRepository = notificationRepository;
         _postRepository = postRepository;
         _commentRepository = commentRepository;
+        _userActivityRepository = userActivityRepository;
         _dispatcher = dispatcher;
     }
 
@@ -58,12 +61,23 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
 
         var toggleLikeType = ToggleLikeType.Added;
         var oldEmoji = existingLike?.Emoji ?? string.Empty;
+
+        var userId = command.UserId.GetValueOrDefault();
+        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
+        if (userActivity == null)
+        {
+            userActivity = new UserActivity { UserId = userId };
+            await _userActivityRepository.AddAsync(userActivity, cancellationToken);
+        }
+
         if (existingLike != null)
         {
             if (existingLike.Emoji == command.Emoji)
             {
                 // Toggle off
                 await _likeRepository.DeleteAsync(existingLike, cancellationToken);
+                userActivity.RemoveReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment");
+                await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
                 toggleLikeType = ToggleLikeType.Removed;
             }
             else
@@ -72,6 +86,8 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                 existingLike.Emoji = command.Emoji;
                 existingLike.LastModifiedAt = DateTimeOffset.Now;
                 await _likeRepository.UpdateAsync(existingLike, cancellationToken);
+                userActivity.AddOrUpdateReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment", command.Emoji);
+                await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
                 toggleLikeType = ToggleLikeType.Updated;
             }
         }
@@ -87,6 +103,9 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                 Username = command.Username ?? "unknown",
             };
             await _likeRepository.AddAsync(existingLike, cancellationToken);
+
+            userActivity.AddOrUpdateReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment", command.Emoji);
+            await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
 
             // Create Notification
             if (command.PostId.HasValue)

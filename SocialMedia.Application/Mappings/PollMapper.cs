@@ -3,8 +3,10 @@ namespace SocialMedia.Application;
 
 public static class PollMapper
 {
-    public static PollDto ToDto(this Poll poll)
+    public static PollDto ToDto(this Poll poll, UserActivity? userActivity = null)
     {
+        var vote = userActivity?.Votes.FirstOrDefault(v => v.PollId == poll.Id);
+
         return new PollDto
         {
             Id = poll.Id,
@@ -15,6 +17,8 @@ public static class PollMapper
             GroupId = poll.GroupId,
             GroupName = poll.Group?.Name ?? string.Empty,
             IsAnonymous = poll.IsAnonymous,
+            HasVoted = vote != null,
+            VotedOptionId = vote?.OptionId,
             Options = poll.Options.Select(o => o.ToDto()).ToList()
         };
     }

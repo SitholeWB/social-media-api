@@ -13,6 +13,7 @@ public class PostDto
     public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }
+    public string? UserReaction { get; set; }
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
     public ICollection<TagDto> AdminTags { get; set; } = [];
     public ICollection<TagDto> Tags { get; set; } = [];

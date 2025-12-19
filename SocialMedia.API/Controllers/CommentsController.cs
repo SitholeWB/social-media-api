@@ -25,7 +25,7 @@ public class CommentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCommentById(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetCommentByIdQuery(id);
+        var query = new GetCommentByIdQuery(id) { UserId = this.GetUserId() };
         var comment = await _dispatcher.Query<GetCommentByIdQuery, CommentReadDto>(query, cancellationToken);
         if (comment == null)
         {
@@ -74,7 +74,7 @@ public class CommentsController : ControllerBase
     [HttpGet("post/{postId}")]
     public async Task<IActionResult> GetPostComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var query = new GetPostCommentsQuery(postId, pageNumber, pageSize);
+        var query = new GetPostCommentsQuery(postId, pageNumber, pageSize) { UserId = this.GetUserId() };
         var result = await _dispatcher.Query<GetPostCommentsQuery, PagedResult<CommentReadDto>>(query, cancellationToken);
         return Ok(result);
     }
