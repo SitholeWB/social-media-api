@@ -6,148 +6,124 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
     private readonly INotificationRepository _notificationRepository;
     private readonly IPostRepository _postRepository;
     private readonly ICommentRepository _commentRepository;
-    private readonly IUserActivityRepository _userActivityRepository;
     private readonly IDispatcher _dispatcher;
+    private readonly IUserRepository _userRepository;
 
     public ToggleLikeCommandHandler(
         ILikeRepository likeRepository,
         INotificationRepository notificationRepository,
         IPostRepository postRepository,
         ICommentRepository commentRepository,
-        IUserActivityRepository userActivityRepository,
-        IDispatcher dispatcher)
+        IDispatcher dispatcher,
+        IUserRepository userRepository)
     {
         _likeRepository = likeRepository;
         _notificationRepository = notificationRepository;
         _postRepository = postRepository;
         _commentRepository = commentRepository;
-        _userActivityRepository = userActivityRepository;
         _dispatcher = dispatcher;
+        _userRepository = userRepository;
     }
 
-    public async Task<bool> Handle(ToggleLikeCommand command, CancellationToken cancellationToken)
+    public async Task<bool> Handle(ToggleLikeCommand request, CancellationToken cancellationToken)
     {
         Like? existingLike = null;
-
-        if (command.PostId.HasValue)
+        if (request.PostId.HasValue)
         {
-            existingLike = await _likeRepository.GetByPostIdAndUserIdAsync(command.PostId.Value, command.UserId.GetValueOrDefault(), cancellationToken);
+            existingLike = await _likeRepository.GetByPostIdAndUserIdAsync(request.PostId.Value, request.UserId.GetValueOrDefault(), cancellationToken);
         }
-        else if (command.CommentId.HasValue)
+        else if (request.CommentId.HasValue)
         {
-            existingLike = await _likeRepository.GetByCommentIdAndUserIdAsync(command.CommentId.Value, command.UserId.GetValueOrDefault(), cancellationToken);
+            existingLike = await _likeRepository.GetByCommentIdAndUserIdAsync(request.CommentId.Value, request.UserId.GetValueOrDefault(), cancellationToken);
         }
 
-        // Validate entity exists before creating new like
+        var type = existingLike == null ? ToggleLikeType.Added : ToggleLikeType.Removed;
+        string oldEmoji = string.Empty;
+
         if (existingLike == null)
         {
-            if (command.PostId.HasValue)
+            var like = new Like
             {
-                var post = await _postRepository.GetByIdAsync(command.PostId.Value, cancellationToken);
-                if (post == null)
-                {
-                    return false; // Post doesn't exist
-                }
-            }
-            else if (command.CommentId.HasValue)
-            {
-                var comment = await _commentRepository.GetByIdAsync(command.CommentId.Value, cancellationToken);
-                if (comment == null)
-                {
-                    return false; // Comment doesn't exist
-                }
-            }
-        }
-
-        var toggleLikeType = ToggleLikeType.Added;
-        var oldEmoji = existingLike?.Emoji ?? string.Empty;
-
-        var userId = command.UserId.GetValueOrDefault();
-        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
-        if (userActivity == null)
-        {
-            userActivity = new UserActivity { UserId = userId };
-            await _userActivityRepository.AddAsync(userActivity, cancellationToken);
-        }
-
-        if (existingLike != null)
-        {
-            if (existingLike.Emoji == command.Emoji)
-            {
-                // Toggle off
-                await _likeRepository.DeleteAsync(existingLike, cancellationToken);
-                userActivity.RemoveReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment");
-                await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
-                toggleLikeType = ToggleLikeType.Removed;
-            }
-            else
-            {
-                // Update emoji
-                existingLike.Emoji = command.Emoji;
-                existingLike.LastModifiedAt = DateTimeOffset.Now;
-                await _likeRepository.UpdateAsync(existingLike, cancellationToken);
-                userActivity.AddOrUpdateReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment", command.Emoji);
-                await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
-                toggleLikeType = ToggleLikeType.Updated;
-            }
-        }
-        else
-        {
-            // Create new
-            existingLike = new Like
-            {
-                UserId = command.UserId.GetValueOrDefault(),
-                PostId = command.PostId,
-                CommentId = command.CommentId,
-                Emoji = command.Emoji,
-                Username = command.Username ?? "unknown",
+                UserId = request.UserId.GetValueOrDefault(),
+                PostId = request.PostId,
+                CommentId = request.CommentId,
+                Emoji = request.Emoji,
+                Username = request.Username ?? "Unknown",
+                CreatedAt = DateTime.UtcNow
             };
-            await _likeRepository.AddAsync(existingLike, cancellationToken);
+            await _likeRepository.AddAsync(like, cancellationToken);
+            existingLike = like;
 
-            userActivity.AddOrUpdateReaction(command.PostId ?? command.CommentId!.Value, command.PostId.HasValue ? "Post" : "Comment", command.Emoji);
-            await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
-
-            // Create Notification
-            if (command.PostId.HasValue)
+             // Create Notification
+            if (request.PostId.HasValue)
             {
-                var post = await _postRepository.GetByIdAsync(command.PostId.Value, cancellationToken);
-                if (post != null && post.AuthorId != command.UserId)
+                var post = await _postRepository.GetByIdAsync(request.PostId.Value, cancellationToken);
+                if (post != null && post.AuthorId != request.UserId)
                 {
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = post.AuthorId,
-                        Message = $"{command.Username} liked your post",
+                        Message = $"{request.Username} liked your post",
                         Type = NotificationType.LikePost,
-                        RelatedId = command.PostId.Value,
+                        RelatedId = request.PostId.Value,
                         IsRead = false,
                         CreatedAt = DateTime.UtcNow
                     }, cancellationToken);
                 }
             }
-            else if (command.CommentId.HasValue)
+            else if (request.CommentId.HasValue)
             {
-                var comment = await _commentRepository.GetByIdAsync(command.CommentId.Value, cancellationToken);
-                if (comment != null && comment.AuthorId != command.UserId)
+                var comment = await _commentRepository.GetByIdAsync(request.CommentId.Value, cancellationToken);
+                if (comment != null && comment.AuthorId != request.UserId)
                 {
                     await _notificationRepository.AddAsync(new Notification
                     {
                         UserId = comment.AuthorId,
-                        Message = $"{command.Username} liked your comment",
+                        Message = $"{request.Username} liked your comment",
                         Type = NotificationType.LikeComment,
-                        RelatedId = command.CommentId.Value,
+                        RelatedId = request.CommentId.Value,
                         IsRead = false,
                         CreatedAt = DateTime.UtcNow
                     }, cancellationToken);
                 }
             }
         }
-        if (existingLike.CommentId.HasValue)
+        else
         {
-            await _dispatcher.Publish(new CommentLikeAddedEvent(existingLike, toggleLikeType, oldEmoji), cancellationToken);
+            if (existingLike.Emoji != request.Emoji)
+            {
+                oldEmoji = existingLike.Emoji;
+                existingLike.Emoji = request.Emoji;
+                await _likeRepository.UpdateAsync(existingLike, cancellationToken);
+                type = ToggleLikeType.Updated;
+            }
+            else
+            {
+                await _likeRepository.DeleteAsync(existingLike, cancellationToken);
+            }
         }
-        else if (existingLike.PostId.HasValue)
+
+        IDomainEvent? likeEvent = null;
+        if (request.PostId.HasValue)
         {
-            await _dispatcher.Publish(new PostLikeAddedEvent(existingLike, toggleLikeType, oldEmoji), cancellationToken);
+            likeEvent = new PostLikeAddedEvent(existingLike, type, oldEmoji);
+        }
+        else if (request.CommentId.HasValue)
+        {
+            likeEvent = new CommentLikeAddedEvent(existingLike, type, oldEmoji);
+        }
+
+        if (likeEvent != null)
+        {
+            await _dispatcher.Publish(likeEvent, cancellationToken);
+        }
+        
+        // Update User Last Active
+        var user = await _userRepository.GetByIdAsync(request.UserId.GetValueOrDefault(), cancellationToken);
+        if (user != null)
+        {
+            user.LastActiveAt = DateTime.UtcNow;
+            await _userRepository.UpdateAsync(user, cancellationToken);
         }
         return true; // Added
     }

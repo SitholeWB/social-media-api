@@ -7,7 +7,7 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
     private readonly IBlockchainService _blockchainService;
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
-    private readonly IUserActivityRepository _userActivityRepository;
+    private readonly IDispatcher _dispatcher;
 
     public VoteOnPollCommandHandler(
         IPollRepository pollRepository, 
@@ -15,14 +15,14 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         IBlockchainService blockchainService,
         IGroupRepository groupRepository,
         IGroupMemberRepository groupMemberRepository,
-        IUserActivityRepository userActivityRepository)
+        IDispatcher dispatcher)
     {
         _pollRepository = pollRepository;
         _voteRepository = voteRepository;
         _blockchainService = blockchainService;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
-        _userActivityRepository = userActivityRepository;
+        _dispatcher = dispatcher;
     }
 
     public async Task<bool> Handle(VoteOnPollCommand command, System.Threading.CancellationToken cancellationToken)
@@ -76,15 +76,8 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         var userIdForBlockchain = poll.IsAnonymous ? Guid.Empty : command.UserId;
         await _blockchainService.AddVoteAsync(vote.Id, userIdForBlockchain, command.PollOptionId, cancellationToken);
 
-        // 4. Update UserActivity 
-        var userActivity = await _userActivityRepository.GetByUserIdAsync(command.UserId, cancellationToken);
-        if (userActivity == null)
-        {
-            userActivity = new UserActivity { UserId = command.UserId };
-            await _userActivityRepository.AddAsync(userActivity, cancellationToken);
-        }
-        userActivity.AddVote(command.PollId, command.PollOptionId);
-        await _userActivityRepository.UpdateAsync(userActivity, cancellationToken);
+        // 4. Publish Event
+        await _dispatcher.Publish(new PollVotedEvent(command.PollId, command.PollOptionId, command.UserId), cancellationToken);
         
         return true;
     }

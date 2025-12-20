@@ -30,7 +30,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
         var eventData = JsonSerializer.Serialize(@event, jsonOptions);
         var outboxEvent = new OutboxEvent
         {
-            EventType = typeof(TEvent).AssemblyQualifiedName ?? typeof(TEvent).FullName ?? typeof(TEvent).Name,
+            EventType = @event!.GetType().AssemblyQualifiedName ?? @event.GetType().FullName ?? @event.GetType().Name,
             EventData = eventData,
             Status = OutboxEventStatus.Pending,
             CreatedAt = DateTime.UtcNow

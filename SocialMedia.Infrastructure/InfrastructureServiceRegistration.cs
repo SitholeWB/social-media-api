@@ -48,6 +48,10 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IBackgroundEventProcessor, BackgroundEventProcessor>();
         services.AddHostedService<EventProcessorBackgroundService>();
 
+        services.AddScoped<IDomainEventHandler<PostLikeAddedEvent>, UserActivityEventHandler>();
+        services.AddScoped<IDomainEventHandler<CommentLikeAddedEvent>, UserActivityEventHandler>();
+        services.AddScoped<IDomainEventHandler<PollVotedEvent>, UserActivityEventHandler>();
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -63,6 +67,29 @@ public static class InfrastructureServiceRegistration
                 ValidateAudience = false
             };
         });
+
+        // Caching Configuration
+        var cacheProvider = configuration["CacheSettings:Provider"];
+        if (string.Equals(cacheProvider, "Redis", StringComparison.OrdinalIgnoreCase))
+        {
+           /* services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["CacheSettings:ConnectionString"];
+            });*/
+        }
+        else if (string.Equals(cacheProvider, "SqlServer", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = configuration["CacheSettings:ConnectionString"];
+                options.SchemaName = configuration["CacheSettings:SchemaName"] ?? "dbo";
+                options.TableName = configuration["CacheSettings:TableName"] ?? "DistCache";
+            });
+        }
+        else
+        {
+            services.AddDistributedMemoryCache();
+        }
 
         return services;
     }
