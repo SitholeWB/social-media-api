@@ -44,6 +44,14 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<IIdentityService, IdentityService>();
 
+        // Embedding Generator for Semantic Search
+        services.AddSingleton<IEmbeddingGenerator, OnnxEmbeddingGenerator>();
+        
+        // Vector Store for Recommendations (Simple In-Memory Implementation)
+        services.AddSingleton<SimpleInMemoryVectorStore>();
+        services.AddScoped<IPostVectorService, PostVectorService>();
+
+
         // Background Event Processing
         services.AddScoped<IBackgroundEventProcessor, BackgroundEventProcessor>();
         services.AddHostedService<EventProcessorBackgroundService>();

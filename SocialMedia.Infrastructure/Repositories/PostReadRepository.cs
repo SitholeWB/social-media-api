@@ -64,4 +64,41 @@ public class PostReadRepository : IPostReadRepository
         var query = _context.Posts.Where(p => p.GroupId == groupId);
         return await query.LongCountAsync(cancellationToken);
     }
+
+    public async Task<List<PostReadModel>> GetGlobalTrendingAsync(int page, int pageSize, int daysBack, CancellationToken cancellationToken = default)
+    {
+        var cutoffDate = DateTimeOffset.UtcNow.AddDays(-daysBack);
+        return await _context.Posts
+            .Where(p => p.CreatedAt >= cutoffDate)
+            .OrderByDescending(p => p.Stats.TrendingScore)
+            .ThenByDescending(p => p.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<PostReadModel>> GetMostActiveAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        return await _context.Posts
+            .OrderByDescending(p => p.Stats.CommentCount)
+            .ThenByDescending(p => p.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<PostReadModel>> GetMostAttractiveAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        return await _context.Posts
+            .OrderByDescending(p => p.Stats.LikeCount)
+            .ThenByDescending(p => p.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<long> GetGlobalTotalCountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Posts.LongCountAsync(cancellationToken);
+    }
 }
