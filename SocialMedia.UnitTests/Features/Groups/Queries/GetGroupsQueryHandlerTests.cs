@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using SocialMedia.Application;
 using SocialMedia.Domain;
@@ -8,12 +9,14 @@ namespace SocialMedia.UnitTests.Features.Groups.Queries;
 public class GetGroupsQueryHandlerTests
 {
     private readonly Mock<IGroupRepository> _groupRepositoryMock;
+    private readonly Mock<IDistributedCache> _distributedCacheMock;
     private readonly GetGroupsQueryHandler _handler;
 
     public GetGroupsQueryHandlerTests()
     {
         _groupRepositoryMock = new Mock<IGroupRepository>();
-        _handler = new GetGroupsQueryHandler(_groupRepositoryMock.Object);
+        _distributedCacheMock = new Mock<IDistributedCache>();
+        _handler = new GetGroupsQueryHandler(_groupRepositoryMock.Object, _distributedCacheMock.Object);
     }
 
     [Fact]

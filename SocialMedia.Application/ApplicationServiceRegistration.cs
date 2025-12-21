@@ -47,6 +47,9 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEventHandler<CommentAddedEvent>, CommentAddedEventHandler>();
         services.AddScoped<IEventHandler<CommentLikeAddedEvent>, CommentLikeAddedEventHandler>();
         services.AddScoped<IEventHandler<CommentDeletedEvent>, CommentDeletedEventHandler>();
+        services.AddScoped<IEventHandler<PostLikeAddedEvent>, UserActivityEventHandler>();
+        services.AddScoped<IEventHandler<CommentLikeAddedEvent>, UserActivityEventHandler>();
+        services.AddScoped<IEventHandler<PollVotedEvent>, UserActivityEventHandler>();
 
         // Groups
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();

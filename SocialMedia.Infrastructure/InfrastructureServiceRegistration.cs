@@ -46,19 +46,14 @@ public static class InfrastructureServiceRegistration
 
         // Embedding Generator for Semantic Search
         services.AddSingleton<IEmbeddingGenerator, OnnxEmbeddingGenerator>();
-        
+
         // Vector Store for Recommendations (Simple In-Memory Implementation)
         services.AddSingleton<SimpleInMemoryVectorStore>();
         services.AddScoped<IPostVectorService, PostVectorService>();
 
-
         // Background Event Processing
         services.AddScoped<IBackgroundEventProcessor, BackgroundEventProcessor>();
         services.AddHostedService<EventProcessorBackgroundService>();
-
-        services.AddScoped<IDomainEventHandler<PostLikeAddedEvent>, UserActivityEventHandler>();
-        services.AddScoped<IDomainEventHandler<CommentLikeAddedEvent>, UserActivityEventHandler>();
-        services.AddScoped<IDomainEventHandler<PollVotedEvent>, UserActivityEventHandler>();
 
         services.AddAuthentication(options =>
         {
@@ -80,10 +75,10 @@ public static class InfrastructureServiceRegistration
         var cacheProvider = configuration["CacheSettings:Provider"];
         if (string.Equals(cacheProvider, "Redis", StringComparison.OrdinalIgnoreCase))
         {
-           /* services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["CacheSettings:ConnectionString"];
-            });*/
+            /* services.AddStackExchangeRedisCache(options =>
+             {
+                 options.Configuration = configuration["CacheSettings:ConnectionString"];
+             });*/
         }
         else if (string.Equals(cacheProvider, "SqlServer", StringComparison.OrdinalIgnoreCase))
         {

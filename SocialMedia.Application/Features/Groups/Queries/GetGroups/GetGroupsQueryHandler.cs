@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
-using SocialMedia.Domain;
 
 namespace SocialMedia.Application;
 
