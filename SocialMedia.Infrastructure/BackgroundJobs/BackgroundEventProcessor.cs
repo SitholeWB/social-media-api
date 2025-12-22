@@ -52,6 +52,18 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
             .Take(100) // Process in batches
             .ToListAsync(cancellationToken);
 
+        var completedEvents = await dbContext.OutboxEvents
+            .Where(e => e.Status == OutboxEventStatus.Completed)
+            .OrderByDescending(e => e.CreatedAt)
+            .Take(100) // Process in batches
+            .ToListAsync(cancellationToken);
+        if (completedEvents?.Count > 0)
+        {
+            _logger.LogInformation("START: Cleaning up {Count} completed outbox events", completedEvents.Count);
+            dbContext.OutboxEvents.RemoveRange(completedEvents);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         foreach (var outboxEvent in pendingEvents)
         {
             await ProcessEventAsync(outboxEvent, dbContext, cancellationToken);
