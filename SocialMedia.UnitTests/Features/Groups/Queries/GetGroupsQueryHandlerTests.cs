@@ -30,7 +30,7 @@ public class GetGroupsQueryHandlerTests
         };
         var totalCount = 2;
 
-        _groupRepositoryMock.Setup(x => x.GetGroupsPagedAsync(1, 10, It.IsAny<CancellationToken>()))
+        _groupRepositoryMock.Setup(x => x.GetGroupsPagedAsync(1, 10, false, It.IsAny<CancellationToken>()))
             .ReturnsAsync((groups, totalCount));
 
         var query = new GetGroupsQuery(1, 10);
@@ -50,7 +50,7 @@ public class GetGroupsQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyResult_WhenNoGroupsExist()
     {
         // Arrange
-        _groupRepositoryMock.Setup(x => x.GetGroupsPagedAsync(1, 10, It.IsAny<CancellationToken>()))
+        _groupRepositoryMock.Setup(x => x.GetGroupsPagedAsync(1, 10, false, It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<Group>(), 0));
 
         var query = new GetGroupsQuery(1, 10);

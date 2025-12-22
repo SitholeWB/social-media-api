@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class BackgroundEventProcessor : IBackgroundEventProcessor
@@ -27,7 +26,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
             IncludeFields = true
         };
 
-        var eventData = JsonSerializer.Serialize(@event, jsonOptions);
+        var eventData = JsonSerializer.Serialize(@event, @event.GetType(), jsonOptions);
         var outboxEvent = new OutboxEvent
         {
             EventType = @event!.GetType().AssemblyQualifiedName ?? @event.GetType().FullName ?? @event.GetType().Name,

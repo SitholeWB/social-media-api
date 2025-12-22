@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class PollRepository : IPollRepository
@@ -43,32 +42,12 @@ public class PollRepository : IPollRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<Poll>> GetActivePollsAsync(Guid? groupId, CancellationToken cancellationToken = default)
+    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Polls
             .Include(p => p.Group)
             .Include(p => p.Options)
-            .Where(p => p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
-
-        if (groupId.HasValue)
-        {
-            query = query.Where(p => p.GroupId == groupId.Value);
-        }
-
-        return await query.ToListAsync(cancellationToken);
-    }
-
-    public async Task<(List<Poll> Items, long TotalCount)> GetActivePollsPagedAsync(Guid? groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
-    {
-        var query = _dbContext.Polls
-            .Include(p => p.Group)
-            .Include(p => p.Options)
-            .Where(p => p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
-
-        if (groupId.HasValue)
-        {
-            query = query.Where(p => p.GroupId == groupId.Value);
-        }
+            .Where(p => p.GroupId == groupId && p.IsActive && (p.ExpiresAt == null || p.ExpiresAt > DateTime.UtcNow));
 
         var totalCount = await query.LongCountAsync(cancellationToken);
         var items = await query

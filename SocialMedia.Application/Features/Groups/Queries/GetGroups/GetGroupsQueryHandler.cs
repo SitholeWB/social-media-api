@@ -25,7 +25,7 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
             return JsonSerializer.Deserialize<PagedResult<GroupDto>>(cachedData)!;
         }
 
-        var (items, totalCount) = await _groupRepository.GetGroupsPagedAsync(query.PageNumber, query.PageSize, cancellationToken);
+        var (items, totalCount) = await _groupRepository.GetGroupsPagedAsync(query.PageNumber, query.PageSize, query.IncludeDefaults, cancellationToken);
 
         var dtos = items.Select(g => new GroupDto
         {

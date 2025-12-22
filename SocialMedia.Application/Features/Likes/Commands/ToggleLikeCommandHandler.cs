@@ -27,18 +27,25 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
 
     public async Task<bool> Handle(ToggleLikeCommand request, CancellationToken cancellationToken)
     {
-        Like? existingLike = null;
+        var existingLike = default(Like?);
+        var post = default(Post?);
+        var comment = default(Comment?);
         if (request.PostId.HasValue)
         {
             existingLike = await _likeRepository.GetByPostIdAndUserIdAsync(request.PostId.Value, request.UserId.GetValueOrDefault(), cancellationToken);
+            post = await _postRepository.GetByIdAsync(request.PostId.Value, cancellationToken);
         }
         else if (request.CommentId.HasValue)
         {
             existingLike = await _likeRepository.GetByCommentIdAndUserIdAsync(request.CommentId.Value, request.UserId.GetValueOrDefault(), cancellationToken);
+            comment = await _commentRepository.GetByIdAsync(request.CommentId.Value, cancellationToken);
         }
-
-        var type = existingLike == null ? ToggleLikeType.Added : ToggleLikeType.Removed;
-        string oldEmoji = string.Empty;
+        if (post == default && comment == default)
+        {
+            return false;
+        }
+        var type = (existingLike == null) ? ToggleLikeType.Added : ToggleLikeType.Removed;
+        var oldEmoji = string.Empty;
 
         if (existingLike == null)
         {
@@ -54,38 +61,30 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
             await _likeRepository.AddAsync(like, cancellationToken);
             existingLike = like;
 
-             // Create Notification
-            if (request.PostId.HasValue)
+            // Create Notification
+            if (post != null && post.AuthorId != request.UserId)
             {
-                var post = await _postRepository.GetByIdAsync(request.PostId.Value, cancellationToken);
-                if (post != null && post.AuthorId != request.UserId)
+                await _notificationRepository.AddAsync(new Notification
                 {
-                    await _notificationRepository.AddAsync(new Notification
-                    {
-                        UserId = post.AuthorId,
-                        Message = $"{request.Username} liked your post",
-                        Type = NotificationType.LikePost,
-                        RelatedId = request.PostId.Value,
-                        IsRead = false,
-                        CreatedAt = DateTime.UtcNow
-                    }, cancellationToken);
-                }
+                    UserId = post.AuthorId,
+                    Message = $"{request.Username} liked your post",
+                    Type = NotificationType.LikePost,
+                    RelatedId = request.PostId.GetValueOrDefault(),
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                }, cancellationToken);
             }
-            else if (request.CommentId.HasValue)
+            else if (comment != null && comment.AuthorId != request.UserId)
             {
-                var comment = await _commentRepository.GetByIdAsync(request.CommentId.Value, cancellationToken);
-                if (comment != null && comment.AuthorId != request.UserId)
+                await _notificationRepository.AddAsync(new Notification
                 {
-                    await _notificationRepository.AddAsync(new Notification
-                    {
-                        UserId = comment.AuthorId,
-                        Message = $"{request.Username} liked your comment",
-                        Type = NotificationType.LikeComment,
-                        RelatedId = request.CommentId.Value,
-                        IsRead = false,
-                        CreatedAt = DateTime.UtcNow
-                    }, cancellationToken);
-                }
+                    UserId = comment.AuthorId,
+                    Message = $"{request.Username} liked your comment",
+                    Type = NotificationType.LikeComment,
+                    RelatedId = request.CommentId.GetValueOrDefault(),
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                }, cancellationToken);
             }
         }
         else
@@ -117,7 +116,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         {
             await _dispatcher.Publish(likeEvent, cancellationToken);
         }
-        
+
         // Update User Last Active
         var user = await _userRepository.GetByIdAsync(request.UserId.GetValueOrDefault(), cancellationToken);
         if (user != null)

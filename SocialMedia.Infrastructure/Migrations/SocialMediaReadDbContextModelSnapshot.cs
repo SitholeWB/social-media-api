@@ -248,6 +248,9 @@ namespace SocialMedia.Infrastructure.Migrations
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");
 
+                            b1.Property<string>("UserReaction")
+                                .HasColumnType("nvarchar(max)");
+
                             b1.HasKey("PostReadModelId", "Id");
 
                             b1.ToTable("PostReads");

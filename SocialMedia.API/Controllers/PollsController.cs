@@ -44,18 +44,6 @@ public class PollsController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("active")]
-    public async Task<IActionResult> GetActivePolls([FromQuery] Guid? groupId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
-    {
-        var query = new GetActivePollsQuery(groupId, pageNumber, pageSize)
-        {
-            UserId = this.GetUserId()
-        };
-        var result = await _dispatcher.Query<GetActivePollsQuery, PagedResult<PollDto>>(query, cancellationToken);
-        return Ok(result);
-    }
-
-    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {

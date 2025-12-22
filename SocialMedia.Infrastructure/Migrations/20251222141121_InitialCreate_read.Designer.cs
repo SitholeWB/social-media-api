@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251218161016_InitialCreate_read")]
+    [Migration("20251222141121_InitialCreate_read")]
     partial class InitialCreate_read
     {
         /// <inheritdoc />
@@ -250,6 +250,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");
+
+                            b1.Property<string>("UserReaction")
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("PostReadModelId", "Id");
 

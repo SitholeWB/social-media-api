@@ -79,9 +79,9 @@ public class GroupsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> GetGroups([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetGroups([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, bool includeDefaults = false, CancellationToken cancellationToken = default)
     {
-        var query = new GetGroupsQuery(pageNumber, pageSize);
+        var query = new GetGroupsQuery(pageNumber, pageSize, includeDefaults);
         var result = await _dispatcher.Query<GetGroupsQuery, PagedResult<GroupDto>>(query, cancellationToken);
         return Ok(result);
     }

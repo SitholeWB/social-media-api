@@ -1,64 +1,64 @@
 import { fetchJson } from './api';
 
 export enum GroupType {
-    Public = 0,
-    Private = 1,
-    Everyone = 2
+	Public = 0,
+	Private = 1,
+	Everyone = 2
 }
 
 export interface Group {
-    id: string;
-    name: string;
-    description: string;
-    type: GroupType;
-    creatorId: string;
-    createdAt: string;
+	id: string;
+	name: string;
+	description: string;
+	type: GroupType;
+	creatorId: string;
+	createdAt: string;
 }
 
 export interface CreateGroupCommand {
-    name: string;
-    description: string;
-    type: GroupType;
+	name: string;
+	description: string;
+	type: GroupType;
 }
 
 export interface UpdateGroupCommand {
-    groupId: string;
-    name: string;
-    description: string;
-    type: GroupType;
+	groupId: string;
+	name: string;
+	description: string;
+	type: GroupType;
 }
 
 export interface PagedResult<T> {
-    items: T[];
-    totalCount: number;
-    pageNumber: number;
-    pageSize: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
+	items: T[];
+	totalCount: number;
+	pageNumber: number;
+	pageSize: number;
+	totalPages: number;
+	hasNextPage: boolean;
+	hasPreviousPage: boolean;
 }
 
 export const groupsService = {
-    getGroups: (pageNumber = 1, pageSize = 10) =>
-        fetchJson<PagedResult<Group>>(`/api/v1.0/groups?pageNumber=${pageNumber}&pageSize=${pageSize}`),
+	getGroups: (pageNumber = 1, pageSize = 10) =>
+		fetchJson<PagedResult<Group>>(`/api/v1.0/groups?pageNumber=${pageNumber}&pageSize=${pageSize}&includeDefaults=true`),
 
-    getGroup: (id: string) =>
-        fetchJson<Group>(`/api/v1.0/groups/${id}`),
+	getGroup: (id: string) =>
+		fetchJson<Group>(`/api/v1.0/groups/${id}`),
 
-    createGroup: (command: CreateGroupCommand) =>
-        fetchJson<string>('/api/v1.0/groups', {
-            method: 'POST',
-            body: JSON.stringify(command),
-        }),
+	createGroup: (command: CreateGroupCommand) =>
+		fetchJson<string>('/api/v1.0/groups', {
+			method: 'POST',
+			body: JSON.stringify(command),
+		}),
 
-    updateGroup: (id: string, command: UpdateGroupCommand) =>
-        fetchJson<void>(`/api/v1.0/groups/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(command),
-        }),
+	updateGroup: (id: string, command: UpdateGroupCommand) =>
+		fetchJson<void>(`/api/v1.0/groups/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify(command),
+		}),
 
-    deleteGroup: (id: string) =>
-        fetchJson<void>(`/api/v1.0/groups/${id}`, {
-            method: 'DELETE',
-        }),
+	deleteGroup: (id: string) =>
+		fetchJson<void>(`/api/v1.0/groups/${id}`, {
+			method: 'DELETE',
+		}),
 };

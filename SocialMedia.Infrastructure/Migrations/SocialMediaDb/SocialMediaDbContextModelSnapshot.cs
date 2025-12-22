@@ -509,6 +509,29 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SocialMedia.Domain.UserActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserActivities");
+                });
+
             modelBuilder.Entity("SocialMedia.Domain.UserBlock", b =>
                 {
                     b.Property<Guid>("Id")
@@ -793,6 +816,71 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Navigation("Comment");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.UserActivity", b =>
+                {
+                    b.OwnsMany("SocialMedia.Domain.UserReactionActivity", "Reactions", b1 =>
+                        {
+                            b1.Property<Guid>("UserActivityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Emoji")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("EntityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("EntityType")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("UserActivityId", "Id");
+
+                            b1.ToTable("UserActivities");
+
+                            b1.ToJson("Reactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserActivityId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.UserVoteActivity", "Votes", b1 =>
+                        {
+                            b1.Property<Guid>("UserActivityId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<Guid>("OptionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("PollId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTimeOffset>("VotedAt")
+                                .HasColumnType("datetimeoffset");
+
+                            b1.HasKey("UserActivityId", "Id");
+
+                            b1.ToTable("UserActivities");
+
+                            b1.ToJson("Votes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserActivityId");
+                        });
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.UserBlock", b =>

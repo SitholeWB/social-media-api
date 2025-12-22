@@ -98,6 +98,22 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserActivities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Reactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Votes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -455,6 +471,12 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserActivities_UserId",
+                table: "UserActivities",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserBlocks_BlockedUserId",
                 table: "UserBlocks",
                 column: "BlockedUserId");
@@ -493,6 +515,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             migrationBuilder.DropTable(
                 name: "Reports");
+
+            migrationBuilder.DropTable(
+                name: "UserActivities");
 
             migrationBuilder.DropTable(
                 name: "UserBlocks");

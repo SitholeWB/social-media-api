@@ -73,6 +73,10 @@ public static class InfrastructureServiceRegistration
 
         // Caching Configuration
         var cacheProvider = configuration["CacheSettings:Provider"];
+        if (isTesting)
+        {
+            cacheProvider = "use memnory";
+        }
         if (string.Equals(cacheProvider, "Redis", StringComparison.OrdinalIgnoreCase))
         {
             /* services.AddStackExchangeRedisCache(options =>

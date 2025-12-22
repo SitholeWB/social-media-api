@@ -68,11 +68,11 @@ public class UserActivityEventHandler :
         string emoji,
         CancellationToken cancellationToken)
     {
-        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, cancellationToken)
-                           ?? new UserActivity { UserId = userId };
+        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
 
-        if (userActivity.Id == Guid.Empty)
+        if (userActivity == default)
         {
+            userActivity = new UserActivity { UserId = userId };
             await _userActivityRepository.AddAsync(userActivity, cancellationToken);
         }
 
