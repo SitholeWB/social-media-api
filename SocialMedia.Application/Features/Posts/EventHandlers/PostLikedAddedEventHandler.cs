@@ -39,6 +39,7 @@ public class PostLikedAddedEventHandler :
                             oldReaction.Count--;
                         }
                         reaction.Count++;
+                        reaction.Emoji = notification.Like.Emoji;
                     }
                     else if (notification.ToggleLikeType == ToggleLikeType.Added)
                     {
@@ -55,7 +56,7 @@ public class PostLikedAddedEventHandler :
                     });
                     post.Stats.LikeCount++;
                 }
-                post.Reactions = [.. post.Reactions.Where(r => r.Count > 0)];
+                post.Reactions = post.Reactions.Where(r => r.Count > 0).ToList();
                 post.UpdateTrendingScore();
                 await _readRepository.UpdateAsync(post, cancellationToken);
             }

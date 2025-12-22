@@ -42,6 +42,7 @@ public class CommentLikeAddedEventHandler :
                             oldReaction.Count--;
                         }
                         reaction.Count++;
+                        reaction.Emoji = notification.Like.Emoji;
                     }
                     else if (notification.ToggleLikeType == ToggleLikeType.Added)
                     {
@@ -58,7 +59,7 @@ public class CommentLikeAddedEventHandler :
                     });
                     comment.Stats.LikeCount++;
                 }
-                comment.Reactions = [.. comment.Reactions.Where(r => r.Count > 0)];
+                comment.Reactions = comment.Reactions.Where(r => r.Count > 0).ToList();
                 await _commentReadRepository.UpdateAsync(comment, cancellationToken);
 
                 // Update TopComments in PostReadModel if present
