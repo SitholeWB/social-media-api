@@ -26,7 +26,7 @@ public class CommentLikeAddedEventHandler :
             var comment = await _commentReadRepository.GetByIdAsync(notification.Like.CommentId.Value, cancellationToken);
             if (comment != null)
             {
-                var reaction = comment.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji);
+                var reaction = comment.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji || r.Emoji == notification.OldEmoji);
                 if (reaction != null)
                 {
                     if (notification.ToggleLikeType == ToggleLikeType.Removed)

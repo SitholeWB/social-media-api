@@ -23,7 +23,7 @@ public class PostLikedAddedEventHandler :
             var post = await _readRepository.GetByIdAsync(notification.Like.PostId.Value, cancellationToken);
             if (post != null)
             {
-                var reaction = post.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji);
+                var reaction = post.Reactions.FirstOrDefault(r => r.Emoji == notification.Like.Emoji || r.Emoji == notification.OldEmoji);
                 if (reaction != null)
                 {
                     if (notification.ToggleLikeType == ToggleLikeType.Removed)
