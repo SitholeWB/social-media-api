@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class Repository<T> : IRepository<T> where T : BaseEntity
@@ -29,7 +28,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
     public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.Entry(entity).State = EntityState.Modified;
+        _dbContext.Set<T>().Entry(entity).State = EntityState.Modified;
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 

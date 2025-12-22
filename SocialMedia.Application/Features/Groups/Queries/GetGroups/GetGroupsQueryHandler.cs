@@ -16,14 +16,14 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
 
     public async Task<PagedResult<GroupDto>> Handle(GetGroupsQuery query, CancellationToken cancellationToken)
     {
-        var cacheKey = $"groups_page_{query.PageNumber}_size_{query.PageSize}";
+        //var cacheKey = $"groups_page_{query.PageNumber}_size_{query.PageSize}";
 
-        // Try get from cache
-        var cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
-        if (!string.IsNullOrEmpty(cachedData))
-        {
-            return JsonSerializer.Deserialize<PagedResult<GroupDto>>(cachedData)!;
-        }
+        //// Try get from cache
+        //var cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
+        //if (!string.IsNullOrEmpty(cachedData))
+        //{
+        //    return JsonSerializer.Deserialize<PagedResult<GroupDto>>(cachedData)!;
+        //}
 
         var (items, totalCount) = await _groupRepository.GetGroupsPagedAsync(query.PageNumber, query.PageSize, query.IncludeDefaults, cancellationToken);
 
@@ -45,7 +45,7 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Cache groups for 10 minutes
         };
         var serialized = JsonSerializer.Serialize(result);
-        await _cache.SetStringAsync(cacheKey, serialized, options, cancellationToken);
+        //await _cache.SetStringAsync(cacheKey, serialized, options, cancellationToken);
 
         return result;
     }
