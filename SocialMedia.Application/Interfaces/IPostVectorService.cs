@@ -27,4 +27,9 @@ public interface IPostVectorService
     Task RemovePostEmbeddingAsync(
         Guid postId, 
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Record a user interaction with a post (e.g. like)
+    /// </summary>
+    Task RecordInteractionAsync(Guid userId, Guid postId, CancellationToken cancellationToken = default);
 }

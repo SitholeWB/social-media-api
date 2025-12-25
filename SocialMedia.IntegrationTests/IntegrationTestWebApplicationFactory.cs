@@ -1,3 +1,11 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using SocialMedia.Infrastructure;
+using SocialMedia.Application;
+
 namespace SocialMedia.IntegrationTests
 {
     public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
@@ -36,6 +44,21 @@ namespace SocialMedia.IntegrationTests
                 {
                     options.UseInMemoryDatabase($"{_dbName}_Read");
                 });
+
+                // Mock PostVectorService to avoid persistent file side effects and ONNX dependency in tests
+                var mockVectorService = new Mock<IPostVectorService>();
+                services.AddSingleton(mockVectorService.Object);
+
+                // Also mock IEmbeddingGenerator just in case
+                var mockEmbeddingGenerator = new Mock<IEmbeddingGenerator>();
+                services.AddSingleton(mockEmbeddingGenerator.Object);
+
+                // Remove real SqliteVectorStore registration if present
+                var vectorStoreDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(SqliteVectorStore));
+                if (vectorStoreDescriptor != null)
+                {
+                    services.Remove(vectorStoreDescriptor);
+                }
             });
         }
     }

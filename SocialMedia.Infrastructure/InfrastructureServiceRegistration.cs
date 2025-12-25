@@ -47,8 +47,8 @@ public static class InfrastructureServiceRegistration
         // Embedding Generator for Semantic Search
         services.AddSingleton<IEmbeddingGenerator, OnnxEmbeddingGenerator>();
 
-        // Vector Store for Recommendations (Simple In-Memory Implementation)
-        services.AddSingleton<SimpleInMemoryVectorStore>();
+        // Vector Store for Recommendations (Persistent SQLite Implementation)
+        services.AddSingleton<SqliteVectorStore>();
         services.AddScoped<IPostVectorService, PostVectorService>();
 
         // Background Event Processing

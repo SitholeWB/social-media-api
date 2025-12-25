@@ -6,12 +6,12 @@ namespace SocialMedia.Infrastructure;
 /// </summary>
 public class PostVectorService : IPostVectorService
 {
-    private readonly SimpleInMemoryVectorStore _vectorStore;
+    private readonly SqliteVectorStore _vectorStore;
     private readonly IEmbeddingGenerator _embeddingGenerator;
     private readonly ILogger<PostVectorService> _logger;
 
     public PostVectorService(
-        SimpleInMemoryVectorStore vectorStore,
+        SqliteVectorStore vectorStore,
         IEmbeddingGenerator embeddingGenerator,
         ILogger<PostVectorService> logger)
     {
@@ -32,7 +32,7 @@ public class PostVectorService : IPostVectorService
             var queryText = "interesting post"; // Placeholder - could be personalized
             var queryVector = await _embeddingGenerator.GenerateEmbeddingAsync(queryText, cancellationToken);
 
-            var postIds = _vectorStore.Search(queryVector, count);
+            var postIds = await _vectorStore.SearchAsync(queryVector, count);
 
             return postIds;
         }
@@ -61,7 +61,7 @@ public class PostVectorService : IPostVectorService
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            _vectorStore.Upsert(record);
+            await _vectorStore.UpsertAsync(record);
             _logger.LogInformation("Upserted embedding for post {PostId}", postId);
         }
         catch (Exception ex)
@@ -76,13 +76,27 @@ public class PostVectorService : IPostVectorService
     {
         try
         {
-            _vectorStore.Delete(postId);
+            await _vectorStore.DeleteAsync(postId);
             _logger.LogInformation("Removed embedding for post {PostId}", postId);
-            await Task.CompletedTask;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing post embedding for {PostId}", postId);
+        }
+    }
+
+    public async Task RecordInteractionAsync(Guid userId, Guid postId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("User {UserId} interacted with post {PostId}. Updating recommendations context.", userId, postId);
+            // In a real system, this would update user preference vectors or historical interaction weight
+            // For now, we log it as requested.
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error recording interaction for user {UserId} and post {PostId}", userId, postId);
         }
     }
 }
