@@ -16,7 +16,7 @@ public static class InfrastructureServiceRegistration
         if (isTesting)
         {
             services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("write_db"));
-            services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("read_db"));
+            services.AddDbContext<SocialMediaReadDbContext>(options => options.UseInMemoryDatabase("read_db"));
         }
         else
         {
