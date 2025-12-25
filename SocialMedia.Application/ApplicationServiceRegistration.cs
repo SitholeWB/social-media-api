@@ -14,6 +14,10 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<DeletePostCommand, bool>, DeletePostCommandHandler>();
         services.AddScoped<IQueryHandler<GetPostsQuery, PagedResult<PostDto>>, GetPostsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPostByIdQuery, PostDto?>, GetPostByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetRecommendedPostsQuery, PagedResult<PostDto>>, GetRecommendedPostsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetTrendingPostsQuery, PagedResult<PostDto>>, GetTrendingPostsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetMostActivePostsQuery, PagedResult<PostDto>>, GetMostActivePostsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetMostAttractivePostsQuery, PagedResult<PostDto>>, GetMostAttractivePostsQueryHandler>();
 
         // Comments
         services.AddScoped<ICommandHandler<CreateCommentCommand, Guid>, CreateCommentCommandHandler>();

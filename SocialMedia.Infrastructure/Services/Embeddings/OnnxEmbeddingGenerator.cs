@@ -1,35 +1,46 @@
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-
+using Microsoft.ML.Tokenizers;
 
 namespace SocialMedia.Infrastructure;
 
 /// <summary>
-/// ONNX-based embedding generator using all-MiniLM-L6-v2 model
-/// This is a lightweight sentence transformer model (384 dimensions)
+/// ONNX-based embedding generator using bge-micro-v2 model
+/// This is a lightweight model (384 dimensions)
 /// </summary>
 public class OnnxEmbeddingGenerator : IEmbeddingGenerator, IDisposable
 {
-    private readonly InferenceSession? _session;
+    private readonly InferenceSession _session;
+    private readonly BertTokenizer _tokenizer;
     private readonly ILogger<OnnxEmbeddingGenerator> _logger;
-    private const int MaxTokens = 128;
+    private const int MaxTokens = 512;
 
     public int Dimensions => 384;
 
-    public OnnxEmbeddingGenerator(ILogger<OnnxEmbeddingGenerator> logger)
+    public OnnxEmbeddingGenerator(IConfiguration configuration, ILogger<OnnxEmbeddingGenerator> logger)
     {
         _logger = logger;
 
         try
         {
-            // For now, we'll use a fallback approach without actual ONNX model files
-            // In production, you would load actual model files here
-            
-            _logger.LogWarning("ONNX model files not configured. Using improved hash-based embedding generation. " +
-                "For production semantic search, download all-MiniLM-L6-v2 ONNX model and configure the path.");
+            var modelPath = configuration["EmbeddingSettings:ModelPath"] ?? "Models/bge-micro-v2/model.onnx";
+            var vocabPath = configuration["EmbeddingSettings:VocabPath"] ?? "Models/bge-micro-v2/vocab.txt";
 
-            // We'll implement a fallback that doesn't require actual ONNX model files
-            _session = null; // Will use fallback logic
+            if (!File.Exists(modelPath) || !File.Exists(vocabPath))
+            {
+                _logger.LogWarning("Embedding model or vocab not found at {ModelPath} / {VocabPath}. Attempting download...", modelPath, vocabPath);
+                var modelsDirectory = Path.GetDirectoryName(modelPath) ?? "Models/bge-micro-v2";
+                var (downloadedModelPath, downloadedVocabPath) = EmbeddingModelDownloader.EnsureModelsDownloadedAsync(modelsDirectory, _logger).GetAwaiter().GetResult();
+                modelPath = downloadedModelPath;
+                vocabPath = downloadedVocabPath;
+            }
+
+            _logger.LogInformation("Loading ONNX model from {Path}", modelPath);
+            _session = new InferenceSession(modelPath);
+            
+            _logger.LogInformation("Loading Vocab from {Path}", vocabPath);
+            using var vocabStream = File.OpenRead(vocabPath);
+            _tokenizer = BertTokenizer.Create(vocabStream);
         }
         catch (Exception ex)
         {
@@ -47,57 +58,91 @@ public class OnnxEmbeddingGenerator : IEmbeddingGenerator, IDisposable
 
         try
         {
-            // Since we don't have the actual ONNX model files yet,
-            // we'll use an improved hash-based approach that's more stable
-            // In production, replace this with actual ONNX inference
-            
-            return await Task.Run(() => GenerateFallbackEmbedding(text), cancellationToken);
+            return await Task.Run(() =>
+            {
+                // 1. Tokenize
+                // Try EncodeToIds as Encode seems to be missing in this version's BertTokenizer
+                var tokenIds = _tokenizer.EncodeToIds(text);
+                var tokens = tokenIds.Select(id => (long)id).Take(MaxTokens).ToArray();
+                var attentionMask = Enumerable.Repeat(1L, tokens.Length).ToArray();
+                var typeIds = new long[tokens.Length]; 
+
+                // 2. Prepare Tensors
+                var dims = new int[] { 1, tokens.Length };
+                var inputIdsTensor = new DenseTensor<long>(dims);
+                var attentionMaskTensor = new DenseTensor<long>(dims);
+                var typeIdsTensor = new DenseTensor<long>(dims);
+
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    inputIdsTensor[0, i] = tokens[i];
+                    attentionMaskTensor[0, i] = attentionMask[i];
+                    typeIdsTensor[0, i] = 0;
+                }
+
+                var inputs = new List<NamedOnnxValue>
+                {
+                    NamedOnnxValue.CreateFromTensor("input_ids", inputIdsTensor),
+                    NamedOnnxValue.CreateFromTensor("attention_mask", attentionMaskTensor),
+                    NamedOnnxValue.CreateFromTensor("token_type_ids", typeIdsTensor)
+                };
+
+                // 3. Run Inference
+                using var results = _session.Run(inputs);
+
+                // 4. Post-processing (Mean Pooling)
+                // bge-micro-v2 usually has 'last_hidden_state' as its main output
+                // The output shape is [1, sequence_length, 384]
+                var outputTensor = results.First(r => r.Name == "last_hidden_state").AsTensor<float>();
+                return MeanPooling(outputTensor, attentionMask);
+            }, cancellationToken);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating embedding for text: {Text}", text.Substring(0, Math.Min(50, text.Length)));
+            _logger.LogError(ex, "Error generating embedding for text: {Text}", text.Length > 50 ? text.Substring(0, 50) : text);
             return CreateZeroVector();
         }
     }
 
-    private ReadOnlyMemory<float> GenerateFallbackEmbedding(string text)
+    private ReadOnlyMemory<float> MeanPooling(Tensor<float> lastHiddenState, long[] attentionMask)
     {
-        // Improved hash-based embedding that's more stable than pure random
-        // Uses multiple hash functions to create a more distributed representation
-        
-        var embedding = new float[Dimensions];
-        
-        // Normalize text
-        text = text.ToLowerInvariant().Trim();
-        
-        // Use multiple hash seeds based on text characteristics
-        var seeds = new[]
-        {
-            text.GetHashCode(),
-            text.Length.GetHashCode(),
-            text.Where(char.IsLetter).Count().GetHashCode(),
-            text.Split(' ').Length.GetHashCode()
-        };
+        var batchSize = lastHiddenState.Dimensions[0]; // should be 1
+        var seqLength = lastHiddenState.Dimensions[1];
+        var hiddenSize = lastHiddenState.Dimensions[2];
 
-        // Generate embedding using multiple hash-based random generators
-        for (int i = 0; i < Dimensions; i++)
-        {
-            var seedIndex = i % seeds.Length;
-            var random = new Random(seeds[seedIndex] + i);
-            embedding[i] = (float)(random.NextDouble() * 2 - 1);
-        }
+        var pooledEmoji = new float[hiddenSize];
+        float tokenCount = 0;
 
-        // Normalize the vector
-        var magnitude = MathF.Sqrt(embedding.Sum(x => x * x));
-        if (magnitude > 0)
+        for (int i = 0; i < seqLength; i++)
         {
-            for (int i = 0; i < embedding.Length; i++)
+            if (attentionMask[i] == 0) continue;
+
+            tokenCount++;
+            for (int j = 0; j < hiddenSize; j++)
             {
-                embedding[i] /= magnitude;
+                pooledEmoji[j] += lastHiddenState[0, i, j];
             }
         }
 
-        return new ReadOnlyMemory<float>(embedding);
+        if (tokenCount > 0)
+        {
+            for (int j = 0; j < hiddenSize; j++)
+            {
+                pooledEmoji[j] /= tokenCount;
+            }
+        }
+
+        // Normalize
+        var magnitude = MathF.Sqrt(pooledEmoji.Sum(x => x * x));
+        if (magnitude > 1e-6)
+        {
+            for (int j = 0; j < hiddenSize; j++)
+            {
+                pooledEmoji[j] /= magnitude;
+            }
+        }
+
+        return new ReadOnlyMemory<float>(pooledEmoji);
     }
 
     private ReadOnlyMemory<float> CreateZeroVector()
