@@ -1,19 +1,101 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using SocialMedia.Files.API.Data;
+using SocialMedia.Files.API.Services;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SocialMedia.Files.API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDbContext<FileDbContext>((sp, options) =>
+{
+    var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+    var config = sp.GetRequiredService<IConfiguration>();
+    var context = httpContextAccessor.HttpContext;
+
+    string shardKey = "db1"; // Default
+
+    if (context != null && context.Request.RouteValues.TryGetValue("shardKey", out var routeVal) && routeVal?.ToString() is string val)
+    {
+        shardKey = val;
+    }
+
+    var connectionString = config[$"Sharding:Databases:{shardKey}"];
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        connectionString = config["Sharding:Databases:db1"];
+    }
+    var isTesting = builder.Environment.IsEnvironment("Testing");
+    if (isTesting)
+    {
+        options.UseInMemoryDatabase(shardKey);
+    }
+    else
+    {
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
+    }
+});
+
+builder.Services.AddScoped<IFileService, FileService>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
+            {
+                var keys = builder.Configuration.GetSection("Authentication:SecretKeys").Get<List<string>>();
+                return keys?.Select(k => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(k))) ?? Enumerable.Empty<SecurityKey>();
+            }
+        };
+    });
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,8 +104,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{ }

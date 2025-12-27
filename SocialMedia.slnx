@@ -11,6 +11,7 @@
   <Project Path="SocialMedia.AppHost/SocialMedia.AppHost.csproj" />
   <Project Path="SocialMedia.Application/SocialMedia.Application.csproj" />
   <Project Path="SocialMedia.Domain/SocialMedia.Domain.csproj" />
+  <Project Path="SocialMedia.Files.API.IntegrationTests/SocialMedia.Files.API.IntegrationTests.csproj" />
   <Project Path="SocialMedia.Files.API/SocialMedia.Files.API.csproj" />
   <Project Path="SocialMedia.Infrastructure/SocialMedia.Infrastructure.csproj" />
   <Project Path="SocialMedia.IntegrationTests/SocialMedia.IntegrationTests.csproj" />
