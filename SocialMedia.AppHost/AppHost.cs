@@ -8,4 +8,6 @@ builder.AddNpmApp("admin", "../SocialMedia.Admin", "dev")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
+builder.AddProject<Projects.SocialMedia_Files_API>("socialmedia-files-api");
+
 await builder.Build().RunAsync();

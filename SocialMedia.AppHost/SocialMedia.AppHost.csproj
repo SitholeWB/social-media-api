@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SocialMedia.API\SocialMedia.API.csproj" />
+    <ProjectReference Include="..\SocialMedia.Files.API\SocialMedia.Files.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

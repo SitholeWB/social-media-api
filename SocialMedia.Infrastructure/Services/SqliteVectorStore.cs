@@ -31,6 +31,16 @@ public class SqliteVectorStore
 
         using var command = new SqliteCommand(createTableSql, connection);
         await command.ExecuteNonQueryAsync();
+
+        var createInteractionsTableSql = @"
+            CREATE TABLE IF NOT EXISTS UserInteractions (
+                UserId TEXT,
+                PostId TEXT,
+                CreatedAt TEXT,
+                PRIMARY KEY (UserId, PostId)
+            )";
+        using var command2 = new SqliteCommand(createInteractionsTableSql, connection);
+        await command2.ExecuteNonQueryAsync();
     }
 
     public async Task UpsertAsync(PostVectorRecord record)
@@ -129,6 +139,58 @@ public class SqliteVectorStore
         if (magnitudeA == 0 || magnitudeB == 0) return 0f;
 
         return dotProduct / (MathF.Sqrt(magnitudeA) * MathF.Sqrt(magnitudeB));
+    }
+
+    public async Task RecordUserInteractionAsync(Guid userId, Guid postId)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var sql = @"
+            INSERT INTO UserInteractions (UserId, PostId, CreatedAt)
+            VALUES ($userId, $postId, $createdAt)
+            ON CONFLICT(UserId, PostId) DO UPDATE SET
+                CreatedAt = excluded.CreatedAt";
+
+        using var command = new SqliteCommand(sql, connection);
+        command.Parameters.AddWithValue("$userId", userId.ToString());
+        command.Parameters.AddWithValue("$postId", postId.ToString());
+        command.Parameters.AddWithValue("$createdAt", DateTimeOffset.UtcNow.ToString("O"));
+
+        await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task<List<float[]>> GetUserInteractionEmbeddingsAsync(Guid userId, int limit)
+    {
+        var embeddings = new List<float[]>();
+
+        using var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync();
+
+        // Join Interactions with PostVectors to get embeddings of perceived 'good' posts
+        // Order by most recent interaction
+        var sql = @"
+            SELECT pv.Embedding 
+            FROM UserInteractions ui
+            JOIN PostVectors pv ON ui.PostId = pv.PostId
+            WHERE ui.UserId = $userId
+            ORDER BY ui.CreatedAt DESC
+            LIMIT $limit";
+
+        using var command = new SqliteCommand(sql, connection);
+        command.Parameters.AddWithValue("$userId", userId.ToString());
+        command.Parameters.AddWithValue("$limit", limit);
+
+        using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var embeddingBytes = (byte[])reader.GetValue(0);
+            var embedding = new float[embeddingBytes.Length / sizeof(float)];
+            Buffer.BlockCopy(embeddingBytes, 0, embedding, 0, embeddingBytes.Length);
+            embeddings.Add(embedding);
+        }
+
+        return embeddings;
     }
 }
 

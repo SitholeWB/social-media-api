@@ -45,7 +45,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IIdentityService, IdentityService>();
 
         // Embedding Generator for Semantic Search
-        services.AddSingleton<IEmbeddingGenerator, OnnxEmbeddingGenerator>();
+        services.AddSingleton<IEmbeddingGenerator, TensorFlowEmbeddingGenerator>();
 
         // Vector Store for Recommendations (Persistent SQLite Implementation)
         services.AddSingleton<SqliteVectorStore>();
