@@ -23,7 +23,7 @@ public class FilesControllerTests : IClassFixture<IntegrationTestFactory>
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(issuer: "test", audience: "test", claims: new[] { new Claim("sub", "user1") }, expires: DateTime.Now.AddHours(10), signingCredentials: credentials);
+        var token = new JwtSecurityToken(issuer: "test", audience: "test", claims: [new Claim("sub", "user1")], expires: DateTime.Now.AddHours(10), signingCredentials: credentials);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SocialMedia.Files.API.Data;
+namespace SocialMedia.Files.API;
 
 public class UserFile
 {

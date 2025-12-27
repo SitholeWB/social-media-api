@@ -1,6 +1,6 @@
 using Files.EntityFrameworkCore.Extensions;
 
-namespace SocialMedia.Files.API.Data;
+namespace SocialMedia.Files.API;
 
 public class StoredFile : IFileEntity
 {

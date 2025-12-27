@@ -1,4 +1,4 @@
-namespace SocialMedia.Files.API.Services;
+namespace SocialMedia.Files.API;
 
 public interface IFileService
 {

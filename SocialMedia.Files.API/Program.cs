@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SocialMedia.Files.API.Data;
-using SocialMedia.Files.API.Services;
+using SocialMedia.Files.API;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,10 +53,10 @@ builder.Services.AddDbContext<FileDbContext>((sp, options) =>
         shardKey = val;
     }
 
-    var connectionString = config[$"Sharding:Databases:{shardKey}"];
+    var connectionString = config.GetConnectionString(shardKey);
     if (string.IsNullOrEmpty(connectionString))
     {
-        connectionString = config["Sharding:Databases:db1"];
+        connectionString = config.GetConnectionString("db1");
     }
     var isTesting = builder.Environment.IsEnvironment("Testing");
     if (isTesting)
@@ -68,7 +67,8 @@ builder.Services.AddDbContext<FileDbContext>((sp, options) =>
     {
         if (!string.IsNullOrEmpty(connectionString))
         {
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            //options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            options.UseSqlServer(connectionString);
         }
     }
 });
@@ -109,7 +109,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program
 { }

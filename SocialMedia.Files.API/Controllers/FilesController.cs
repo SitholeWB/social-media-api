@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SocialMedia.Files.API.Services;
 using System.Diagnostics;
 
-namespace SocialMedia.Files.API.Controllers;
+namespace SocialMedia.Files.API;
 
 [ApiController]
 [Route("api/{shardKey}/files")]

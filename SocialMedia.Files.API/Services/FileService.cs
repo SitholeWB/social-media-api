@@ -1,9 +1,8 @@
 using Files.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
-using SocialMedia.Files.API.Data;
 using System.Security.Cryptography;
 
-namespace SocialMedia.Files.API.Services;
+namespace SocialMedia.Files.API;
 
 public class FileService : IFileService
 {
