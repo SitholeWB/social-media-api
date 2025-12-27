@@ -25,20 +25,19 @@ public static class EmbeddingModelDownloader
             logger.LogInformation("Downloading TinyBERT SavedModel from {Url}...", ModelUrl);
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromMinutes(10);
-            
+
             var response = await httpClient.GetAsync(ModelUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            // Note: Since this is a .tar.gz from TF Hub, in a real production scenario 
-            // you'd use a library to extract it. For now, I'll provide instructions 
-            // or assume a simpler direct link if found. 
-            // For this implementation, I'll update the generator to load from the directory.
+            // Note: Since this is a .tar.gz from TF Hub, in a real production scenario you'd use a
+            // library to extract it. For now, I'll provide instructions or assume a simpler direct
+            // link if found. For this implementation, I'll update the generator to load from the directory.
             var tempFile = Path.Combine(modelsDirectory, "model.tar.gz");
             using (var fs = new FileStream(tempFile, FileMode.Create))
             {
                 await response.Content.CopyToAsync(fs, cancellationToken);
             }
-            
+
             logger.LogInformation("Extracting model to {Dir}...", savedModelDir);
             if (Directory.Exists(savedModelDir)) Directory.Delete(savedModelDir, true);
             Directory.CreateDirectory(savedModelDir);
@@ -48,7 +47,7 @@ public static class EmbeddingModelDownloader
             {
                 System.Formats.Tar.TarFile.ExtractToDirectory(gzipStream, savedModelDir, true);
             }
-            
+
             File.Delete(tempFile);
 
             // Verify extraction
@@ -79,7 +78,7 @@ public static class EmbeddingModelDownloader
             logger.LogInformation("Downloading vocab from {Url}...", VocabUrl);
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromMinutes(5);
-            
+
             var vocabBytes = await httpClient.GetByteArrayAsync(VocabUrl, cancellationToken);
             await File.WriteAllBytesAsync(vocabPath, vocabBytes, cancellationToken);
             logger.LogInformation("Vocab downloaded successfully to {Path}", vocabPath);

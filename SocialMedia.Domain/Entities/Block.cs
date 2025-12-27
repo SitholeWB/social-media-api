@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Domain;
 
 public class Block : BaseEntity

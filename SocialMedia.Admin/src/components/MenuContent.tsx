@@ -14,46 +14,46 @@ import GroupIcon from '@mui/icons-material/Group';
 import { Link, useLocation } from 'react-router-dom';
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
-  { text: 'Groups', icon: <GroupIcon />, path: '/groups' },
-  { text: 'Users', icon: <PeopleRoundedIcon />, path: '/users' },
-  { text: 'Polls', icon: <AssignmentRoundedIcon />, path: '/polls' },
-  { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+	{ text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
+	{ text: 'Groups', icon: <GroupIcon />, path: '/groups' },
+	{ text: 'Users', icon: <PeopleRoundedIcon />, path: '/users' },
+	{ text: 'Polls', icon: <AssignmentRoundedIcon />, path: '/polls' },
+	{ text: 'Reports', icon: <ReportIcon />, path: '/reports' },
 ];
 
 const secondaryListItems = [
-  { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
+	{ text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
 ];
 
 export default function MenuContent() {
-  const location = useLocation();
+	const location = useLocation();
 
-  return (
-    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
-      <List dense>
-        {mainListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              component={Link}
-              to={item.path}
-              selected={location.pathname === item.path}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <List dense>
-        {secondaryListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton component={Link} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Stack>
-  );
+	return (
+		<Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
+			<List dense>
+				{mainListItems.map((item, index) => (
+					<ListItem key={index} disablePadding sx={{ display: 'block' }}>
+						<ListItemButton
+							component={Link}
+							to={item.path}
+							selected={location.pathname === item.path}
+						>
+							<ListItemIcon>{item.icon}</ListItemIcon>
+							<ListItemText primary={item.text} />
+						</ListItemButton>
+					</ListItem>
+				))}
+			</List>
+			<List dense>
+				{secondaryListItems.map((item, index) => (
+					<ListItem key={index} disablePadding sx={{ display: 'block' }}>
+						<ListItemButton component={Link} to={item.path}>
+							<ListItemIcon>{item.icon}</ListItemIcon>
+							<ListItemText primary={item.text} />
+						</ListItemButton>
+					</ListItem>
+				))}
+			</List>
+		</Stack>
+	);
 }

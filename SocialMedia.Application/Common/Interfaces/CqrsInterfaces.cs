@@ -1,8 +1,10 @@
 namespace SocialMedia.Application;
 
-public interface ICommand<out TResult> { }
+public interface ICommand<out TResult>
+{ }
 
-public interface IQuery<out TResult> { }
+public interface IQuery<out TResult>
+{ }
 
 public interface ICommandHandler<in TCommand, TResult> where TCommand : ICommand<TResult>
 {
@@ -24,6 +26,8 @@ public interface IEventHandler<in TEvent> where TEvent : IEvent
 public interface IDispatcher
 {
     Task<TResult> Send<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>;
+
     Task<TResult> Query<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>;
+
     Task Publish<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent;
 }

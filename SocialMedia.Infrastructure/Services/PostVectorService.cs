@@ -1,8 +1,8 @@
 namespace SocialMedia.Infrastructure;
 
 /// <summary>
-/// Service for managing post embeddings and vector-based recommendations
-/// Uses ONNX-based embedding generator for semantic similarity
+/// Service for managing post embeddings and vector-based recommendations Uses ONNX-based embedding
+/// generator for semantic similarity
 /// </summary>
 public class PostVectorService : IPostVectorService
 {
@@ -35,8 +35,8 @@ public class PostVectorService : IPostVectorService
                 var historyEmbeddings = await _vectorStore.GetUserInteractionEmbeddingsAsync(userId.Value, limit: 5);
                 if (historyEmbeddings.Count > 0)
                 {
-                    // Calculate average vector (centroid) of interacted posts
-                    // Simple average: sum each dimension, divide by count
+                    // Calculate average vector (centroid) of interacted posts Simple average: sum
+                    // each dimension, divide by count
                     int dim = historyEmbeddings[0].Length;
                     var sumVector = new float[dim];
                     foreach (var vec in historyEmbeddings)
@@ -44,15 +44,15 @@ public class PostVectorService : IPostVectorService
                         for (int i = 0; i < dim; i++) sumVector[i] += vec[i];
                     }
                     for (int i = 0; i < dim; i++) sumVector[i] /= historyEmbeddings.Count;
-                    
+
                     queryVector = sumVector;
                     _logger.LogInformation("Using personalized query vector for user {UserId} based on {Count} interactions.", userId, historyEmbeddings.Count);
                 }
                 else
                 {
                     // No history, fallback to generic "interesting" query or global trends
-                     _logger.LogInformation("No interaction history for user {UserId}. Using default query.", userId);
-                    var queryText = "globally interesting trending content"; 
+                    _logger.LogInformation("No interaction history for user {UserId}. Using default query.", userId);
+                    var queryText = "globally interesting trending content";
                     var roVector = await _embeddingGenerator.GenerateEmbeddingAsync(queryText, cancellationToken);
                     queryVector = roVector.ToArray();
                 }
@@ -124,10 +124,10 @@ public class PostVectorService : IPostVectorService
         try
         {
             _logger.LogInformation("User {UserId} interacted with post {PostId}. Recording interaction.", userId, postId);
-            
+
             // Store the interaction permanently
             await _vectorStore.RecordUserInteractionAsync(userId, postId);
-            
+
             _logger.LogDebug("Interaction recorded successfully.");
             await Task.CompletedTask;
         }

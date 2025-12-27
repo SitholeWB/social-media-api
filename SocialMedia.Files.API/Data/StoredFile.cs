@@ -13,5 +13,4 @@ public class StoredFile : IFileEntity
     public int ChunkBytesLength { get; set; }
     public long TotalBytesLength { get; set; }
     public byte[] Data { get; set; } = Array.Empty<byte>();
-
 }

@@ -16,8 +16,8 @@ public class GetMostAttractivePostsQueryHandler : IQueryHandler<GetMostAttractiv
     public async Task<PagedResult<PostDto>> Handle(GetMostAttractivePostsQuery request, CancellationToken cancellationToken)
     {
         var posts = await _readRepository.GetMostAttractiveAsync(
-            request.PageNumber, 
-            request.PageSize, 
+            request.PageNumber,
+            request.PageSize,
             cancellationToken);
 
         UserActivity? userActivity = null;

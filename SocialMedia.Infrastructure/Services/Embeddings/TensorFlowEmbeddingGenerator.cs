@@ -1,14 +1,12 @@
 using Microsoft.ML.Tokenizers;
 using Tensorflow;
 using static Tensorflow.Binding;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace SocialMedia.Infrastructure;
 
 /// <summary>
-/// TensorFlow-based embedding generator using TinyBERT (L-2, H-128)
-/// This is an extremely lightweight model (128 dimensions) optimized for shared hosting.
+/// TensorFlow-based embedding generator using TinyBERT (L-2, H-128) This is an extremely
+/// lightweight model (128 dimensions) optimized for shared hosting.
 /// </summary>
 public class TensorFlowEmbeddingGenerator : IEmbeddingGenerator, IDisposable
 {
@@ -37,8 +35,8 @@ public class TensorFlowEmbeddingGenerator : IEmbeddingGenerator, IDisposable
             }
 
             _logger.LogInformation("Loading TensorFlow SavedModel from {Dir}", modelDir);
-            
-            try 
+
+            try
             {
                 // API Discovery confirmed 'LoadFromSavedModel' is a static method on Session
                 _session = Session.LoadFromSavedModel(modelDir);
@@ -50,7 +48,7 @@ public class TensorFlowEmbeddingGenerator : IEmbeddingGenerator, IDisposable
                 _logger.LogWarning("Session.LoadFromSavedModel failed: {Msg}. Trying legacy Import.", ex.Message);
                 _graph = tf.Graph().as_default();
                 _session = tf.Session(_graph);
-                
+
                 var pbPath = Path.Combine(modelDir, "saved_model.pb");
                 if (File.Exists(pbPath))
                 {
@@ -89,23 +87,23 @@ public class TensorFlowEmbeddingGenerator : IEmbeddingGenerator, IDisposable
             {
                 var tokenIds = _tokenizer.EncodeToIds(text);
                 var tokens = tokenIds.Select(id => (int)id).Take(MaxTokens).ToArray();
-                
+
                 var inputIdsTensor = tf.constant(tokens, shape: new long[] { 1, tokens.Length });
-                
+
                 // Robust lookup: Search for operations that end with the expected names
                 var ops = _graph.get_operations();
                 var inputOp = ops.FirstOrDefault(o => o.name.EndsWith("input_word_ids") || o.name.EndsWith("input_ids"));
                 var outputOp = ops.FirstOrDefault(o => o.name.EndsWith("pooled_output") || o.name == "StatefulPartitionedCall" || o.name.EndsWith("last_hidden_state/Reshape"));
-                
+
                 if (inputOp == null || outputOp == null)
                 {
-                    _logger.LogWarning("Required TensorFlow operations not found. Available ops: {Ops}", 
+                    _logger.LogWarning("Required TensorFlow operations not found. Available ops: {Ops}",
                         string.Join(", ", ops.Take(5).Select(o => o.name)));
                     return CreateZeroVector();
                 }
 
                 var results = _session.run(new Operation[] { outputOp.op }, new FeedItem[] { new FeedItem(inputOp, inputIdsTensor) });
-                
+
                 if (results == null || results.Length == 0)
                 {
                     return CreateZeroVector();

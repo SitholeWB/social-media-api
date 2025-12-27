@@ -1,4 +1,3 @@
-
 namespace SocialMedia.IntegrationTests;
 
 public class ReadDbContextTests

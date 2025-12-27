@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public static class LikeMapper

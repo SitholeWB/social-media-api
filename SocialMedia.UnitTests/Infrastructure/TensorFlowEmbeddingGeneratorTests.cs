@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SocialMedia.Infrastructure;
-using Xunit;
 
 namespace SocialMedia.UnitTests.Infrastructure;
 
@@ -15,7 +14,7 @@ public class TensorFlowEmbeddingGeneratorTests
     {
         _loggerMock = new Mock<ILogger<TensorFlowEmbeddingGenerator>>();
         _configurationMock = new Mock<IConfiguration>();
-        
+
         // Use default paths (null) to trigger internal logic or set explicit correct path
         // _configurationMock.Setup(c => c["EmbeddingSettings:ModelPath"]).Returns((string)null);
     }

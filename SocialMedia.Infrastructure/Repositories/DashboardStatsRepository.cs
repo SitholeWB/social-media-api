@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace SocialMedia.Infrastructure;
 
 public class DashboardStatsRepository(SocialMediaDbContext context) : IDashboardStatsRepository
@@ -7,7 +5,7 @@ public class DashboardStatsRepository(SocialMediaDbContext context) : IDashboard
     public async Task<DashboardStatsDto> GetDashboardStatsAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
         var totalUsers = await context.Users.CountAsync(cancellationToken);
-        
+
         var activeUsers = await context.Users
             .Where(u => u.LastActiveAt >= startDate && u.LastActiveAt <= endDate)
             .CountAsync(cancellationToken);
@@ -21,7 +19,7 @@ public class DashboardStatsRepository(SocialMediaDbContext context) : IDashboard
         var newComments = await context.Comments
             .Where(c => c.CreatedAt >= startDate && c.CreatedAt <= endDate)
             .CountAsync(cancellationToken);
-            
+
         var totalReactions = await context.Likes.CountAsync(cancellationToken);
         var newReactions = await context.Likes
             .Where(l => l.CreatedAt >= startDate && l.CreatedAt <= endDate)

@@ -9,23 +9,23 @@ public interface IPostVectorService
     /// Get recommended posts based on vector similarity
     /// </summary>
     Task<List<Guid>> GetRecommendedPostIdsAsync(
-        Guid? userId, 
-        int count = 10, 
+        Guid? userId,
+        int count = 10,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Update or create embedding for a post
     /// </summary>
     Task UpsertPostEmbeddingAsync(
-        Guid postId, 
-        string content, 
+        Guid postId,
+        string content,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Remove post embedding
     /// </summary>
     Task RemovePostEmbeddingAsync(
-        Guid postId, 
+        Guid postId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

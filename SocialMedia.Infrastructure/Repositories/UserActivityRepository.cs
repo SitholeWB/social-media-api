@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
-using SocialMedia.Domain;
-
 namespace SocialMedia.Infrastructure;
 
 public class UserActivityRepository : Repository<UserActivity>, IUserActivityRepository
@@ -16,7 +12,7 @@ public class UserActivityRepository : Repository<UserActivity>, IUserActivityRep
     public async Task<UserActivity?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var cacheKey = $"user_activity_{userId}";
-        
+
         // Try get from cache
         var cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
         if (!string.IsNullOrEmpty(cachedData))

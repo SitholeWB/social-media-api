@@ -1,5 +1,3 @@
-using SocialMedia.Application;
-
 namespace SocialMedia.Application;
 
 public class LoginWithGoogleCommandHandler : ICommandHandler<LoginWithGoogleCommand, AuthResponse>

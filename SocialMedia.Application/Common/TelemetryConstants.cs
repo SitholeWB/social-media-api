@@ -7,6 +7,7 @@ public static class TelemetryConstants
 
     // Activity Sources
     public const string DispatcherActivitySource = "SocialMedia.Dispatcher";
+
     public const string RepositoryActivitySource = "SocialMedia.Repository";
 
     // Meter Names
@@ -14,6 +15,7 @@ public static class TelemetryConstants
 
     // Metric Names
     public const string CommandExecutionCount = "socialmedia.command.execution.count";
+
     public const string CommandExecutionDuration = "socialmedia.command.execution.duration";
     public const string QueryExecutionCount = "socialmedia.query.execution.count";
     public const string QueryExecutionDuration = "socialmedia.query.execution.duration";
@@ -22,6 +24,7 @@ public static class TelemetryConstants
 
     // Tag Names
     public const string CommandType = "command.type";
+
     public const string QueryType = "query.type";
     public const string EventType = "event.type";
     public const string OperationType = "operation.type";

@@ -1,8 +1,5 @@
-using Files.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SocialMedia.Files.API.Data;
 using SocialMedia.Files.API.Services;
 using System.Diagnostics;
 
@@ -23,9 +20,8 @@ public class FilesController : ControllerBase
 
     private string? GetUserId()
     {
-        // Adjust claim type based on your token structure
-        // Often it's ClaimTypes.NameIdentifier or "sub"
-        return User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+        // Adjust claim type based on your token structure Often it's ClaimTypes.NameIdentifier or "sub"
+        return User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                ?? User.FindFirst("sub")?.Value;
     }
 
@@ -53,18 +49,18 @@ public class FilesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Download(string shardKey, Guid id)
     {
-        // For download, we might verify auth inside service or here.
-        // If we want to support public downloads (if logic allows), userId can be null.
-        // But the service logic enforced ownership if userId is present, or threw if not owned.
-        // If the endpoint is public (no [Authorize]), User might be unauthenticated.
+        // For download, we might verify auth inside service or here. If we want to support public
+        // downloads (if logic allows), userId can be null. But the service logic enforced ownership
+        // if userId is present, or threw if not owned. If the endpoint is public (no [Authorize]),
+        // User might be unauthenticated.
         var userId = GetUserId();
 
-        try 
+        try
         {
             var (stream, contentType, fileName) = await _fileService.DownloadFileAsync(shardKey, userId, id);
-            
+
             Activity.Current?.AddTag("file.download_id", id.ToString());
-            
+
             return File(stream, contentType, fileName);
         }
         catch (FileNotFoundException)
@@ -92,7 +88,7 @@ public class FilesController : ControllerBase
         }
         catch (UnauthorizedAccessException)
         {
-             return Forbid();
+            return Forbid();
         }
     }
 }

@@ -16,9 +16,9 @@ public class GetTrendingPostsQueryHandler : IQueryHandler<GetTrendingPostsQuery,
     public async Task<PagedResult<PostDto>> Handle(GetTrendingPostsQuery request, CancellationToken cancellationToken)
     {
         var posts = await _readRepository.GetGlobalTrendingAsync(
-            request.PageNumber, 
-            request.PageSize, 
-            request.DaysBack, 
+            request.PageNumber,
+            request.PageSize,
+            request.DaysBack,
             cancellationToken);
 
         UserActivity? userActivity = null;

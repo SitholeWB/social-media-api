@@ -16,8 +16,8 @@ public class GetMostActivePostsQueryHandler : IQueryHandler<GetMostActivePostsQu
     public async Task<PagedResult<PostDto>> Handle(GetMostActivePostsQuery request, CancellationToken cancellationToken)
     {
         var posts = await _readRepository.GetMostActiveAsync(
-            request.PageNumber, 
-            request.PageSize, 
+            request.PageNumber,
+            request.PageSize,
             cancellationToken);
 
         UserActivity? userActivity = null;

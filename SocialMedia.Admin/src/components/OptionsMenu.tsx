@@ -15,93 +15,93 @@ import { logout } from '../store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const MenuItem = styled(MuiMenuItem)({
-  margin: '2px 0',
+	margin: '2px 0',
 });
 
 export default function OptionsMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const open = Boolean(anchorEl);
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
-  const handleLogout = () => {
-    handleClose();
-    dispatch(logout());
-    navigate('/login');
-  };
+	const handleLogout = () => {
+		handleClose();
+		dispatch(logout());
+		navigate('/login');
+	};
 
-  const handleSettings = () => {
-    handleClose();
-    navigate('/settings');
-  };
+	const handleSettings = () => {
+		handleClose();
+		navigate('/settings');
+	};
 
-  const handleProfile = () => {
-    handleClose();
-    navigate('/profile');
-  };
+	const handleProfile = () => {
+		handleClose();
+		navigate('/profile');
+	};
 
-  const handleAddAccount = () => {
-    handleClose();
-    navigate('/login');
-  };
+	const handleAddAccount = () => {
+		handleClose();
+		navigate('/login');
+	};
 
-  return (
-    <React.Fragment>
-      <IconButton
-        aria-label="Open menu"
-        onClick={handleClick}
-        sx={{ borderColor: 'transparent' }}
-      >
-        <MoreVertRoundedIcon />
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        id="menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        sx={{
-          [`& .${listClasses.root}`]: {
-            padding: '4px',
-          },
-          [`& .${paperClasses.root}`]: {
-            padding: 0,
-          },
-          [`& .${dividerClasses.root}`]: {
-            margin: '4px -4px',
-          },
-        }}
-      >
-        <MenuItem onClick={handleProfile}>Profile</MenuItem>
-        <MenuItem onClick={handleProfile}>My account</MenuItem>
-        <Divider />
-        <MenuItem onClick={handleAddAccount}>Add another account</MenuItem>
-        <MenuItem onClick={handleSettings}>Settings</MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={handleLogout}
-          sx={{
-            [`& .${listItemIconClasses.root}`]: {
-              ml: 'auto',
-              minWidth: 0,
-            },
-          }}
-        >
-          <ListItemText>Logout</ListItemText>
-          <ListItemIcon>
-            <LogoutRoundedIcon fontSize="small" />
-          </ListItemIcon>
-        </MenuItem>
-      </Menu>
-    </React.Fragment>
-  );
+	return (
+		<React.Fragment>
+			<IconButton
+				aria-label="Open menu"
+				onClick={handleClick}
+				sx={{ borderColor: 'transparent' }}
+			>
+				<MoreVertRoundedIcon />
+			</IconButton>
+			<Menu
+				anchorEl={anchorEl}
+				id="menu"
+				open={open}
+				onClose={handleClose}
+				onClick={handleClose}
+				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+				sx={{
+					[`& .${listClasses.root}`]: {
+						padding: '4px',
+					},
+					[`& .${paperClasses.root}`]: {
+						padding: 0,
+					},
+					[`& .${dividerClasses.root}`]: {
+						margin: '4px -4px',
+					},
+				}}
+			>
+				<MenuItem onClick={handleProfile}>Profile</MenuItem>
+				<MenuItem onClick={handleProfile}>My account</MenuItem>
+				<Divider />
+				<MenuItem onClick={handleAddAccount}>Add another account</MenuItem>
+				<MenuItem onClick={handleSettings}>Settings</MenuItem>
+				<Divider />
+				<MenuItem
+					onClick={handleLogout}
+					sx={{
+						[`& .${listItemIconClasses.root}`]: {
+							ml: 'auto',
+							minWidth: 0,
+						},
+					}}
+				>
+					<ListItemText>Logout</ListItemText>
+					<ListItemIcon>
+						<LogoutRoundedIcon fontSize="small" />
+					</ListItemIcon>
+				</MenuItem>
+			</Menu>
+		</React.Fragment>
+	);
 }

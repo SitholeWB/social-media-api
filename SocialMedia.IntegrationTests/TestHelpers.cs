@@ -1,4 +1,3 @@
-
 namespace SocialMedia.IntegrationTests;
 
 public static class TestHelpers
@@ -11,8 +10,8 @@ public static class TestHelpers
 
         while (await dbContext.OutboxEvents.AnyAsync(e => e.Status == OutboxEventStatus.Pending || e.Status == OutboxEventStatus.Processing, cancellationToken))
         {
-            // Only trigger processing if there are pending events. 
-            // If events are Processing, they are being handled by another thread/process (or the previous call), so we just wait.
+            // Only trigger processing if there are pending events. If events are Processing, they
+            // are being handled by another thread/process (or the previous call), so we just wait.
             if (await dbContext.OutboxEvents.AnyAsync(e => e.Status == OutboxEventStatus.Pending, cancellationToken))
             {
                 await eventProcessor.ProcessPendingEventsAsync(cancellationToken);

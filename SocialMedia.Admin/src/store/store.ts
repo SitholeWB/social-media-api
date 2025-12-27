@@ -8,15 +8,15 @@ import reportsSlice from './slices/reportsSlice';
 import dashboardSlice from './slices/dashboardSlice';
 
 export const store = configureStore({
-    reducer: {
-        groups: groupsReducer,
-        polls: pollsReducer,
-        auth: authReducer,
-        settings: settingsReducer,
-        posts: postsReducer,
-        reports: reportsSlice,
-        dashboard: dashboardSlice,
-    },
+	reducer: {
+		groups: groupsReducer,
+		polls: pollsReducer,
+		auth: authReducer,
+		settings: settingsReducer,
+		posts: postsReducer,
+		reports: reportsSlice,
+		dashboard: dashboardSlice,
+	},
 });
 
 export type RootState = ReturnType<typeof store.getState>;

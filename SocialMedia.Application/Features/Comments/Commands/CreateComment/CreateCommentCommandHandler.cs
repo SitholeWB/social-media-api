@@ -50,8 +50,8 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
         // Publish Event
         await _dispatcher.Publish(new CommentAddedEvent(createdComment), cancellationToken);
 
-        // Integration with Vector Service - Treat comment as an update to post context
-        // In a real scenario, we might want to concatenate or update the post embedding
+        // Integration with Vector Service - Treat comment as an update to post context In a real
+        // scenario, we might want to concatenate or update the post embedding
         await _postVectorService.UpsertPostEmbeddingAsync(post.Id, $"{post.Content} {createdComment.Content}", cancellationToken);
 
         return createdComment.Id;

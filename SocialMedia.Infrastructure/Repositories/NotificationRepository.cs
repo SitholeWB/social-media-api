@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class NotificationRepository : Repository<Notification>, INotificationRepository
@@ -6,5 +5,4 @@ public class NotificationRepository : Repository<Notification>, INotificationRep
     public NotificationRepository(SocialMediaDbContext context) : base(context)
     {
     }
-
 }

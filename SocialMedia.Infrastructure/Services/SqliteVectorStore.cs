@@ -1,6 +1,4 @@
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace SocialMedia.Infrastructure;
 
@@ -167,10 +165,10 @@ public class SqliteVectorStore
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        // Join Interactions with PostVectors to get embeddings of perceived 'good' posts
-        // Order by most recent interaction
+        // Join Interactions with PostVectors to get embeddings of perceived 'good' posts Order by
+        // most recent interaction
         var sql = @"
-            SELECT pv.Embedding 
+            SELECT pv.Embedding
             FROM UserInteractions ui
             JOIN PostVectors pv ON ui.PostId = pv.PostId
             WHERE ui.UserId = $userId

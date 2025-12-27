@@ -1,5 +1,3 @@
-using SocialMedia.Domain;
-
 namespace SocialMedia.Application;
 
 public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>

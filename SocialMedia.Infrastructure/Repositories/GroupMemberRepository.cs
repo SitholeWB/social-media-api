@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class GroupMemberRepository : Repository<GroupMember>, IGroupMemberRepository
@@ -18,5 +17,4 @@ public class GroupMemberRepository : Repository<GroupMember>, IGroupMemberReposi
         return await _dbContext.GroupMembers.FirstOrDefaultAsync(gm =>
             gm.GroupId == groupId && gm.UserId == userId, cancellationToken);
     }
-
 }

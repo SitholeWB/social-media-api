@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Application;
 
 public record AddUserToGroupCommand(Guid GroupId, Guid UserId) : ICommand<bool>;
@@ -32,5 +31,4 @@ public class AddUserToGroupCommandHandler : ICommandHandler<AddUserToGroupComman
 
         return true;
     }
-
 }

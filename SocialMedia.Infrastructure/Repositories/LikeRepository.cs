@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class LikeRepository : Repository<Like>, ILikeRepository

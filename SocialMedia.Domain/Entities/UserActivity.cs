@@ -15,11 +15,11 @@ public class UserActivity : BaseEntity
         }
         else
         {
-            Reactions.Add(new UserReactionActivity 
-            { 
-                EntityId = entityId, 
-                EntityType = entityType, 
-                Emoji = emoji 
+            Reactions.Add(new UserReactionActivity
+            {
+                EntityId = entityId,
+                EntityType = entityType,
+                Emoji = emoji
             });
         }
     }
@@ -33,11 +33,11 @@ public class UserActivity : BaseEntity
     {
         if (!Votes.Any(v => v.PollId == pollId))
         {
-            Votes.Add(new UserVoteActivity 
-            { 
-                PollId = pollId, 
-                OptionId = optionId, 
-                VotedAt = DateTimeOffset.UtcNow 
+            Votes.Add(new UserVoteActivity
+            {
+                PollId = pollId,
+                OptionId = optionId,
+                VotedAt = DateTimeOffset.UtcNow
             });
         }
     }

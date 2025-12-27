@@ -1,10 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using SocialMedia.Infrastructure;
-using SocialMedia.Application;
 
 namespace SocialMedia.IntegrationTests
 {
@@ -45,7 +39,8 @@ namespace SocialMedia.IntegrationTests
                     options.UseInMemoryDatabase($"{_dbName}_Read");
                 });
 
-                // Mock PostVectorService to avoid persistent file side effects and ONNX dependency in tests
+                // Mock PostVectorService to avoid persistent file side effects and ONNX dependency
+                // in tests
                 var mockVectorService = new Mock<IPostVectorService>();
                 services.AddSingleton(mockVectorService.Object);
 

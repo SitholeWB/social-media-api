@@ -1,5 +1,3 @@
-using SocialMedia.Domain;
-
 namespace SocialMedia.Application;
 
 public class UpdatePollCommandHandler : ICommandHandler<UpdatePollCommand, bool>

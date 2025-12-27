@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class CommentRepository : Repository<Comment>, ICommentRepository
@@ -13,6 +12,7 @@ public class CommentRepository : Repository<Comment>, ICommentRepository
             .Include(c => c.File)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
+
     public async Task<(List<Comment> Items, long TotalCount)> GetPagedByPostIdAsync(Guid postId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Comments

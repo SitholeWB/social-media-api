@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Infrastructure;
 
 public class UserBlockRepository : Repository<UserBlock>, IUserBlockRepository
@@ -12,5 +11,4 @@ public class UserBlockRepository : Repository<UserBlock>, IUserBlockRepository
         return await _dbContext.UserBlocks.AnyAsync(ub =>
             ub.BlockerId == blockerId && ub.BlockedUserId == blockedUserId, cancellationToken);
     }
-
 }

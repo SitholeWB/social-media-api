@@ -10,8 +10,8 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
     private readonly IDispatcher _dispatcher;
 
     public VoteOnPollCommandHandler(
-        IPollRepository pollRepository, 
-        IRepository<Vote> voteRepository, 
+        IPollRepository pollRepository,
+        IRepository<Vote> voteRepository,
         IBlockchainService blockchainService,
         IGroupRepository groupRepository,
         IGroupMemberRepository groupMemberRepository,
@@ -70,15 +70,15 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         };
 
         await _voteRepository.AddAsync(vote, cancellationToken);
-        
-        // 3. Update blockchain (Immutable audit log)
-        // For anonymous polls, we record Guid.Empty as UserId to maintain total anonymity on the ledger
+
+        // 3. Update blockchain (Immutable audit log) For anonymous polls, we record Guid.Empty as
+        // UserId to maintain total anonymity on the ledger
         var userIdForBlockchain = poll.IsAnonymous ? Guid.Empty : command.UserId;
         await _blockchainService.AddVoteAsync(vote.Id, userIdForBlockchain, command.PollOptionId, cancellationToken);
 
         // 4. Publish Event
         await _dispatcher.Publish(new PollVotedEvent(command.PollId, command.PollOptionId, command.UserId), cancellationToken);
-        
+
         return true;
     }
 }

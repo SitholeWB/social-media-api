@@ -5,9 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useColorScheme } from '@mui/material/styles';
 import AppTheme from './theme/AppTheme';
 import {
-    chartsCustomizations,
-    datePickersCustomizations,
-    treeViewCustomizations,
+	chartsCustomizations,
+	datePickersCustomizations,
+	treeViewCustomizations,
 } from './theme/customizations';
 import Layout from './Layout';
 import GroupsPage from './pages/GroupsPage';
@@ -31,66 +31,66 @@ import ReportedPostsPage from './pages/ReportedPostsPage';
 import DashboardPage from './pages/DashboardPage';
 
 const xThemeComponents = {
-    ...chartsCustomizations,
-    ...datePickersCustomizations,
-    ...treeViewCustomizations,
+	...chartsCustomizations,
+	...datePickersCustomizations,
+	...treeViewCustomizations,
 };
 
 function ThemeSync() {
-    const { setMode } = useColorScheme();
-    const themeMode = useSelector((state: RootState) => state.settings.themeMode);
+	const { setMode } = useColorScheme();
+	const themeMode = useSelector((state: RootState) => state.settings.themeMode);
 
-    React.useEffect(() => {
-        setMode(themeMode);
-    }, [themeMode, setMode]);
+	React.useEffect(() => {
+		setMode(themeMode);
+	}, [themeMode, setMode]);
 
-    return null;
+	return null;
 }
 
 function AppContent(props: { disableCustomTheme?: boolean }) {
-    return (
-        <AppTheme {...props} themeComponents={xThemeComponents}>
-            <CssBaseline enableColorScheme />
-            <ThemeSync />
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route
-                        path="/"
-                        element={
-                            <ProtectedRoute>
-                                <Layout />
-                            </ProtectedRoute>
-                        }
-                    >
-                        <Route index element={<DashboardPage />} />
-                        <Route path="/groups" element={<GroupsPage />} />
-                        <Route path="/groups/create" element={<CreateGroupPage />} />
-                        <Route path="/groups/:groupId/edit" element={<EditGroupPage />} />
-                        <Route path="users" element={<UsersPage />} />
-                        <Route path="/polls" element={<PollsPage />} />
-                        <Route path="/polls/create" element={<CreatePollPage />} />
-                        <Route path="/polls/:pollId/edit" element={<EditPollPage />} />
-                        <Route path="settings" element={<SettingsPage />} />
-                        <Route path="profile" element={<ProfilePage />} />
-                        <Route path="/groups/:groupId/posts" element={<PostsPage />} />
-                        <Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
-                        <Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
-                        <Route path="/groups/:groupId/polls" element={<PollsPage />} />
-                        <Route path="/polls/:pollId" element={<ViewPollPage />} />
-                        <Route path="/reports" element={<ReportedPostsPage />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </AppTheme>
-    );
+	return (
+		<AppTheme {...props} themeComponents={xThemeComponents}>
+			<CssBaseline enableColorScheme />
+			<ThemeSync />
+			<BrowserRouter>
+				<Routes>
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="/register" element={<RegisterPage />} />
+					<Route
+						path="/"
+						element={
+							<ProtectedRoute>
+								<Layout />
+							</ProtectedRoute>
+						}
+					>
+						<Route index element={<DashboardPage />} />
+						<Route path="/groups" element={<GroupsPage />} />
+						<Route path="/groups/create" element={<CreateGroupPage />} />
+						<Route path="/groups/:groupId/edit" element={<EditGroupPage />} />
+						<Route path="users" element={<UsersPage />} />
+						<Route path="/polls" element={<PollsPage />} />
+						<Route path="/polls/create" element={<CreatePollPage />} />
+						<Route path="/polls/:pollId/edit" element={<EditPollPage />} />
+						<Route path="settings" element={<SettingsPage />} />
+						<Route path="profile" element={<ProfilePage />} />
+						<Route path="/groups/:groupId/posts" element={<PostsPage />} />
+						<Route path="/groups/:groupId/posts/create" element={<CreatePostPage />} />
+						<Route path="/groups/:groupId/posts/:postId/edit" element={<EditPostPage />} />
+						<Route path="/groups/:groupId/polls" element={<PollsPage />} />
+						<Route path="/polls/:pollId" element={<ViewPollPage />} />
+						<Route path="/reports" element={<ReportedPostsPage />} />
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</AppTheme>
+	);
 }
 
 export default function App(props: { disableCustomTheme?: boolean }) {
-    return (
-        <Provider store={store}>
-            <AppContent {...props} />
-        </Provider>
-    );
+	return (
+		<Provider store={store}>
+			<AppContent {...props} />
+		</Provider>
+	);
 }

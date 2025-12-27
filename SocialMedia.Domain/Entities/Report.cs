@@ -1,4 +1,3 @@
-
 namespace SocialMedia.Domain;
 
 public enum ReportStatus
@@ -16,6 +15,7 @@ public class Report : BaseEntity
 
     // Either PostId or CommentId will be set, not both
     public Guid? PostId { get; set; }
+
     public Post? Post { get; set; }
 
     public Guid? CommentId { get; set; }
