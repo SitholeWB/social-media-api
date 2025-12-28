@@ -1,7 +1,5 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -16,7 +14,7 @@ public class FilesControllerTests : IClassFixture<IntegrationTestFactory>
     public FilesControllerTests(IntegrationTestFactory factory)
     {
         _factory = factory;
-        _client = _factory.CreateClient();
+        _client = _factory.CreateDefaultClient();
     }
 
     private static string GenerateToken(string secret)

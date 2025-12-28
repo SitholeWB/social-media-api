@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace SocialMedia.Files.API.IntegrationTests;
@@ -39,6 +35,10 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>
             // This means Sharding Logic in Program.cs is BYPASSED in tests. This is acceptable for
             // functional testing of Controller Logic (Upload/Download). To test Sharding
             // specifically, we would need a more complex setup.
+
+            // Add Newtonsoft.Json for testing
+            services.AddControllers()
+                .AddNewtonsoftJson();
         });
     }
 }
