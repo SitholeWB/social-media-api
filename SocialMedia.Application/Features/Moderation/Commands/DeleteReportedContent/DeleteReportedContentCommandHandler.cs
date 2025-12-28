@@ -5,15 +5,18 @@ public class DeleteReportedContentCommandHandler : ICommandHandler<DeleteReporte
     private readonly IReportRepository _reportRepository;
     private readonly IPostRepository _postRepository;
     private readonly ICommentRepository _commentRepository;
+    private readonly IDispatcher _dispatcher;
 
     public DeleteReportedContentCommandHandler(
         IReportRepository reportRepository,
         IPostRepository postRepository,
-        ICommentRepository commentRepository)
+        ICommentRepository commentRepository,
+        IDispatcher dispatcher)
     {
         _reportRepository = reportRepository;
         _postRepository = postRepository;
         _commentRepository = commentRepository;
+        _dispatcher = dispatcher;
     }
 
     public async Task<int> Handle(DeleteReportedContentCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,7 @@ public class DeleteReportedContentCommandHandler : ICommandHandler<DeleteReporte
             {
                 await _postRepository.DeleteAsync(post, cancellationToken);
                 deletedCount++;
+                await _dispatcher.Publish(new PostDeletedEvent(post), cancellationToken);
             }
         }
 
@@ -43,6 +47,7 @@ public class DeleteReportedContentCommandHandler : ICommandHandler<DeleteReporte
             {
                 await _commentRepository.DeleteAsync(comment, cancellationToken);
                 deletedCount++;
+                await _dispatcher.Publish(new CommentDeletedEvent(comment), cancellationToken);
             }
         }
 

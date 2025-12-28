@@ -45,14 +45,23 @@ public class ModerationControllerTests(IntegrationTestWebApplicationFactory fact
         createPostResponse.EnsureSuccessStatusCode();
         var postId = await createPostResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
+        // Process pending events to update read model
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
+
         // 3. Report Post as User
         var reportCommand = new ReportPostCommand(Guid.Empty, Guid.Empty) { PostId = postId, ReporterId = Guid.NewGuid(), Reason = "Spam" };
         var reportResponse = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
         reportResponse.EnsureSuccessStatusCode();
 
+        // Process pending events to update read model
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
+
         // 4. Delete Reported Content as Admin
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
         var deleteResponse = await _client.DeleteAsync($"/api/v1/moderation/reported-content?minReports=0", TestContext.Current.CancellationToken); // minReports=0 means > 0 reports (so 1 report is enough)
+
+        // Process pending events to update read model
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Assert
         deleteResponse.EnsureSuccessStatusCode();
