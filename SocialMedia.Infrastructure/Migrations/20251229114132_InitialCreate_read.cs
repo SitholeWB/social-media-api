@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace SocialMedia.Infrastructure.Migrations
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public partial class InitialCreate_read : Migration
     {
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -69,7 +70,7 @@ namespace SocialMedia.Infrastructure.Migrations
                 column: "GroupId");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

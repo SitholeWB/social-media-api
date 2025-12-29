@@ -9,7 +9,6 @@ public class CommentRepository : Repository<Comment>, ICommentRepository
     public override async Task<Comment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Comments
-            .Include(c => c.File)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 

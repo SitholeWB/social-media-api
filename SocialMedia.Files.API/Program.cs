@@ -11,6 +11,15 @@ builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAdminSPA", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "SocialMedia.Files.API", Version = "v1" });
@@ -101,6 +110,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("AllowAdminSPA");
 app.UseAuthentication();
 app.UseAuthorization();
 

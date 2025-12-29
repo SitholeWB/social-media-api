@@ -7,8 +7,7 @@ public class Comment : BaseEntity
     public Post Post { get; set; } = null!;
     public Guid AuthorId { get; set; }
     public bool IsDeleted { get; set; } = false;
-    public Guid? FileId { get; set; }
-    public MediaFile? File { get; set; }
+    public string? FileUrl { get; set; }
 
     public ICollection<Like> Likes { get; set; } = new List<Like>();
 

@@ -74,14 +74,6 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         // Arrange
         var fileId = Guid.NewGuid();
 
-        // Seed MediaFile
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
-            context.MediaFiles.Add(new MediaFile { Id = fileId, FileName = "comment.jpg", Url = "http://example.com/comment.jpg" });
-            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
-        }
-
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = Guid.NewGuid() };
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
@@ -92,7 +84,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
             PostId = postId,
             Content = "Comment with Image",
             AuthorId = Guid.NewGuid(),
-            FileId = fileId
+            FileUrl = "http://example.com/comment.jpg"
         };
 
         // Act

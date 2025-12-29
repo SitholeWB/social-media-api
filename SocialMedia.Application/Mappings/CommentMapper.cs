@@ -10,7 +10,7 @@ public static class CommentMapper
             Content = comment.Content,
             PostId = comment.PostId,
             AuthorId = comment.AuthorId,
-            FileUrl = comment.File?.Url,
+            FileUrl = comment.FileUrl,
             CreatedAt = comment.CreatedAt,
             AdminTags = comment.AdminTags,
             Tags = comment.Tags
@@ -24,7 +24,7 @@ public static class CommentMapper
             Content = dto.Content,
             PostId = dto.PostId,
             AuthorId = dto.AuthorId,
-            FileId = dto.FileId,
+            FileUrl = dto.FileUrl,
             AdminTags = dto.AdminTags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
             Tags = dto.Tags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
         };

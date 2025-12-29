@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialMedia.Infrastructure;
 
@@ -11,9 +12,11 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    partial class SocialMediaReadDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229114132_InitialCreate_read")]
+    partial class InitialCreate_read
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +47,6 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
@@ -247,9 +247,6 @@ namespace SocialMedia.Infrastructure.Migrations
 
                             b1.Property<DateTimeOffset>("CreatedAt")
                                 .HasColumnType("datetimeoffset");
-
-                            b1.Property<string>("FileUrl")
-                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");

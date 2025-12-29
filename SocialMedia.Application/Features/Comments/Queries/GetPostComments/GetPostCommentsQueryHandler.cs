@@ -28,6 +28,7 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
             AuthorId = c.AuthorId,
             AuthorName = c.AuthorName,
             AuthorProfilePicUrl = c.AuthorProfilePicUrl,
+            FileUrl = c.FileUrl,
             CreatedAt = c.CreatedAt,
             LikeCount = c.Stats.LikeCount,
             UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == c.Id && r.EntityType == "Comment")?.Emoji,

@@ -31,7 +31,7 @@ public class PostCreatedEventHandler :
             AuthorId = notification.Post.AuthorId,
             AuthorName = author?.GetFullName() ?? "Unknown",
             CreatedAt = notification.Post.CreatedAt,
-            FileUrl = notification.Post.File?.Url,
+            FileUrl = notification.Post.FileUrl,
             AdminTags = notification.Post.AdminTags,
             StatusFullScreen = notification.Post.StatusFullScreen,
             Reactions = new List<ReactionReadDto>(),

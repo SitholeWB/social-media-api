@@ -6,7 +6,7 @@ public class CreatePostDto
     public string Content { get; set; } = string.Empty;
     public Guid GroupId { get; set; }
     public Guid AuthorId { get; set; }
-    public Guid? FileId { get; set; }
+    public string? FileUrl { get; set; }
     public bool StatusFullScreen { get; set; } = false;
     public List<string> AdminTags { get; set; } = [];
     public List<string> Tags { get; set; } = [];

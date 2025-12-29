@@ -75,8 +75,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("FileId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -88,8 +88,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileId");
 
                     b.HasIndex("PostId");
 
@@ -190,31 +188,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.HasIndex("PostId");
 
                     b.ToTable("Likes");
-                });
-
-            modelBuilder.Entity("SocialMedia.Domain.MediaFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("LastModifiedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MediaFiles");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Notification", b =>
@@ -398,8 +371,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("FileId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
@@ -418,8 +391,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileId");
 
                     b.HasIndex("GroupId");
 
@@ -586,10 +557,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             modelBuilder.Entity("SocialMedia.Domain.Comment", b =>
                 {
-                    b.HasOne("SocialMedia.Domain.MediaFile", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId");
-
                     b.HasOne("SocialMedia.Domain.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
@@ -651,8 +618,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         });
 
                     b.Navigation("AdminTags");
-
-                    b.Navigation("File");
 
                     b.Navigation("Post");
 
@@ -728,10 +693,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             modelBuilder.Entity("SocialMedia.Domain.Post", b =>
                 {
-                    b.HasOne("SocialMedia.Domain.MediaFile", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId");
-
                     b.HasOne("SocialMedia.Domain.Group", "Group")
                         .WithMany("Posts")
                         .HasForeignKey("GroupId")
@@ -793,8 +754,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         });
 
                     b.Navigation("AdminTags");
-
-                    b.Navigation("File");
 
                     b.Navigation("Group");
 

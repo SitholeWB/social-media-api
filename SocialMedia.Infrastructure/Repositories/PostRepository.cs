@@ -9,21 +9,18 @@ public class PostRepository : Repository<Post>, IPostRepository
     public override async Task<Post?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Posts
-            .Include(p => p.File)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public override async Task<IReadOnlyList<Post>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Posts
-            .Include(p => p.File)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<(List<Post> Items, long TotalCount)> GetPagedAsync(Guid groupId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Posts
-            .Include(p => p.File)
             .Include(p => p.Comments)
             .Include(p => p.Likes)
             .OrderByDescending(p => p.CreatedAt);

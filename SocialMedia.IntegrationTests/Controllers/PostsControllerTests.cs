@@ -6,22 +6,15 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
     public async Task CreatePost_WithImage_ReturnsUrl()
     {
         // Arrange
-        var fileId = Guid.NewGuid();
 
         // Seed MediaFile
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
-            context.MediaFiles.Add(new MediaFile { Id = fileId, FileName = "test.jpg", Url = "http://example.com/test.jpg" });
-            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
-        }
 
         var createPostDto = new CreatePostDto
         {
             Title = "Post with Image",
             Content = "Content",
             AuthorId = Guid.NewGuid(),
-            FileId = fileId
+            FileUrl = "http://example.com/test.jpg"
         };
 
         // Act

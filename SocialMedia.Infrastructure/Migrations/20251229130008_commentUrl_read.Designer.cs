@@ -12,8 +12,8 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251222141121_InitialCreate_read")]
-    partial class InitialCreate_read
+    [Migration("20251229130008_commentUrl_read")]
+    partial class commentUrl_read
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
@@ -247,6 +250,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                             b1.Property<DateTimeOffset>("CreatedAt")
                                 .HasColumnType("datetimeoffset");
+
+                            b1.Property<string>("FileUrl")
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");

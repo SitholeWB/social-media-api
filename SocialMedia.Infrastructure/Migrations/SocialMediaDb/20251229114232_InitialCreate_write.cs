@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public partial class InitialCreate_write : Migration
     {
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -44,21 +45,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Groups", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MediaFiles",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MediaFiles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,7 +155,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     StatusFullScreen = table.Column<bool>(type: "bit", nullable: false),
-                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -184,11 +170,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Posts_MediaFiles_FileId",
-                        column: x => x.FileId,
-                        principalTable: "MediaFiles",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -299,7 +280,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FileUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -308,11 +289,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_MediaFiles_FileId",
-                        column: x => x.FileId,
-                        principalTable: "MediaFiles",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Posts_PostId",
                         column: x => x.PostId,
@@ -399,11 +375,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_FileId",
-                table: "Comments",
-                column: "FileId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_PostId",
                 table: "Comments",
                 column: "PostId");
@@ -450,11 +421,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_FileId",
-                table: "Posts",
-                column: "FileId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Posts_GroupId",
                 table: "Posts",
                 column: "GroupId");
@@ -491,7 +457,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 column: "PollOptionId");
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -538,9 +504,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             migrationBuilder.DropTable(
                 name: "Polls");
-
-            migrationBuilder.DropTable(
-                name: "MediaFiles");
 
             migrationBuilder.DropTable(
                 name: "Groups");

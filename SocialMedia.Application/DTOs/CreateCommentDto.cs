@@ -5,7 +5,7 @@ public class CreateCommentDto
     public string Content { get; set; } = string.Empty;
     public Guid PostId { get; set; }
     public Guid AuthorId { get; set; }
-    public Guid? FileId { get; set; }
+    public string? FileUrl { get; set; }
     public List<string> AdminTags { get; set; } = [];
     public List<string> Tags { get; set; } = [];
 }

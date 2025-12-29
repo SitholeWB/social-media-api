@@ -13,7 +13,6 @@ public class SocialMediaDbContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Like> Likes { get; set; }
-    public DbSet<MediaFile> MediaFiles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Poll> Polls { get; set; }
     public DbSet<PollOption> PollOptions { get; set; }
