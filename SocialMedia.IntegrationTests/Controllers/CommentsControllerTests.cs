@@ -72,7 +72,6 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
     public async Task CreateComment_WithImage_ReturnsUrl()
     {
         // Arrange
-        var fileId = Guid.NewGuid();
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = Guid.NewGuid() };
@@ -84,7 +83,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
             PostId = postId,
             Content = "Comment with Image",
             AuthorId = Guid.NewGuid(),
-            FileUrl = "http://example.com/comment.jpg"
+            Media = [new MediaDto { Url = "http://example.com/comment.jpg" }]
         };
 
         // Act
@@ -102,7 +101,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         var comment = await getResponse.Content.ReadFromJsonAsync<CommentDto>(TestContext.Current.CancellationToken);
         Assert.NotNull(comment);
-        //Assert.Equal("http://example.com/comment.jpg", comment.FileUrl);
+        Assert.True(comment.Media?.Any(x => x.Url == "http://example.com/comment.jpg"));
     }
 
     [Fact]

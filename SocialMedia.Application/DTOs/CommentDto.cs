@@ -6,7 +6,7 @@ public class CommentDto
     public string Content { get; set; } = string.Empty;
     public Guid PostId { get; set; }
     public Guid AuthorId { get; set; }
-    public string? FileUrl { get; set; }
+    public ICollection<MediaDto> Media { get; set; } = [];
     public DateTimeOffset CreatedAt { get; set; }
     public string? UserReaction { get; set; }
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();

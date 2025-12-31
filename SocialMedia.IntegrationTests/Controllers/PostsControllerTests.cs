@@ -14,7 +14,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
             Title = "Post with Image",
             Content = "Content",
             AuthorId = Guid.NewGuid(),
-            FileUrl = "http://example.com/test.jpg"
+            Media = [new MediaDto { Url = "http://example.com/test.jpg" }]
         };
 
         // Act
@@ -34,7 +34,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
         Assert.NotNull(result);
         var createdPost = result.Items.Find(p => p.Id == postId);
         Assert.NotNull(createdPost);
-        Assert.Equal("http://example.com/test.jpg", createdPost.FileUrl);
+        Assert.True(createdPost.Media?.Any(x => x.Url == "http://example.com/test.jpg"));
     }
 
     [Fact]

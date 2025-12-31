@@ -42,7 +42,8 @@ public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, Com
             UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == comment.Id && r.EntityType == "Comment")?.Emoji,
             Reactions = comment.Reactions,
             Tags = comment.Tags,
-            AdminTags = comment.AdminTags
+            AdminTags = comment.AdminTags,
+            Media = comment.Media
         };
     }
 }

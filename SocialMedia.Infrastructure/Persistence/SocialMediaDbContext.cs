@@ -61,6 +61,7 @@ public class SocialMediaDbContext : DbContext
         {
             entity.OwnsMany(c => c.Tags, b => b.ToJson());
             entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
+            entity.OwnsMany(c => c.Media, b => b.ToJson());
         });
 
         modelBuilder.Entity<Comment>()
@@ -73,6 +74,7 @@ public class SocialMediaDbContext : DbContext
         {
             entity.OwnsMany(c => c.Tags, b => b.ToJson());
             entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
+            entity.OwnsMany(c => c.Media, b => b.ToJson());
         });
 
         modelBuilder.Entity<Poll>()

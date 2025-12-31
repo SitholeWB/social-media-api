@@ -9,7 +9,7 @@ public class PostReadModel
     public string AuthorName { get; set; } = string.Empty; // Denormalized
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? LastModifiedAt { get; set; }
-    public string? FileUrl { get; set; }
+    public ICollection<MediaDto> Media { get; set; } = new List<MediaDto>();
     public bool StatusFullScreen { get; set; } = false;
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();

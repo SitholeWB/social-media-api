@@ -8,7 +8,7 @@ public class Post : BaseEntity
     public Guid AuthorId { get; set; }
     public bool IsDeleted { get; set; } = false;
     public bool StatusFullScreen { get; set; } = false;
-    public string? FileUrl { get; set; }
+    public ICollection<MediaDto> Media { get; set; } = new List<MediaDto>();
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
     public ICollection<Comment> Comments { get; set; } = [];

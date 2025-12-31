@@ -11,7 +11,7 @@ public static class PostMapper
             Content = post.Content,
             AuthorId = post.AuthorId,
             GroupId = post.GroupId,
-            FileUrl = post.FileUrl,
+            Media = post.Media,
             CreatedAt = post.CreatedAt,
             AdminTags = post.AdminTags,
             Tags = post.Tags,
@@ -30,7 +30,7 @@ public static class PostMapper
             AuthorId = dto.AuthorId,
             GroupId = dto.GroupId,
             StatusFullScreen = dto.StatusFullScreen,
-            FileUrl = dto.FileUrl,
+            Media = dto.Media,
             Tags = dto.Tags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? [],
             AdminTags = dto.AdminTags?.Select(x => new TagDto { Text = x, Topic = "Not-Set" })?.ToList() ?? []
         };

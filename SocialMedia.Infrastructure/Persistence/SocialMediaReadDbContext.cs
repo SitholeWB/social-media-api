@@ -41,12 +41,14 @@ public class SocialMediaReadDbContext : DbContext
             entity.OwnsMany(p => p.Reactions, b => b.ToJson());
             entity.OwnsMany(p => p.AdminTags, b => b.ToJson());
             entity.OwnsMany(p => p.Tags, b => b.ToJson());
+            entity.OwnsMany(p => p.Media, b => b.ToJson());
             entity.OwnsMany(p => p.TopComments, b =>
             {
                 b.ToJson();
                 b.OwnsMany(c => c.Reactions);
                 b.OwnsMany(c => c.Tags);
                 b.OwnsMany(c => c.AdminTags);
+                b.OwnsMany(c => c.Media);
             });
         });
 
@@ -60,6 +62,7 @@ public class SocialMediaReadDbContext : DbContext
             entity.OwnsMany(c => c.Reactions, b => b.ToJson());
             entity.OwnsMany(c => c.Tags, b => b.ToJson());
             entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
+            entity.OwnsMany(c => c.Media, b => b.ToJson());
         });
     }
 }

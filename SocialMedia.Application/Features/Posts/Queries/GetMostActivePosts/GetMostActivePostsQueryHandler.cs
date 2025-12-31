@@ -34,7 +34,7 @@ public class GetMostActivePostsQueryHandler : IQueryHandler<GetMostActivePostsQu
             AuthorId = p.AuthorId,
             AuthorName = p.AuthorName,
             CreatedAt = p.CreatedAt,
-            FileUrl = p.FileUrl,
+            Media = p.Media,
             LikeCount = p.Stats.LikeCount,
             CommentCount = p.Stats.CommentCount,
             UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == p.Id && r.EntityType == "Post")?.Emoji,

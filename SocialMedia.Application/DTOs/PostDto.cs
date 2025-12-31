@@ -8,7 +8,7 @@ public class PostDto
     public Guid GroupId { get; set; }
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
-    public string? FileUrl { get; set; }
+    public ICollection<MediaDto> Media { get; set; } = [];
     public bool StatusFullScreen { get; set; } = false;
     public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
