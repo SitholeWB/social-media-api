@@ -50,7 +50,7 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Add 35 comments
-        for (int i = 0; i < 35; i++)
+        for (int i = 0; i < 300; i++)
         {
             var commentDto = new CreateCommentDto { PostId = postId, Content = $"Comment {i}", AuthorId = Guid.NewGuid() };
             await _client.PostAsJsonAsync("/api/v1/comments", commentDto, TestContext.Current.CancellationToken);

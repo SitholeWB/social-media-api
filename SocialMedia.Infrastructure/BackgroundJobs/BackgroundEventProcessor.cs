@@ -6,6 +6,8 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
     private readonly ILogger<BackgroundEventProcessor> _logger;
     private const int MaxRetries = 3;
 
+    private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
     public BackgroundEventProcessor(
         IServiceProvider serviceProvider,
         ILogger<BackgroundEventProcessor> _logger)
@@ -43,6 +45,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
 
     public async Task ProcessPendingEventsAsync(CancellationToken cancellationToken = default)
     {
+        await _semaphore.WaitAsync(cancellationToken);
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
 
@@ -68,6 +71,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
         {
             await ProcessEventAsync(outboxEvent, dbContext, cancellationToken);
         }
+        _semaphore.Release();
     }
 
     private async Task ProcessEventAsync(OutboxEvent outboxEvent, SocialMediaDbContext dbContext, CancellationToken cancellationToken)

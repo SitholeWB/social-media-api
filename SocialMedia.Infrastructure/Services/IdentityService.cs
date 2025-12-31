@@ -28,7 +28,8 @@ public class IdentityService : IIdentityService
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
         var username = request.Username.Trim();
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == username, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower()
+                                                              || u.Email.ToLower() == username.ToLower(), cancellationToken);
 
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash, user.Id))
         {
@@ -60,7 +61,7 @@ public class IdentityService : IIdentityService
             throw new Exception("Invalid Google token");
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == payload.Email, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == payload.Email.ToLower(), cancellationToken);
 
         if (user == null)
         {
@@ -77,7 +78,7 @@ public class IdentityService : IIdentityService
             };
 
             // Ensure username is unique
-            if (await _context.Users.AnyAsync(u => u.Username == user.Username, cancellationToken))
+            if (await _context.Users.AnyAsync(u => u.Username.ToLower() == user.Username.ToLower(), cancellationToken))
             {
                 user.Username = $"{user.Username}_{Guid.NewGuid().ToString().Substring(0, 4)}";
             }
@@ -102,7 +103,8 @@ public class IdentityService : IIdentityService
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
         var username = request.Username.Trim();
-        if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == username, cancellationToken))
+        if (await _context.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()
+                                            || u.Email.ToLower() == username.ToLower(), cancellationToken))
         {
             throw new Exception("Username already exists");
         }
@@ -131,6 +133,7 @@ public class IdentityService : IIdentityService
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
+        var appName = _configuration.GetValue<string>("Name") ?? "unknown";
         var secretKey = jwtSettings["Secret"] ?? "SuperSecretKey12345678901234567890"; // Fallback for dev
         var key = Encoding.ASCII.GetBytes(secretKey);
 
@@ -141,9 +144,10 @@ public class IdentityService : IIdentityService
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.Names} {user.Surname}"),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Actor, appName),
             }),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddMonths(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
@@ -153,7 +157,7 @@ public class IdentityService : IIdentityService
 
     private static string HashPassword(string password, Guid userId)
     {
-        var list = userId.ToString().ToLowerInvariant().ToList();
+        var list = userId.ToString().ToLower().ToList();
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{password}_{string.Join("", list)}"));
         return Convert.ToBase64String(bytes);
     }

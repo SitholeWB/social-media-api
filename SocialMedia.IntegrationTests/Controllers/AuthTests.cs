@@ -53,11 +53,26 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
     }
 
     [Fact]
-    public async Task Register_ShouldReturnBadRequest_WhenEmailAlreadyExists()
+    public async Task Register_ShouldReturnBadRequest_WhenEmailAlreadyExists_SameCases()
     {
         // Arrange
         var client = _factory.CreateClient();
         var request = new RegisterRequest("duplicateuser", "duplicate@example.com", "password123");
+        await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode); // Or BadRequest depending on implementation
+    }
+
+    [Fact]
+    public async Task Register_ShouldReturnBadRequest_WhenEmailAlreadyExists_DifferentCases()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new RegisterRequest("duplIcateUser", "dupLicAte@example.com", "password123");
         await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
 
         // Act

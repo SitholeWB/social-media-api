@@ -19,7 +19,7 @@ public static class TestHelpers
             else
             {
                 // Wait for Processing events to complete
-                await Task.Delay(50, cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
             }
         }
 
@@ -27,7 +27,7 @@ public static class TestHelpers
             .Where(e => e.Status == OutboxEventStatus.Failed)
             .ToListAsync(cancellationToken);
 
-        if (failedEvents.Any())
+        if (failedEvents.Count > 0)
         {
             var errors = string.Join(", ", failedEvents.Select(e => $"{e.EventType}: {e.ErrorMessage}"));
             throw new Exception($"Events failed to process: {errors}");
