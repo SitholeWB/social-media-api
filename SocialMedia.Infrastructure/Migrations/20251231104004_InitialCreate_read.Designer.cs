@@ -12,8 +12,8 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialMediaReadDbContext))]
-    [Migration("20251229130008_commentUrl_read")]
-    partial class commentUrl_read
+    [Migration("20251231104004_InitialCreate_read")]
+    partial class InitialCreate_read
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,9 +48,6 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -83,9 +80,6 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("GroupId")
                         .HasColumnType("uniqueidentifier");
@@ -134,6 +128,29 @@ namespace SocialMedia.Infrastructure.Migrations
                             b1.ToTable("CommentReads");
 
                             b1.ToJson("AdminTags");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("CommentReadModelId", "Id");
+
+                            b1.ToTable("CommentReads");
+
+                            b1.ToJson("Media");
 
                             b1.WithOwner()
                                 .HasForeignKey("CommentReadModelId");
@@ -212,6 +229,8 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Navigation("AdminTags");
 
+                    b.Navigation("Media");
+
                     b.Navigation("Reactions");
 
                     b.Navigation("Stats")
@@ -251,9 +270,6 @@ namespace SocialMedia.Infrastructure.Migrations
                             b1.Property<DateTimeOffset>("CreatedAt")
                                 .HasColumnType("datetimeoffset");
 
-                            b1.Property<string>("FileUrl")
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");
 
@@ -286,6 +302,30 @@ namespace SocialMedia.Infrastructure.Migrations
                                         .HasColumnType("nvarchar(max)");
 
                                     b2.Property<string>("Topic")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("CommentReadDtoPostReadModelId", "CommentReadDtoId", "Id");
+
+                                    b2.ToTable("PostReads");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("CommentReadDtoPostReadModelId", "CommentReadDtoId");
+                                });
+
+                            b1.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b2 =>
+                                {
+                                    b2.Property<Guid>("CommentReadDtoPostReadModelId")
+                                        .HasColumnType("uniqueidentifier");
+
+                                    b2.Property<int>("CommentReadDtoId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("Url")
                                         .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
@@ -354,6 +394,8 @@ namespace SocialMedia.Infrastructure.Migrations
 
                             b1.Navigation("AdminTags");
 
+                            b1.Navigation("Media");
+
                             b1.Navigation("Reactions");
 
                             b1.Navigation("Tags");
@@ -381,6 +423,29 @@ namespace SocialMedia.Infrastructure.Migrations
                             b1.ToTable("PostReads");
 
                             b1.ToJson("AdminTags");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("PostReadModelId", "Id");
+
+                            b1.ToTable("PostReads");
+
+                            b1.ToJson("Media");
 
                             b1.WithOwner()
                                 .HasForeignKey("PostReadModelId");
@@ -464,6 +529,8 @@ namespace SocialMedia.Infrastructure.Migrations
                         });
 
                     b.Navigation("AdminTags");
+
+                    b.Navigation("Media");
 
                     b.Navigation("Reactions");
 

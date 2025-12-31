@@ -75,9 +75,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -371,9 +368,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("FileUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -590,6 +584,29 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                                 .HasForeignKey("CommentId");
                         });
 
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("CommentId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("CommentId", "Id");
+
+                            b1.ToTable("Comments");
+
+                            b1.ToJson("Media");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentId");
+                        });
+
                     b.OwnsMany("SocialMedia.Domain.TagDto", "Tags", b1 =>
                         {
                             b1.Property<Guid>("CommentId")
@@ -618,6 +635,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                         });
 
                     b.Navigation("AdminTags");
+
+                    b.Navigation("Media");
 
                     b.Navigation("Post");
 
@@ -726,6 +745,29 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                                 .HasForeignKey("PostId");
                         });
 
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("PostId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("PostId", "Id");
+
+                            b1.ToTable("Posts");
+
+                            b1.ToJson("Media");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostId");
+                        });
+
                     b.OwnsMany("SocialMedia.Domain.TagDto", "Tags", b1 =>
                         {
                             b1.Property<Guid>("PostId")
@@ -756,6 +798,8 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                     b.Navigation("AdminTags");
 
                     b.Navigation("Group");
+
+                    b.Navigation("Media");
 
                     b.Navigation("Tags");
                 });
