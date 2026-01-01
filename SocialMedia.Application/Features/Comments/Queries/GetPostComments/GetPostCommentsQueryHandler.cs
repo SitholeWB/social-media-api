@@ -24,6 +24,7 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
         var dtos = comments.Select(c => new CommentReadDto
         {
             CommentId = c.Id,
+            Title = c.Title,
             Content = c.Content,
             AuthorId = c.AuthorId,
             AuthorName = c.AuthorName,

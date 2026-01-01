@@ -2,6 +2,7 @@ namespace SocialMedia.Domain;
 
 public class Comment : BaseEntity
 {
+    public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid PostId { get; set; }
     public Post Post { get; set; } = null!;

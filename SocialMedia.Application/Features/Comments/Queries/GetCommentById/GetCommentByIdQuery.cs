@@ -34,6 +34,7 @@ public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, Com
         {
             CommentId = comment.Id,
             Content = comment.Content,
+            Title = comment.Title,
             AuthorId = comment.AuthorId,
             AuthorName = comment.AuthorName,
             AuthorProfilePicUrl = comment.AuthorProfilePicUrl,

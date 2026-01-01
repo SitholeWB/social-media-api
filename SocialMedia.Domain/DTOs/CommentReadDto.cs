@@ -3,6 +3,7 @@ namespace SocialMedia.Domain;
 public class CommentReadDto
 {
     public Guid CommentId { get; set; }
+    public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;

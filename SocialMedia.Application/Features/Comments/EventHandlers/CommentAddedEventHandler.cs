@@ -37,6 +37,7 @@ public class CommentAddedEventHandler :
             {
                 CommentId = notification.Comment.Id,
                 Content = notification.Comment.Content,
+                Title = notification.Comment.Title,
                 AuthorId = notification.Comment.AuthorId,
                 AuthorName = createdBy,
                 AuthorProfilePicUrl = null,
@@ -53,6 +54,7 @@ public class CommentAddedEventHandler :
                 Id = notification.Comment.Id,
                 PostId = notification.Comment.PostId,
                 Content = notification.Comment.Content,
+                Title = notification.Comment.Title,
                 AuthorId = notification.Comment.AuthorId,
                 AuthorName = createdBy,
                 AuthorProfilePicUrl = null,
