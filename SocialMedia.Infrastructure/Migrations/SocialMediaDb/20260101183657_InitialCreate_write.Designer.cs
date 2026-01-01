@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     [DbContext(typeof(SocialMediaDbContext))]
-    [Migration("20251231104037_InitialCreate_write")]
+    [Migration("20260101183657_InitialCreate_write")]
     partial class InitialCreate_write
     {
         /// <inheritdoc />
@@ -77,6 +77,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -370,6 +373,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");

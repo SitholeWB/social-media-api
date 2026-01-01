@@ -20,8 +20,12 @@ public class PostCreatedEventHandler :
         {
             throw new ArgumentNullException(nameof(notification.Post), "Post in PostCreatedEvent is null. This might be due to JSON deserialization issues.");
         }
-
-        var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
+        var createdBy = notification.Post.CreatedBy;
+        if (string.IsNullOrWhiteSpace(createdBy))
+        {
+            var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
+            createdBy = author?.GetFullName() ?? "Unknown";
+        }
 
         var readModel = new PostReadModel
         {
@@ -29,7 +33,7 @@ public class PostCreatedEventHandler :
             Title = notification.Post.Title,
             Content = notification.Post.Content,
             AuthorId = notification.Post.AuthorId,
-            AuthorName = author?.GetFullName() ?? "Unknown",
+            AuthorName = createdBy,
             CreatedAt = notification.Post.CreatedAt,
             Media = notification.Post.Media,
             AdminTags = notification.Post.AdminTags,

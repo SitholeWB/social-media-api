@@ -27,14 +27,18 @@ public class CommentAddedEventHandler :
         var post = await _readRepository.GetByIdAsync(notification.Comment.PostId, cancellationToken);
         if (post != null)
         {
-            var author = await _userRepository.GetByIdAsync(notification.Comment.AuthorId, cancellationToken);
-
+            var createdBy = notification.Comment.CreatedBy;
+            if (string.IsNullOrWhiteSpace(createdBy))
+            {
+                var author = await _userRepository.GetByIdAsync(notification.Comment.AuthorId, cancellationToken);
+                createdBy = author?.GetFullName() ?? "Unknown";
+            }
             var commentDto = new CommentReadDto
             {
                 CommentId = notification.Comment.Id,
                 Content = notification.Comment.Content,
                 AuthorId = notification.Comment.AuthorId,
-                AuthorName = author?.GetFullName() ?? "Unknown",
+                AuthorName = createdBy,
                 AuthorProfilePicUrl = null,
                 Media = notification.Comment.Media,
                 CreatedAt = notification.Comment.CreatedAt,
@@ -50,7 +54,7 @@ public class CommentAddedEventHandler :
                 PostId = notification.Comment.PostId,
                 Content = notification.Comment.Content,
                 AuthorId = notification.Comment.AuthorId,
-                AuthorName = author?.GetFullName() ?? "Unknown",
+                AuthorName = createdBy,
                 AuthorProfilePicUrl = null,
                 Media = notification.Comment.Media,
                 CreatedAt = notification.Comment.CreatedAt,

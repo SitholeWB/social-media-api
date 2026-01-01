@@ -2,6 +2,14 @@ namespace SocialMedia.IntegrationTests;
 
 public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
+    public override async ValueTask InitializeAsync()
+    {
+        // Runs once before any tests in this class
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123", isAdmin: true);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
     [Fact]
     public async Task VerifyChain_ShouldReturnTrue_Initially()
     {
@@ -26,7 +34,7 @@ public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : Bas
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Get Option

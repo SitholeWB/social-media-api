@@ -45,6 +45,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -266,6 +269,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                             b1.Property<DateTimeOffset>("CreatedAt")
                                 .HasColumnType("datetimeoffset");
+
+                            b1.Property<string>("CreatedBy")
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<int>("LikeCount")
                                 .HasColumnType("int");

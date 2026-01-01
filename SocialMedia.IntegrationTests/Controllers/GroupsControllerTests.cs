@@ -2,6 +2,14 @@ namespace SocialMedia.IntegrationTests;
 
 public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
+    public override async ValueTask InitializeAsync()
+    {
+        // Runs once before any tests in this class
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123", isAdmin: true);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
     [Fact]
     public async Task CreateGroup_ShouldReturnBadRequest_WhenNameIsEmpty()
     {

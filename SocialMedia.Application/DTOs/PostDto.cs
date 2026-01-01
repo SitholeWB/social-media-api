@@ -10,6 +10,7 @@ public class PostDto
     public string AuthorName { get; set; } = string.Empty;
     public ICollection<MediaDto> Media { get; set; } = [];
     public bool StatusFullScreen { get; set; } = false;
+    public string? CreatedBy { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }

@@ -16,6 +16,8 @@ public class CommentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateComment([FromBody] CreateCommentDto createCommentDto, CancellationToken cancellationToken)
     {
+        createCommentDto.CreatedBy = this.GetUserNames();
+        createCommentDto.AuthorId = this.GetUserId() ?? createCommentDto.AuthorId;
         var command = new CreateCommentCommand(createCommentDto);
         var commentId = await _dispatcher.Send<CreateCommentCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, commentId);

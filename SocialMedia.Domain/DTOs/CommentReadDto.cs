@@ -11,6 +11,7 @@ public class CommentReadDto
     public DateTimeOffset CreatedAt { get; set; }
     public int LikeCount { get; set; }
     public string? UserReaction { get; set; }
+    public string? CreatedBy { get; set; } = string.Empty;
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
     public ICollection<TagDto> AdminTags { get; set; } = new List<TagDto>();
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();

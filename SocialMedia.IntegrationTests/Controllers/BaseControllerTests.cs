@@ -17,20 +17,38 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
         return ValueTask.CompletedTask;
     }
 
-    public async ValueTask InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         // Runs once before any tests in this class
         var uniqueId = Guid.NewGuid().ToString("N");
-        var token = await RegisterAndLoginAsyncx($"likeuser_post_{uniqueId}@test.com", "password123");
+        var token = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
-    protected async Task<string> RegisterAndLoginAsyncx(string email, string password)
+    protected async Task<string> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
     {
-        var registerRequest = new { Email = email, Password = password, Username = email.Split('@')[0] };
-        await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
-        var loginRequest = new { Username = email, Password = password };
+        var email = $"{username}@example.com";
+        var registerRequest = new RegisterRequest(username, email, password);
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
+        registerResponse.EnsureSuccessStatusCode();
+
+        if (isAdmin)
+        {
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+                if (user != null)
+                {
+                    user.Role = UserRole.Admin;
+                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
+                }
+            }
+        }
+
+        var loginRequest = new LoginRequest(username, password);
         var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        loginResponse.EnsureSuccessStatusCode();
         var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return authResponse!.Token;
     }

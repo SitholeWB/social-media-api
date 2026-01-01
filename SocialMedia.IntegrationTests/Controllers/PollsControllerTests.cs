@@ -2,6 +2,14 @@ namespace SocialMedia.IntegrationTests;
 
 public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
+    public override async ValueTask InitializeAsync()
+    {
+        // Runs once before any tests in this class
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var token = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123", isAdmin: true);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
     [Fact]
     public async Task CreatePoll_ShouldReturnCreated()
     {
@@ -22,7 +30,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync("/api/v1/polls", command, TestContext.Current.CancellationToken);
+            var response = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", command, TestContext.Current.CancellationToken);
 
             // Assert
             if (!response.IsSuccessStatusCode)
@@ -31,7 +39,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
                 Console.WriteLine($"CreatePoll failed: {response.StatusCode} - {error}");
             }
             response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var pollDto = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
             Assert.NotEqual(Guid.Empty, pollDto);
         }
@@ -60,7 +68,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+            var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
             createResponse.EnsureSuccessStatusCode();
             var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
@@ -120,7 +128,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+            var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
             var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
@@ -201,7 +209,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2), false, groupId);
@@ -229,7 +237,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/polls", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Act

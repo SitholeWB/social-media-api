@@ -3,6 +3,7 @@ namespace SocialMedia.Infrastructure;
 public class BackgroundEventProcessor : IBackgroundEventProcessor
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly EventProcessorBackgroundService _eventProcessorBackgroundService;
     private readonly ILogger<BackgroundEventProcessor> _logger;
     private const int MaxRetries = 3;
 
@@ -10,10 +11,12 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
 
     public BackgroundEventProcessor(
         IServiceProvider serviceProvider,
-        ILogger<BackgroundEventProcessor> _logger)
+        ILogger<BackgroundEventProcessor> _logger,
+        EventProcessorBackgroundService eventProcessorBackgroundService)
     {
         _serviceProvider = serviceProvider;
         this._logger = _logger;
+        _eventProcessorBackgroundService = eventProcessorBackgroundService;
     }
 
     public async Task EnqueueEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
@@ -39,11 +42,11 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
 
         dbContext.OutboxEvents.Add(outboxEvent);
         await dbContext.SaveChangesAsync(cancellationToken);
-
+        await _eventProcessorBackgroundService.StartAsync(CancellationToken.None);
         _logger.LogInformation("Enqueued event {EventType} with ID {EventId}", typeof(TEvent).Name, outboxEvent.Id);
     }
 
-    public async Task ProcessPendingEventsAsync(CancellationToken cancellationToken = default)
+    public async Task<int> ProcessPendingEventsAsync(CancellationToken cancellationToken = default)
     {
         await _semaphore.WaitAsync(cancellationToken);
         using var scope = _serviceProvider.CreateScope();
@@ -72,6 +75,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
             await ProcessEventAsync(outboxEvent, dbContext, cancellationToken);
         }
         _semaphore.Release();
+        return (pendingEvents?.Count ?? 0) + (completedEvents?.Count ?? 0);
     }
 
     private async Task ProcessEventAsync(OutboxEvent outboxEvent, SocialMediaDbContext dbContext, CancellationToken cancellationToken)

@@ -53,8 +53,8 @@ public static class InfrastructureServiceRegistration
 
         // Background Event Processing
         services.AddScoped<IBackgroundEventProcessor, BackgroundEventProcessor>();
-        services.AddHostedService<EventProcessorBackgroundService>();
-
+        services.AddSingleton<EventProcessorBackgroundService>();
+        services.AddHostedService<EventProcessorBackgroundService>(provider => provider.GetRequiredService<EventProcessorBackgroundService>());
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

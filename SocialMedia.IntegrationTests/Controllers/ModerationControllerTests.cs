@@ -2,34 +2,6 @@ namespace SocialMedia.IntegrationTests;
 
 public class ModerationControllerTests(IntegrationTestWebApplicationFactory factory) : BaseControllerTests(factory)
 {
-    private async Task<string> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
-    {
-        var email = $"{username}@example.com";
-        var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
-        registerResponse.EnsureSuccessStatusCode();
-
-        if (isAdmin)
-        {
-            using (var scope = _factory.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-                if (user != null)
-                {
-                    user.Role = UserRole.Admin;
-                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
-                }
-            }
-        }
-
-        var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
-        loginResponse.EnsureSuccessStatusCode();
-        var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
-        return authResponse!.Token;
-    }
-
     [Fact]
     public async Task DeleteReportedContent_ShouldDeletePost_WhenThresholdMet()
     {

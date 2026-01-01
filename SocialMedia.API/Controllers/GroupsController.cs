@@ -46,7 +46,6 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPost("{groupId}/posts")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostDto createPostDto, [FromRoute] Guid groupId, CancellationToken cancellationToken)
     {
         createPostDto.GroupId = groupId;
@@ -56,6 +55,7 @@ public class GroupsController : ControllerBase
             return BadRequest("Failed to get user from auth token");
         }
         createPostDto.AuthorId = userId.Value;
+        createPostDto.CreatedBy = this.GetUserNames();
         var command = new CreatePostCommand(createPostDto);
         var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);

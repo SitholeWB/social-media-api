@@ -32,14 +32,14 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
 
         var comment = command.CreateCommentDto.ToEntity();
         var createdComment = await _commentRepository.AddAsync(comment, cancellationToken);
-
+        var createdBy = string.IsNullOrWhiteSpace(command.CreateCommentDto.CreatedBy) ? "Someone" : command.CreateCommentDto.CreatedBy;
         // Create Notification
         if (post.AuthorId != comment.AuthorId)
         {
             await _notificationRepository.AddAsync(new Notification
             {
                 UserId = post.AuthorId,
-                Message = $"Someone commented on your post",
+                Message = $"{createdBy} commented on your post",
                 Type = NotificationType.Comment,
                 RelatedId = post.Id,
                 IsRead = false,
