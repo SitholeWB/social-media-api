@@ -60,14 +60,14 @@ export default function CreatePollPage() {
 	const handleSave = async () => {
 		try {
 			await dispatch(createPoll(formData)).unwrap();
-			navigate('/polls');
+			navigate(`/groups/${stateGroupId}/polls`);
 		} catch (error) {
 			console.error('Failed to create poll', error);
 		}
 	};
 
 	const handleCancel = () => {
-		navigate('/polls');
+		navigate(`/groups/${stateGroupId}/polls`);
 	};
 
 	return (

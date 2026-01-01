@@ -45,11 +45,10 @@ export interface PagedResult<T> {
 }
 
 export const pollsService = {
-	getPolls: (pageNumber = 1, pageSize = 10, groupId?: string) => {
-		const url = new URL(`${window.location.origin}/api/v1.0/polls/active`);
+	getPolls: (groupId: string, pageNumber = 1, pageSize = 10) => {
+		const url = new URL(`${window.location.origin}/api/v1.0/groups/${groupId}/polls`);
 		url.searchParams.append('pageNumber', pageNumber.toString());
 		url.searchParams.append('pageSize', pageSize.toString());
-		if (groupId) url.searchParams.append('groupId', groupId);
 		return fetchJson<PagedResult<Poll>>(url.pathname + url.search);
 	},
 
@@ -57,7 +56,7 @@ export const pollsService = {
 		fetchJson<Poll>(`/api/v1.0/polls/${id}`),
 
 	createPoll: (command: CreatePollCommand) =>
-		fetchJson<Poll>('/api/v1.0/polls', {
+		fetchJson<Poll>(`/api/v1.0/groups/${command.groupId}/polls`, {
 			method: 'POST',
 			body: JSON.stringify(command),
 		}),

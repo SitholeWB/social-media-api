@@ -14,6 +14,7 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("pending")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetPendingReports([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var query = new GetPendingReportsQuery { PageNumber = pageNumber, PageSize = pageSize };

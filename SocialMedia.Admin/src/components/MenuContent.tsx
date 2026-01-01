@@ -17,7 +17,6 @@ const mainListItems = [
 	{ text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
 	{ text: 'Groups', icon: <GroupIcon />, path: '/groups' },
 	{ text: 'Users', icon: <PeopleRoundedIcon />, path: '/users' },
-	{ text: 'Polls', icon: <AssignmentRoundedIcon />, path: '/polls' },
 	{ text: 'Reports', icon: <ReportIcon />, path: '/reports' },
 ];
 

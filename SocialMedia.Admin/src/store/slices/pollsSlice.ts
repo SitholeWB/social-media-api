@@ -38,7 +38,7 @@ const initialState: PollsState = {
 export const fetchPolls = createAsyncThunk(
 	'polls/fetchPolls',
 	async ({ pageNumber = 1, pageSize = 10, groupId }: { pageNumber?: number; pageSize?: number; groupId?: string } = {}) => {
-		const response = await pollsService.getPolls(pageNumber, pageSize, groupId);
+		const response = await pollsService.getPolls(groupId ?? 'not-set', pageNumber, pageSize);
 		return response;
 	}
 );

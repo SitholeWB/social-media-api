@@ -11,6 +11,10 @@ public class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupCommand, boo
 
     public async Task<bool> Handle(DeleteGroupCommand command, CancellationToken cancellationToken)
     {
+        if (DefaultConstants.DEFAULT_GROUPS.Any(x => x.Id == command.GroupId))
+        {
+            return false;
+        }
         var group = await _groupRepository.GetByIdAsync(command.GroupId, cancellationToken);
         if (group == null)
         {

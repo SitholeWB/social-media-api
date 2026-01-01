@@ -14,6 +14,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroupCommand command, CancellationToken cancellationToken)
     {
         var userId = this.GetUserId();
@@ -27,6 +28,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPost("{groupId}/users/{userId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddUserToGroup(Guid groupId, Guid userId, CancellationToken cancellationToken)
     {
         var command = new AddUserToGroupCommand(groupId, userId);
@@ -35,6 +37,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpDelete("{groupId}/users/{userId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RemoveUserFromGroup(Guid groupId, Guid userId, CancellationToken cancellationToken)
     {
         var command = new RemoveUserFromGroupCommand(groupId, userId);
@@ -43,6 +46,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPost("{groupId}/posts")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostDto createPostDto, [FromRoute] Guid groupId, CancellationToken cancellationToken)
     {
         createPostDto.GroupId = groupId;
@@ -100,6 +104,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateGroup(Guid id, [FromBody] UpdateGroupCommand command, CancellationToken cancellationToken)
     {
         if (id != command.GroupId)
@@ -116,6 +121,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteGroup(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteGroupCommand(id);
@@ -128,6 +134,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPost("{groupId}/polls")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreatePoll(Guid groupId, [FromBody] CreatePollCommand command, CancellationToken cancellationToken)
     {
         var userId = this.GetUserId();

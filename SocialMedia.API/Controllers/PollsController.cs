@@ -13,13 +13,6 @@ public class PollsController : ControllerBase
         _dispatcher = dispatcher;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePollCommand command, CancellationToken cancellationToken)
-    {
-        var pollId = await _dispatcher.Send<CreatePollCommand, Guid>(command, cancellationToken);
-        return CreatedAtAction(nameof(Get), new { id = pollId }, pollId);
-    }
-
     [HttpPost("{id}/vote")]
     public async Task<IActionResult> Vote(Guid id, [FromBody] VoteOnPollCommand command, CancellationToken cancellationToken)
     {
@@ -65,6 +58,7 @@ public class PollsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdatePoll(Guid id, [FromBody] UpdatePollCommand command, CancellationToken cancellationToken)
     {
         if (id != command.PollId)
@@ -81,6 +75,7 @@ public class PollsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeletePoll(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeletePollCommand(id);

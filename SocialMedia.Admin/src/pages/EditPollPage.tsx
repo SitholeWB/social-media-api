@@ -5,10 +5,12 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import PageHeader from '../components/PageHeader';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { fetchPoll, updatePoll } from '../store/slices/pollsSlice';
 import { fetchGroups } from '../store/slices/groupsSlice';
@@ -73,7 +75,7 @@ export default function EditPollPage() {
 					command
 				})).unwrap();
 
-				navigate('/polls');
+				navigate(`/groups/${groupId}/polls`);
 			}
 		} catch (err: any) {
 			setError(err.message || 'Failed to update poll');
@@ -83,7 +85,7 @@ export default function EditPollPage() {
 	};
 
 	const handleCancel = () => {
-		navigate('/polls');
+		navigate(`/groups/${groupId}/polls`);
 	};
 
 	if (!pollId) {
