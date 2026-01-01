@@ -187,6 +187,44 @@ export default function PostsPage() {
 			)
 		},
 		{
+			field: 'media',
+			headerName: 'Media',
+			width: 150,
+			renderCell: (params: GridRenderCellParams<any>) => {
+				const media = params.value as any[];
+				if (!media || media.length === 0) return <Typography variant="caption" color="text.secondary">None</Typography>;
+
+				return (
+					<Stack direction="row" spacing={0.5} sx={{ py: 1 }}>
+						{media.slice(0, 3).map((m, i) => (
+							<Box
+								key={i}
+								sx={{
+									width: 32,
+									height: 32,
+									borderRadius: 0.5,
+									overflow: 'hidden',
+									border: '1px solid',
+									borderColor: 'divider'
+								}}
+							>
+								<img
+									src={m.url}
+									alt="media"
+									style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+								/>
+							</Box>
+						))}
+						{media.length > 3 && (
+							<Typography variant="caption" sx={{ alignSelf: 'center', ml: 0.5 }}>
+								+{media.length - 3}
+							</Typography>
+						)}
+					</Stack>
+				);
+			}
+		},
+		{
 			field: 'createdAt',
 			headerName: 'Created At',
 			width: 180,

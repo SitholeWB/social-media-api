@@ -77,6 +77,7 @@ export const createPost = createAsyncThunk<
 			content: command.content,
 			title: command.title,
 			groupId,
+			media: command.media,
 			createdAt: new Date().toISOString(),
 			createdBy: 'current-user',
 			updatedAt: new Date().toISOString(),
