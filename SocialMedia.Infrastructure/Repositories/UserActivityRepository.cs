@@ -29,12 +29,11 @@ public class UserActivityRepository : Repository<UserActivity>, IUserActivityRep
         {
             var options = new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
             };
             var serialized = JsonSerializer.Serialize(userActivity);
             await _cache.SetStringAsync(cacheKey, serialized, options, cancellationToken);
         }
-
         return userActivity;
     }
 }

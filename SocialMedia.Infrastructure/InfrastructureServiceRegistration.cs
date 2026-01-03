@@ -1,3 +1,5 @@
+using StackExchange.Redis;
+
 namespace SocialMedia.Infrastructure;
 
 public static class InfrastructureServiceRegistration
@@ -73,16 +75,36 @@ public static class InfrastructureServiceRegistration
 
         // Caching Configuration
         var cacheProvider = configuration["CacheSettings:Provider"];
+        // Register the lifecycle manager
+        services.AddSingleton<GarnetLifecycleService>();
+        services.AddHostedService(sp => sp.GetRequiredService<GarnetLifecycleService>());
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var garnet = sp.GetRequiredService<GarnetLifecycleService>();
+            return ConnectionMultiplexer.Connect($"127.0.0.1:{garnet.Port}");
+        });
+
+        // Register our "Lua-Free" Cache
+        services.AddSingleton<IDistributedCache>(sp =>
+        {
+            var redis = sp.GetRequiredService<IConnectionMultiplexer>();
+            // Use a unique instance name for each test run if needed
+            return new GarnetDistributedCache(redis, instanceName: "GarnetTest:");
+        });
+
         if (isTesting)
         {
             cacheProvider = "use memnory";
         }
+
+        /*
         if (string.Equals(cacheProvider, "Redis", StringComparison.OrdinalIgnoreCase))
         {
-            /* services.AddStackExchangeRedisCache(options =>
-             {
-                 options.Configuration = configuration["CacheSettings:ConnectionString"];
-             });*/
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = configuration["CacheSettings:ConnectionString"];
+            //});
         }
         else if (string.Equals(cacheProvider, "SqlServer", StringComparison.OrdinalIgnoreCase))
         {
@@ -97,7 +119,7 @@ public static class InfrastructureServiceRegistration
         {
             services.AddDistributedMemoryCache();
         }
-
+        */
         return services;
     }
 }
