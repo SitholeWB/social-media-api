@@ -33,7 +33,7 @@ public class EventProcessorBackgroundService : BackgroundService
             {
                 using var scope = _serviceProvider.CreateScope();
                 var eventProcessor = scope.ServiceProvider.GetRequiredService<IBackgroundEventProcessor>();
-                var rankService = scope.ServiceProvider.GetRequiredService<AutoScalingPostRankService>();
+                var rankService = scope.ServiceProvider.GetRequiredService<IPostRankService>();
                 var socialMediaReadDbContext = scope.ServiceProvider.GetRequiredService<SocialMediaReadDbContext>();
                 var socialMediaDbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
                 var postService = scope.ServiceProvider.GetRequiredService<IPostService>();

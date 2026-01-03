@@ -83,7 +83,8 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var garnet = sp.GetRequiredService<GarnetLifecycleService>();
-            return ConnectionMultiplexer.Connect($"127.0.0.1:{garnet.Port}");
+            garnet.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
+            return ConnectionMultiplexer.Connect($"127.0.0.1:{garnet.Port}", configure: x => new ConfigurationOptions { AbortOnConnectFail = false });
         });
 
         // Register our "Lua-Free" Cache

@@ -6,9 +6,14 @@ public class GarnetLifecycleService : IHostedService, IDisposable
 {
     private GarnetServer? _server;
     public int Port { get; private set; }
+    private bool _running = false;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        if (_running)
+        {
+            return Task.CompletedTask;
+        }
         Port = GetFreeTcpPort();
         // Define settings as an array of strings
         string[] args = [
@@ -21,7 +26,7 @@ public class GarnetLifecycleService : IHostedService, IDisposable
 
         _server = new GarnetServer(args);
         _server.Start();
-
+        _running = true;
         return Task.CompletedTask;
     }
 
