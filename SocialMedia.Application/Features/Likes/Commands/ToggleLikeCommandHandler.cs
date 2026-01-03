@@ -8,7 +8,6 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
     private readonly ICommentRepository _commentRepository;
     private readonly IDispatcher _dispatcher;
     private readonly IUserRepository _userRepository;
-    private readonly IPostVectorService _postVectorService;
 
     public ToggleLikeCommandHandler(
         ILikeRepository likeRepository,
@@ -16,8 +15,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         IPostRepository postRepository,
         ICommentRepository commentRepository,
         IDispatcher dispatcher,
-        IUserRepository userRepository,
-        IPostVectorService postVectorService)
+        IUserRepository userRepository)
     {
         _likeRepository = likeRepository;
         _notificationRepository = notificationRepository;
@@ -25,7 +23,6 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         _commentRepository = commentRepository;
         _dispatcher = dispatcher;
         _userRepository = userRepository;
-        _postVectorService = postVectorService;
     }
 
     public async Task<bool> Handle(ToggleLikeCommand request, CancellationToken cancellationToken)
@@ -88,16 +85,6 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
                     IsRead = false,
                     CreatedAt = DateTime.UtcNow
                 }, cancellationToken);
-            }
-
-            // Integration with Vector Service
-            if (request.PostId.HasValue)
-            {
-                await _postVectorService.RecordInteractionAsync(request.UserId.GetValueOrDefault(), request.PostId.Value, cancellationToken);
-            }
-            else if (comment != null)
-            {
-                await _postVectorService.RecordInteractionAsync(request.UserId.GetValueOrDefault(), comment.PostId, cancellationToken);
             }
         }
         else

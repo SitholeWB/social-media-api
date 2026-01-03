@@ -277,6 +277,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -321,7 +322,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Likes",
+                name: "Reactions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -335,14 +336,14 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Likes", x => x.Id);
+                    table.PrimaryKey("PK_Reactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Likes_Comments_CommentId",
+                        name: "FK_Reactions_Comments_CommentId",
                         column: x => x.CommentId,
                         principalTable: "Comments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Likes_Posts_PostId",
+                        name: "FK_Reactions_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "Id");
@@ -392,16 +393,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_CommentId",
-                table: "Likes",
-                column: "CommentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Likes_PostId",
-                table: "Likes",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
                 table: "Notifications",
                 column: "UserId");
@@ -426,6 +417,16 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "IX_Posts_GroupId",
                 table: "Posts",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reactions_CommentId",
+                table: "Reactions",
+                column: "CommentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reactions_PostId",
+                table: "Reactions",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_CommentId",
@@ -469,9 +470,6 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
                 name: "GroupMembers");
 
             migrationBuilder.DropTable(
-                name: "Likes");
-
-            migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
@@ -479,6 +477,9 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
             migrationBuilder.DropTable(
                 name: "PollVoteRecords");
+
+            migrationBuilder.DropTable(
+                name: "Reactions");
 
             migrationBuilder.DropTable(
                 name: "Reports");

@@ -37,7 +37,6 @@ public class SocialMediaReadDbContext : DbContext
             entity.HasIndex(e => e.GroupId);
             entity.ToTable("PostReads"); // Separate table or view usually
 
-            entity.OwnsOne(p => p.Stats, b => b.ToJson());
             entity.OwnsMany(p => p.Reactions, b => b.ToJson());
             entity.OwnsMany(p => p.AdminTags, b => b.ToJson());
             entity.OwnsMany(p => p.Tags, b => b.ToJson());
@@ -50,6 +49,21 @@ public class SocialMediaReadDbContext : DbContext
                 b.OwnsMany(c => c.AdminTags);
                 b.OwnsMany(c => c.Media);
             });
+
+            // Index for ranking queries
+            entity.HasIndex(p => new { p.TrendingScore, p.CreatedAt })
+                  .IsDescending(true, true)
+                  .HasDatabaseName("IX_Posts_RankScore_CreatedAt");
+
+            entity.HasIndex(p => p.CreatedAt)
+                  .IsDescending()
+                  .HasDatabaseName("IX_Posts_CreatedAt");
+
+            entity.HasIndex(p => p.ReactionCount)
+                  .HasDatabaseName("IX_Posts_ReactionCount");
+
+            entity.HasIndex(p => p.CommentCount)
+                  .HasDatabaseName("IX_Posts_CommentCount");
         });
 
         modelBuilder.Entity<CommentReadModel>(entity =>

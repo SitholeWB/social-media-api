@@ -6,20 +6,17 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
     private readonly IDispatcher _dispatcher;
-    private readonly IPostVectorService _postVectorService;
 
     public CreatePostCommandHandler(
         IPostRepository postRepository,
         IGroupRepository groupRepository,
         IGroupMemberRepository groupMemberRepository,
-        IDispatcher dispatcher,
-        IPostVectorService postVectorService)
+        IDispatcher dispatcher)
     {
         _postRepository = postRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
         _dispatcher = dispatcher;
-        _postVectorService = postVectorService;
     }
 
     public async Task<Guid> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -44,9 +41,6 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
         var postWithFile = await _postRepository.GetByIdAsync(createdPost.Id, cancellationToken);
 
         await _dispatcher.Publish(new PostCreatedEvent(postWithFile ?? createdPost), cancellationToken);
-
-        // Integration with Vector Service
-        await _postVectorService.UpsertPostEmbeddingAsync(createdPost.Id, createdPost.Content, cancellationToken);
 
         return createdPost.Id;
     }

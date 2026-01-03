@@ -15,7 +15,10 @@ public class PostReadModel
     public ICollection<TagDto> Tags { get; set; } = new List<TagDto>();
 
     // Stats Stats
-    public PostStatsDto Stats { get; set; } = new();
+    public int ReactionCount { get; set; }
+
+    public int CommentCount { get; set; }
+    public double TrendingScore { get; set; }
 
     // Enriched Data
     public ICollection<ReactionReadDto> Reactions { get; set; } = new List<ReactionReadDto>();
@@ -27,8 +30,5 @@ public class PostReadModel
 
     public string? GroupName { get; set; }
 
-    public void UpdateTrendingScore()
-    {
-        Stats.TrendingScore = Stats.LikeCount + (Stats.CommentCount * 2);
-    }
+    public DateTime RankUpdatedAt { get; set; }
 }

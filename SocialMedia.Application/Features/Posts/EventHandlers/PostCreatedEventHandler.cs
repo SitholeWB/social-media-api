@@ -5,13 +5,16 @@ public class PostCreatedEventHandler :
 {
     private readonly IPostReadRepository _readRepository;
     private readonly IUserRepository _userRepository; // To get Author Name
+    private readonly IPostVectorService _postVectorService;
 
     public PostCreatedEventHandler(
         IPostReadRepository readRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IPostVectorService postVectorService)
     {
         _readRepository = readRepository;
         _userRepository = userRepository;
+        _postVectorService = postVectorService;
     }
 
     public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
@@ -41,16 +44,14 @@ public class PostCreatedEventHandler :
             Reactions = new List<ReactionReadDto>(),
             TopComments = new List<CommentReadDto>(),
             Tags = notification.Post.Tags,
-            Stats = new PostStatsDto
-            {
-                LikeCount = 0,
-                CommentCount = 0,
-                TrendingScore = 0
-            },
+            ReactionCount = 0,
+            CommentCount = 0,
+            TrendingScore = 0,
             GroupId = notification.Post.GroupId,
             GroupName = notification.Post.Group?.Name
         };
 
         await _readRepository.AddAsync(readModel, cancellationToken);
+        await _postVectorService.UpsertPostEmbeddingAsync(notification.Post.Id, $"{notification.Post.Content}", cancellationToken);
     }
 }

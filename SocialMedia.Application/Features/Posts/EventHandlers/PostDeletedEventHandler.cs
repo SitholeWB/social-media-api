@@ -3,15 +3,11 @@ namespace SocialMedia.Application;
 public class PostDeletedEventHandler :
     IEventHandler<PostDeletedEvent>
 {
-    private readonly IPostReadRepository _readRepository;
-    private readonly ICommentReadRepository _commentReadRepository;
+    private readonly IPostService _postService;
 
-    public PostDeletedEventHandler(
-        IPostReadRepository readRepository,
-        ICommentReadRepository commentReadRepository)
+    public PostDeletedEventHandler(IPostService postService)
     {
-        _readRepository = readRepository;
-        _commentReadRepository = commentReadRepository;
+        _postService = postService;
     }
 
     public async Task Handle(PostDeletedEvent notification, CancellationToken cancellationToken)
@@ -21,19 +17,6 @@ public class PostDeletedEventHandler :
             throw new ArgumentNullException(nameof(notification.Post));
         }
 
-        var post = await _readRepository.GetByIdAsync(notification.Post.Id, cancellationToken);
-        if (post != null)
-        {
-            await _readRepository.DeleteByIdAsync(post.Id, cancellationToken);
-            var comments = new List<CommentReadModel>();
-            do
-            {
-                comments = await _commentReadRepository.GetByPostIdAsync(post.Id, 1, 100, cancellationToken);
-                foreach (var comment in comments)
-                {
-                    await _commentReadRepository.DeleteByIdAsync(comment.Id, cancellationToken);
-                }
-            } while (comments.Count > 0);
-        }
+        await _postService.DeletePostAsync(notification.Post.Id, cancellationToken);
     }
 }

@@ -44,6 +44,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPostReadRepository, PostReadRepository>();
         services.AddScoped<ICommentReadRepository, CommentReadRepository>();
 
+        services.AddScoped<IPostRankService, AutoScalingPostRankService>();
         services.AddScoped<IIdentityService, IdentityService>();
 
         // Embedding Generator for Semantic Search

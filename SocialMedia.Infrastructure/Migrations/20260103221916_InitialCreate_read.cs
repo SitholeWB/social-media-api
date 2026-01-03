@@ -17,6 +17,7 @@ namespace SocialMedia.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -47,12 +48,15 @@ namespace SocialMedia.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     StatusFullScreen = table.Column<bool>(type: "bit", nullable: false),
+                    ReactionCount = table.Column<int>(type: "int", nullable: false),
+                    CommentCount = table.Column<int>(type: "int", nullable: false),
+                    TrendingScore = table.Column<double>(type: "float", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RankUpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AdminTags = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Media = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Reactions = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Stats = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tags = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TopComments = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -70,6 +74,28 @@ namespace SocialMedia.Infrastructure.Migrations
                 name: "IX_PostReads_GroupId",
                 table: "PostReads",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_CommentCount",
+                table: "PostReads",
+                column: "CommentCount");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_CreatedAt",
+                table: "PostReads",
+                column: "CreatedAt",
+                descending: new bool[0]);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_RankScore_CreatedAt",
+                table: "PostReads",
+                columns: new[] { "TrendingScore", "CreatedAt" },
+                descending: new bool[0]);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_ReactionCount",
+                table: "PostReads",
+                column: "ReactionCount");
         }
 
         /// <inheritdoc />

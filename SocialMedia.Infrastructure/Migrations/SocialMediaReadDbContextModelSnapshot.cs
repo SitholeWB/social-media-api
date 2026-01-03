@@ -78,6 +78,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CommentCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -94,6 +97,12 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTime>("RankUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReactionCount")
+                        .HasColumnType("int");
+
                     b.Property<bool>("StatusFullScreen")
                         .HasColumnType("bit");
 
@@ -101,9 +110,26 @@ namespace SocialMedia.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("TrendingScore")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentCount")
+                        .HasDatabaseName("IX_Posts_CommentCount");
+
+                    b.HasIndex("CreatedAt")
+                        .IsDescending()
+                        .HasDatabaseName("IX_Posts_CreatedAt");
+
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("ReactionCount")
+                        .HasDatabaseName("IX_Posts_ReactionCount");
+
+                    b.HasIndex("TrendingScore", "CreatedAt")
+                        .IsDescending()
+                        .HasDatabaseName("IX_Posts_RankScore_CreatedAt");
 
                     b.ToTable("PostReads", (string)null);
                 });
@@ -515,38 +541,11 @@ namespace SocialMedia.Infrastructure.Migrations
                                 .HasForeignKey("PostReadModelId");
                         });
 
-                    b.OwnsOne("SocialMedia.Domain.PostStatsDto", "Stats", b1 =>
-                        {
-                            b1.Property<Guid>("PostReadModelId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("CommentCount")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("LikeCount")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("TrendingScore")
-                                .HasColumnType("int");
-
-                            b1.HasKey("PostReadModelId");
-
-                            b1.ToTable("PostReads");
-
-                            b1.ToJson("Stats");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PostReadModelId");
-                        });
-
                     b.Navigation("AdminTags");
 
                     b.Navigation("Media");
 
                     b.Navigation("Reactions");
-
-                    b.Navigation("Stats")
-                        .IsRequired();
 
                     b.Navigation("Tags");
 

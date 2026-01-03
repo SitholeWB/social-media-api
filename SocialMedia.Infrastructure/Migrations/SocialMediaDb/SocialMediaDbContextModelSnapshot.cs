@@ -191,7 +191,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Notification", b =>

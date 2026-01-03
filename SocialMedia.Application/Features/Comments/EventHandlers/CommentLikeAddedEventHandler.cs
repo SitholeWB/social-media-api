@@ -5,13 +5,16 @@ public class CommentLikeAddedEventHandler :
 {
     private readonly IPostReadRepository _readRepository;
     private readonly ICommentReadRepository _commentReadRepository;
+    private readonly IPostRankService _postRankService;
 
     public CommentLikeAddedEventHandler(
         IPostReadRepository readRepository,
-        ICommentReadRepository commentReadRepository)
+        ICommentReadRepository commentReadRepository,
+        IPostRankService postRankService)
     {
         _readRepository = readRepository;
         _commentReadRepository = commentReadRepository;
+        _postRankService = postRankService;
     }
 
     public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
@@ -71,8 +74,8 @@ public class CommentLikeAddedEventHandler :
                     {
                         topComment.LikeCount = comment.Stats.LikeCount;
                         topComment.Reactions = comment.Reactions;
-                        post.UpdateTrendingScore();
                         await _readRepository.UpdateAsync(post, cancellationToken);
+                        await _postRankService.UpdatePostRankAsync(post.Id, cancellationToken);
                     }
                 }
             }

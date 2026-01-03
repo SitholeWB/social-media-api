@@ -6,17 +6,20 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
     private readonly IGroupRepository _groupRepository;
     private readonly IGroupMemberRepository _groupMemberRepository;
     private readonly IUserActivityRepository _userActivityRepository;
+    private readonly IPostRankService _postRankService;
 
     public GetPostsQueryHandler(
         IPostReadRepository readRepository,
         IGroupRepository groupRepository,
         IGroupMemberRepository groupMemberRepository,
-        IUserActivityRepository userActivityRepository)
+        IUserActivityRepository userActivityRepository,
+        IPostRankService postRankService)
     {
         _readRepository = readRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
         _userActivityRepository = userActivityRepository;
+        _postRankService = postRankService;
     }
 
     public async Task<PagedResult<PostDto>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
@@ -36,9 +39,7 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             }
         }
 
-        var posts = request.SortBy == PostSortBy.Trending
-            ? await _readRepository.GetTrendingAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken)
-            : await _readRepository.GetLatestAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken);
+        var posts = await _postRankService.GetRankedPostsAsync(request.GroupId, request.PageNumber, request.PageSize, cancellationToken);
 
         UserActivity? userActivity = null;
         if (request.UserId.HasValue)
@@ -55,8 +56,8 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             AuthorName = p.AuthorName,
             CreatedAt = p.CreatedAt,
             Media = p.Media,
-            LikeCount = p.Stats.LikeCount,
-            CommentCount = p.Stats.CommentCount,
+            LikeCount = p.ReactionCount,
+            CommentCount = p.CommentCount,
             UserReaction = userActivity?.Reactions.FirstOrDefault(r => r.EntityId == p.Id && r.EntityType == "Post")?.Emoji,
             AdminTags = p.AdminTags,
             Tags = p.Tags,

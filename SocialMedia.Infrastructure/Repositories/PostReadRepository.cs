@@ -2,103 +2,48 @@ namespace SocialMedia.Infrastructure;
 
 public class PostReadRepository : IPostReadRepository
 {
-    private readonly SocialMediaReadDbContext _context;
+    private readonly SocialMediaReadDbContext _readDbContext;
+    private readonly SocialMediaDbContext _writeDbContext;
+    private readonly ILogger<PostReadRepository> _logger;
 
-    public PostReadRepository(SocialMediaReadDbContext context)
+    public PostReadRepository(SocialMediaReadDbContext readDbContext, ILogger<PostReadRepository> logger, SocialMediaDbContext writeDbContext)
     {
-        _context = context;
+        _readDbContext = readDbContext;
+        _logger = logger;
+        _writeDbContext = writeDbContext;
     }
 
     public async Task AddAsync(PostReadModel post, CancellationToken cancellationToken = default)
     {
-        await _context.Posts.AddAsync(post, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _readDbContext.Posts.AddAsync(post, cancellationToken);
+        await _readDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(PostReadModel post, CancellationToken cancellationToken = default)
     {
-        _context.Posts.Update(post);
-        await _context.SaveChangesAsync(cancellationToken);
+        _readDbContext.Posts.Update(post);
+        await _readDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<PostReadModel?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Posts.FindAsync(new object[] { id }, cancellationToken);
+        return await _readDbContext.Posts.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var post = await _context.Posts.FindAsync(new object[] { id }, cancellationToken);
+        var post = await _readDbContext.Posts.FindAsync(new object[] { id }, cancellationToken);
         if (post is null)
         {
             return false;
         }
-        _context.Posts.Remove(post);
-        await _context.SaveChangesAsync(cancellationToken);
+        _readDbContext.Posts.Remove(post);
+        await _readDbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<List<PostReadModel>> GetTrendingAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<long> GetTotalCountAsync(Guid groupId, CancellationToken token)
     {
-        var query = _context.Posts.Where(p => p.GroupId == groupId);
-        return await query
-            .OrderByDescending(p => p.Stats.TrendingScore)
-            .ThenByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<List<PostReadModel>> GetLatestAsync(Guid groupId, int page, int pageSize, CancellationToken cancellationToken = default)
-    {
-        var query = _context.Posts.Where(p => p.GroupId == groupId);
-        return await query
-            .OrderByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<long> GetTotalCountAsync(Guid groupId, CancellationToken cancellationToken = default)
-    {
-        var query = _context.Posts.Where(p => p.GroupId == groupId);
-        return await query.LongCountAsync(cancellationToken);
-    }
-
-    public async Task<List<PostReadModel>> GetGlobalTrendingAsync(int page, int pageSize, int daysBack, CancellationToken cancellationToken = default)
-    {
-        var cutoffDate = DateTimeOffset.UtcNow.AddDays(-daysBack);
-        return await _context.Posts
-            .Where(p => p.CreatedAt >= cutoffDate)
-            .OrderByDescending(p => p.Stats.TrendingScore)
-            .ThenByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<List<PostReadModel>> GetMostActiveAsync(int page, int pageSize, CancellationToken cancellationToken = default)
-    {
-        return await _context.Posts
-            .OrderByDescending(p => p.Stats.CommentCount)
-            .ThenByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<List<PostReadModel>> GetMostAttractiveAsync(int page, int pageSize, CancellationToken cancellationToken = default)
-    {
-        return await _context.Posts
-            .OrderByDescending(p => p.Stats.LikeCount)
-            .ThenByDescending(p => p.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<long> GetGlobalTotalCountAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Posts.LongCountAsync(cancellationToken);
+        return await _readDbContext.Posts.Where(x => x.GroupId == groupId).LongCountAsync(token);
     }
 }

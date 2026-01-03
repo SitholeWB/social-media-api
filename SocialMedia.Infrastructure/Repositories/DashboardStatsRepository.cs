@@ -20,8 +20,8 @@ public class DashboardStatsRepository(SocialMediaDbContext context) : IDashboard
             .Where(c => c.CreatedAt >= startDate && c.CreatedAt <= endDate)
             .CountAsync(cancellationToken);
 
-        var totalReactions = await context.Likes.CountAsync(cancellationToken);
-        var newReactions = await context.Likes
+        var totalReactions = await context.Reactions.CountAsync(cancellationToken);
+        var newReactions = await context.Reactions
             .Where(l => l.CreatedAt >= startDate && l.CreatedAt <= endDate)
             .CountAsync(cancellationToken);
 

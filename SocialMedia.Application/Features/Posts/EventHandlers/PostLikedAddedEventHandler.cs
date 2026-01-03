@@ -4,11 +4,13 @@ public class PostLikedAddedEventHandler :
     IEventHandler<PostLikeAddedEvent>
 {
     private readonly IPostReadRepository _readRepository;
+    private readonly IPostRankService _postRankService;
 
     public PostLikedAddedEventHandler(
-        IPostReadRepository readRepository)
+        IPostReadRepository readRepository, IPostRankService postRankService)
     {
         _readRepository = readRepository;
+        _postRankService = postRankService;
     }
 
     public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
@@ -29,7 +31,7 @@ public class PostLikedAddedEventHandler :
                     if (notification.ToggleLikeType == ToggleLikeType.Removed)
                     {
                         reaction.Count--;
-                        post.Stats.LikeCount--;
+                        post.ReactionCount--;
                     }
                     else if (notification.ToggleLikeType == ToggleLikeType.Updated)
                     {
@@ -44,7 +46,7 @@ public class PostLikedAddedEventHandler :
                     else if (notification.ToggleLikeType == ToggleLikeType.Added)
                     {
                         reaction.Count++;
-                        post.Stats.LikeCount++;
+                        post.ReactionCount++;
                     }
                 }
                 else
@@ -54,11 +56,11 @@ public class PostLikedAddedEventHandler :
                         Emoji = notification.Like.Emoji,
                         Count = 1
                     });
-                    post.Stats.LikeCount++;
+                    post.ReactionCount++;
                 }
                 post.Reactions = post.Reactions.Where(r => r.Count > 0).ToList();
-                post.UpdateTrendingScore();
                 await _readRepository.UpdateAsync(post, cancellationToken);
+                await _postRankService.UpdatePostRankAsync(post.Id, cancellationToken);
             }
         }
     }

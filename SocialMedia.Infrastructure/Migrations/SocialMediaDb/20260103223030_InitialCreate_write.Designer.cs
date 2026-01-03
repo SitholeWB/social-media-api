@@ -12,7 +12,7 @@ using SocialMedia.Infrastructure;
 namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 {
     [DbContext(typeof(SocialMediaDbContext))]
-    [Migration("20260101183657_InitialCreate_write")]
+    [Migration("20260103223030_InitialCreate_write")]
     partial class InitialCreate_write
     {
         /// <inheritdoc />
@@ -89,6 +89,10 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -190,7 +194,7 @@ namespace SocialMedia.Infrastructure.Migrations.SocialMediaDb
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Notification", b =>

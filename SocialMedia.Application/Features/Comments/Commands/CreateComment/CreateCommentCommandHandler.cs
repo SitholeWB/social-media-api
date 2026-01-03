@@ -6,20 +6,17 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
     private readonly IPostRepository _postRepository;
     private readonly INotificationRepository _notificationRepository;
     private readonly IDispatcher _dispatcher;
-    private readonly IPostVectorService _postVectorService;
 
     public CreateCommentCommandHandler(
         ICommentRepository commentRepository,
         IPostRepository postRepository,
         INotificationRepository notificationRepository,
-        IDispatcher dispatcher,
-        IPostVectorService postVectorService)
+        IDispatcher dispatcher)
     {
         _commentRepository = commentRepository;
         _postRepository = postRepository;
         _notificationRepository = notificationRepository;
         _dispatcher = dispatcher;
-        _postVectorService = postVectorService;
     }
 
     public async Task<Guid> Handle(CreateCommentCommand command, CancellationToken cancellationToken)
@@ -49,10 +46,6 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
 
         // Publish Event
         await _dispatcher.Publish(new CommentAddedEvent(createdComment), cancellationToken);
-
-        // Integration with Vector Service - Treat comment as an update to post context In a real
-        // scenario, we might want to concatenate or update the post embedding
-        await _postVectorService.UpsertPostEmbeddingAsync(post.Id, $"{post.Content} {createdComment.Content}", cancellationToken);
 
         return createdComment.Id;
     }

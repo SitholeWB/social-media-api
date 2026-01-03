@@ -6,15 +6,21 @@ public class CommentAddedEventHandler :
     private readonly IPostReadRepository _readRepository;
     private readonly ICommentReadRepository _commentReadRepository;
     private readonly IUserRepository _userRepository; // To get Author Name
+    private readonly IPostVectorService _postVectorService; // For vector integration
+    private readonly IPostRankService _postRankService; // For vector integration
 
     public CommentAddedEventHandler(
         IPostReadRepository readRepository,
         ICommentReadRepository commentReadRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IPostVectorService postVectorService,
+        IPostRankService postRankService)
     {
         _readRepository = readRepository;
         _commentReadRepository = commentReadRepository;
         _userRepository = userRepository;
+        _postVectorService = postVectorService;
+        _postRankService = postRankService;
     }
 
     public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
@@ -68,7 +74,7 @@ public class CommentAddedEventHandler :
 
             await _commentReadRepository.AddAsync(commentReadModel, cancellationToken);
 
-            post.Stats.CommentCount++;
+            post.CommentCount++;
 
             // Add to TopComments (keep max 30)
             post.TopComments.Add(commentDto);
@@ -80,8 +86,12 @@ public class CommentAddedEventHandler :
                 post.TopComments.Remove(oldest);
             }
 
-            post.UpdateTrendingScore();
             await _readRepository.UpdateAsync(post, cancellationToken);
+            await _postRankService.UpdatePostRankAsync(post.Id, cancellationToken);
+
+            // Integration with Vector Service - Treat comment as an update to post context In a
+            // real scenario, we might want to concatenate or update the post embedding
+            await _postVectorService.UpsertPostEmbeddingAsync(post.Id, $"{post.Content} {notification.Comment.Content}", cancellationToken);
         }
     }
 }
