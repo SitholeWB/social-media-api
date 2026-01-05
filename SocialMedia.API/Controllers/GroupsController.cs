@@ -56,6 +56,7 @@ public class GroupsController : ControllerBase
         }
         createPostDto.AuthorId = userId.Value;
         createPostDto.CreatedBy = this.GetUserNames();
+        createPostDto.Title = this.GetAppName();
         var command = new CreatePostCommand(createPostDto);
         var postId = await _dispatcher.Send<CreatePostCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);

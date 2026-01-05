@@ -23,6 +23,7 @@ public static class CommentMapper
         return new Comment
         {
             Content = dto.Content,
+            Title = dto.Title ?? string.Empty,
             PostId = dto.PostId,
             AuthorId = dto.AuthorId,
             CreatedBy = dto.CreatedBy,

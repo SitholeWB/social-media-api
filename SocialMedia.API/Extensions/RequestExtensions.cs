@@ -14,4 +14,9 @@ public static class RequestExtensions
     {
         return request?.User?.FindFirstValue(ClaimTypes.Name);
     }
+
+    public static string? GetAppName(this ControllerBase request)
+    {
+        return request?.User?.FindFirstValue(ClaimTypes.Actor);
+    }
 }

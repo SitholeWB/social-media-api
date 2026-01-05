@@ -136,14 +136,26 @@ public class IdentityService : IIdentityService
         var appName = _configuration.GetValue<string>("Name") ?? "unknown";
         var secretKey = jwtSettings["Secret"] ?? "SuperSecretKey12345678901234567890"; // Fallback for dev
         var key = Encoding.ASCII.GetBytes(secretKey);
-
+        var fullNames = user.Username;
+        if (!string.IsNullOrEmpty(user.Names) && !string.IsNullOrEmpty(user.Surname))
+        {
+            fullNames = $"{user.Names} {user.Surname}";
+        }
+        else if (!string.IsNullOrEmpty(user.Names))
+        {
+            fullNames = user.Names;
+        }
+        else if (!string.IsNullOrEmpty(user.Surname))
+        {
+            fullNames = user.Surname;
+        }
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, $"{user.Names} {user.Surname}"),
+                new Claim(ClaimTypes.Name, fullNames),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
                 new Claim(ClaimTypes.Actor, appName),
             }),

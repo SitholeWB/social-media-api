@@ -18,6 +18,7 @@ public class CommentsController : ControllerBase
     {
         createCommentDto.CreatedBy = this.GetUserNames();
         createCommentDto.AuthorId = this.GetUserId() ?? createCommentDto.AuthorId;
+        createCommentDto.Title = this.GetAppName();
         var command = new CreateCommentCommand(createCommentDto);
         var commentId = await _dispatcher.Send<CreateCommentCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, commentId);
