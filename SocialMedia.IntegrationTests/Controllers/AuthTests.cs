@@ -117,4 +117,25 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         // test, we'd need to mock IIdentityService.
         Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.InternalServerError);
     }
+
+    [Fact]
+    public async Task ForgotPassword_ShouldReturnOk_WhenUserExists()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        await RegisterAndLoginAsync($"forgot_{uniqueId}", "somePassword");
+
+        var forgotPwdRequest = new ForgotPasswordRequest
+        {
+            Email = $"forgot_{uniqueId}" // Assuming our handler finds by username too
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/forgot-password", forgotPwdRequest, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
+        Assert.True(result);
+    }
 }

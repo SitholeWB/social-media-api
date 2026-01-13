@@ -7,8 +7,8 @@ public class ModerationControllerTests(IntegrationTestWebApplicationFactory fact
     {
         // 1. Setup Users
         var uniqueId = Guid.NewGuid().ToString("N");
-        var adminToken = await RegisterAndLoginAsync($"admin_mod_{uniqueId}", "password123", true);
-        var userToken = await RegisterAndLoginAsync($"user_mod_{uniqueId}", "password123");
+        var (adminToken, _) = await RegisterAndLoginAsync($"admin_mod_{uniqueId}", "password123", true);
+        var (userToken, _) = await RegisterAndLoginAsync($"user_mod_{uniqueId}", "password123");
 
         // 2. Create Post as User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
@@ -51,8 +51,8 @@ public class ModerationControllerTests(IntegrationTestWebApplicationFactory fact
     {
         // Arrange
         var uniqueId = Guid.NewGuid().ToString("N");
-        var userToken = await RegisterAndLoginAsync($"user_mod_fail_{uniqueId}", "password123");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+        var (token, _) = await RegisterAndLoginAsync($"user_mod_fail_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
         var response = await _client.DeleteAsync($"/api/v1/moderation/reported-content?minReports=1", TestContext.Current.CancellationToken);

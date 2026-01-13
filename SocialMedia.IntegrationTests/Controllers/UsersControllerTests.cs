@@ -118,4 +118,60 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+
+    [Fact]
+    public async Task UpdateUser_ShouldReturnOk_WhenRequestIsValid()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (token, userId) = await RegisterAndLoginAsync($"update_{uniqueId}", "password123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var updateRequest = new UpdateUserRequest
+        {
+            FirstName = "UpdatedFirstName",
+            LastName = "UpdatedLastName",
+            Email = $"updated_{uniqueId}@example.com",
+            Avatar = "new_avatar_url",
+            Username = $"updated_user_{uniqueId}",
+            Surname = "UpdatedSurname"
+        };
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/api/v1/users/{userId}", updateRequest, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task ChangePassword_ShouldReturnOk_WhenOldPasswordIsCorrect()
+    {
+        // Arrange
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var (token, userId) = await RegisterAndLoginAsync($"pwd_{uniqueId}", "oldPassword123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var changePwdRequest = new ChangePasswordRequest
+        {
+            OldPassword = "oldPassword123",
+            NewPassword = "newPassword123",
+            ConfirmPassword = "newPassword123"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync($"/api/v1/users/{userId}/change-password", changePwdRequest, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
+        Assert.True(result);
+
+        // Verify login with new password
+        var loginRequest = new LoginRequest($"pwd_{uniqueId}", "newPassword123");
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        loginResponse.EnsureSuccessStatusCode();
+    }
 }

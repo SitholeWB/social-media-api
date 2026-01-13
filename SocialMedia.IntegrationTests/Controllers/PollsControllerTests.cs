@@ -6,7 +6,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Runs once before any tests in this class
         var uniqueId = Guid.NewGuid().ToString("N");
-        var token = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123", isAdmin: true);
+        var (token, _) = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123", isAdmin: true);
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
