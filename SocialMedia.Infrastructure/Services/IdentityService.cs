@@ -1,4 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Google.Apis.Auth;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace SocialMedia.Infrastructure;
 
@@ -167,14 +173,14 @@ public class IdentityService : IIdentityService
         return tokenHandler.WriteToken(token);
     }
 
-    private static string HashPassword(string password, Guid userId)
+    public string HashPassword(string password, Guid userId)
     {
         var list = userId.ToString().ToLower().ToList();
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{password}_{string.Join("", list)}"));
         return Convert.ToBase64String(bytes);
     }
 
-    private static bool VerifyPassword(string password, string storedHash, Guid userId)
+    public bool VerifyPassword(string password, string storedHash, Guid userId)
     {
         var hash = HashPassword(password, userId);
         return hash == storedHash;

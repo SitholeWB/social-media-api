@@ -26,6 +26,7 @@ public class SocialMediaDbContext : DbContext
     public DbSet<OutboxEvent> OutboxEvents { get; set; }
     public DbSet<PollVoteRecord> PollVoteRecords { get; set; }
     public DbSet<UserActivity> UserActivities { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

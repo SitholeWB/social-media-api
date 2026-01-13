@@ -29,6 +29,22 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+    [HttpPut("{userId}")]
+    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateUserCommand(userId, request);
+        var result = await _dispatcher.Send<UpdateUserCommand, bool>(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("{userId}/change-password")]
+    public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ChangePasswordCommand(userId, request);
+        var result = await _dispatcher.Send<ChangePasswordCommand, bool>(command, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("reported")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetReportedUsers([FromQuery] int minReports = 5, CancellationToken cancellationToken = default)

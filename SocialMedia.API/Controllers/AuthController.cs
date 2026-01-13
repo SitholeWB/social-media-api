@@ -84,4 +84,13 @@ public class AuthController : ControllerBase
             return StatusCode(500, new { error = ex.Message, stack = ex.StackTrace });
         }
     }
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ForgotPasswordCommand(request);
+        var result = await _dispatcher.Send<ForgotPasswordCommand, bool>(command, cancellationToken);
+        return Ok(result);
+    }
 }

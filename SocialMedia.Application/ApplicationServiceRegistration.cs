@@ -39,6 +39,7 @@ public static class ApplicationServiceRegistration
         // Auth
         services.AddScoped<ICommandHandler<LoginCommand, AuthResponse>, LoginCommandHandler>();
         services.AddScoped<ICommandHandler<RegisterCommand, AuthResponse>, RegisterCommandHandler>();
+        services.AddScoped<ICommandHandler<ForgotPasswordCommand, bool>, ForgotPasswordCommandHandler>();
 
         // Register Event Handlers
         services.AddScoped<IEventHandler<PostCreatedEvent>, EmailNotificationHandler>();
@@ -64,12 +65,17 @@ public static class ApplicationServiceRegistration
 
         // Users
         services.AddScoped<ICommandHandler<BlockUserCommand, bool>, BlockUserCommandHandler>();
+        services.AddScoped<ICommandHandler<ChangePasswordCommand, bool>, ChangePasswordCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateUserCommand, bool>, UpdateUserCommandHandler>();
         services.AddScoped<ICommandHandler<AdminBlockUserCommand, bool>, AdminBlockUserCommandHandler>();
         services.AddScoped<IQueryHandler<GetReportedUsersQuery, List<ReportedUserDto>>, GetReportedUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, AuthResponse>, GetUserByIdQueryHandler>();
 
         // Moderation
         services.AddScoped<ICommandHandler<DeleteReportedContentCommand, int>, DeleteReportedContentCommandHandler>();
+
+        // Feedback
+        services.AddScoped<ICommandHandler<SubmitFeedbackCommand, bool>, SubmitFeedbackCommandHandler>();
 
         // polls
         services.AddScoped<ICommandHandler<DeletePollCommand, bool>, DeletePollCommandHandler>();

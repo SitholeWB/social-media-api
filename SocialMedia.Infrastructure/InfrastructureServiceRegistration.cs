@@ -46,6 +46,7 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<IPostRankService, AutoScalingPostRankService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<INotificationService, FakeNotificationService>();
 
         // Embedding Generator for Semantic Search
         services.AddSingleton<IEmbeddingGenerator, TensorFlowEmbeddingGenerator>();
