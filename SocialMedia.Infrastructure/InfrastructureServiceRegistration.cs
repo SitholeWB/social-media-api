@@ -77,8 +77,6 @@ public static class InfrastructureServiceRegistration
         if (!isTesting)
         {
             // Caching Configuration
-            var cacheProvider = configuration["CacheSettings:Provider"];
-            // Register the lifecycle manager
             services.AddSingleton<GarnetLifecycleService>();
             services.AddHostedService(sp => sp.GetRequiredService<GarnetLifecycleService>());
 

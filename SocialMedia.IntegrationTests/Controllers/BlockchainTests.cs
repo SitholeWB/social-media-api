@@ -27,7 +27,7 @@ public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : Bas
         var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
         var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-        var createCommand = new CreatePollCommand(null, default, groupId)
+        var createCommand = new CreatePollCommand(null, Guid.Empty, groupId)
         {
             Question = "Blockchain Test",
             Options = new List<string> { "A", "B" },
@@ -43,7 +43,7 @@ public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : Bas
         var optionId = poll.Options[0].Id;
 
         // Vote
-        var voteCommand = new VoteOnPollCommand(default, default, default)
+        var voteCommand = new VoteOnPollCommand(Guid.Empty, Guid.Empty, Guid.Empty)
         {
             PollId = pollId,
             PollOptionId = optionId,
@@ -63,6 +63,6 @@ public class BlockchainTests(IntegrationTestWebApplicationFactory factory) : Bas
 
     private class VerificationResult
     {
-        public bool IsValid { get; set; }
+        public bool IsValid { get; set; } = false;
     }
 }

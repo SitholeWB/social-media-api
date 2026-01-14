@@ -111,7 +111,6 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
     public async Task UpdateComment_ShouldReturnNotFound_WhenCommentDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
         var commentId = Guid.NewGuid();
 
         // Act

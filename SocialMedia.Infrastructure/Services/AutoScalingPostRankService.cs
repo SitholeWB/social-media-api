@@ -471,10 +471,10 @@ public class AutoScalingPostRankService : IPostRankService
         if (firstReaction != default && firstComment != default)
             return firstReaction < firstComment ? firstReaction : firstComment;
 
-        return firstReaction == default ? firstReaction : firstReaction;
+        return firstReaction == default ? firstComment : firstReaction;
     }
 
-    private string DetermineGlobalActivityLevel(int dailyPosts, int weeklyUsers)
+    public static string DetermineGlobalActivityLevel(int dailyPosts, int weeklyUsers)
     {
         if (dailyPosts < 10) return "Quiet";
         if (dailyPosts < 50) return "Moderate";

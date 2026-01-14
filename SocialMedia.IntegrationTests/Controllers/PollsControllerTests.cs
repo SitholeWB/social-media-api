@@ -21,7 +21,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
-            var command = new CreatePollCommand(null, default, groupId)
+            var command = new CreatePollCommand(null, Guid.Empty, groupId)
             {
                 Question = "What is your favorite color?",
                 Options = new List<string> { "Red", "Blue", "Green" },
@@ -61,7 +61,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
-            var createCommand = new CreatePollCommand(null, default, groupId)
+            var createCommand = new CreatePollCommand(null, Guid.Empty, groupId)
             {
                 Question = "Vote Test",
                 Options = new List<string> { "Option 1", "Option 2" },
@@ -84,7 +84,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             Assert.NotNull(poll);
             var optionId = poll!.Options[0].Id;
 
-            var voteCommand = new VoteOnPollCommand(default, default, default)
+            var voteCommand = new VoteOnPollCommand(Guid.Empty, Guid.Empty, Guid.Empty)
             {
                 PollId = pollId,
                 PollOptionId = optionId,
@@ -121,7 +121,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
-            var createCommand = new CreatePollCommand(null, default, groupId)
+            var createCommand = new CreatePollCommand(null, Guid.Empty, groupId)
             {
                 Question = "Double Vote Test",
                 Options = new List<string> { "Yes", "No" },
@@ -137,7 +137,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             var optionId = poll!.Options[0].Id;
             var userId = Guid.NewGuid();
 
-            var voteCommand = new VoteOnPollCommand(default, default, default)
+            var voteCommand = new VoteOnPollCommand(Guid.Empty, Guid.Empty, Guid.Empty)
             {
                 PollId = pollId,
                 PollOptionId = optionId,
@@ -202,7 +202,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Arrange
-        var createCommand = new CreatePollCommand(null, default, groupId)
+        var createCommand = new CreatePollCommand(null, Guid.Empty, groupId)
         {
             Question = "Poll to Update",
             Options = new List<string> { "A", "B" },
@@ -230,7 +230,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Arrange
-        var createCommand = new CreatePollCommand(null, default, groupId)
+        var createCommand = new CreatePollCommand(null, Guid.Empty, groupId)
         {
             Question = "Poll to Delete",
             Options = new List<string> { "A", "B" },

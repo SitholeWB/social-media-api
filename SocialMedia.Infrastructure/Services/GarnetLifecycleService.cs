@@ -40,6 +40,7 @@ public class GarnetLifecycleService : IHostedService, IDisposable
     public void Dispose()
     {
         _server?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public static int GetFreeTcpPort()

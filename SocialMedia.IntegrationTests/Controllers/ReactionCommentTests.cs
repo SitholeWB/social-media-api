@@ -22,11 +22,6 @@ public class ReactionCommentTests(IntegrationTestWebApplicationFactory factory) 
         // Process pending events
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
-        // Assert: Check Post Read Model (TopComments)
-        var getPostResponse = await _client.GetAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts?pageNumber=1&pageSize=10", TestContext.Current.CancellationToken);
-        var postResult = await getPostResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>(TestContext.Current.CancellationToken);
-        var post = postResult.Items.FirstOrDefault(p => p.Id == postId);
-
         // Note: PostDto currently doesn't expose TopComments, we might need to update PostDto or
         // fetch comments separately But we can check the comments endpoint
 
