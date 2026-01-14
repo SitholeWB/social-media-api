@@ -50,6 +50,9 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
+        // Process pending events to update read model
+        await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
+
         // Create a comment
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment 2", AuthorId = Guid.NewGuid() };
         await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);

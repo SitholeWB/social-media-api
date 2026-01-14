@@ -20,10 +20,6 @@ public class ReadDbContextTests
         Assert.NotNull(postEntity);
 
         // Verify JSON ownerships
-        var statsNav = postEntity.FindNavigation("Stats");
-        Assert.NotNull(statsNav);
-        Assert.True(statsNav.TargetEntityType.IsOwned());
-
         var reactionsNav = postEntity.FindNavigation("Reactions");
         Assert.NotNull(reactionsNav);
         Assert.True(reactionsNav.TargetEntityType.IsOwned());

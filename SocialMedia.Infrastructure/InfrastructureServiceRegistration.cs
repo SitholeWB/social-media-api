@@ -74,31 +74,28 @@ public static class InfrastructureServiceRegistration
                 ValidateAudience = false
             };
         });
-
-        // Caching Configuration
-        var cacheProvider = configuration["CacheSettings:Provider"];
-        // Register the lifecycle manager
-        services.AddSingleton<GarnetLifecycleService>();
-        services.AddHostedService(sp => sp.GetRequiredService<GarnetLifecycleService>());
-
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        if (!isTesting)
         {
-            var garnet = sp.GetRequiredService<GarnetLifecycleService>();
-            garnet.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
-            return ConnectionMultiplexer.Connect($"127.0.0.1:{garnet.Port}", configure: x => new ConfigurationOptions { AbortOnConnectFail = false });
-        });
+            // Caching Configuration
+            var cacheProvider = configuration["CacheSettings:Provider"];
+            // Register the lifecycle manager
+            services.AddSingleton<GarnetLifecycleService>();
+            services.AddHostedService(sp => sp.GetRequiredService<GarnetLifecycleService>());
 
-        // Register our "Lua-Free" Cache
-        services.AddSingleton<IDistributedCache>(sp =>
-        {
-            var redis = sp.GetRequiredService<IConnectionMultiplexer>();
-            // Use a unique instance name for each test run if needed
-            return new GarnetDistributedCache(redis, instanceName: "GarnetTest:");
-        });
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var garnet = sp.GetRequiredService<GarnetLifecycleService>();
+                garnet.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
+                return ConnectionMultiplexer.Connect($"127.0.0.1:{garnet.Port}", configure: x => new ConfigurationOptions { AbortOnConnectFail = false });
+            });
 
-        if (isTesting)
-        {
-            cacheProvider = "use memnory";
+            // Register our "Lua-Free" Cache
+            services.AddSingleton<IDistributedCache>(sp =>
+            {
+                var redis = sp.GetRequiredService<IConnectionMultiplexer>();
+                // Use a unique instance name for each test run if needed
+                return new GarnetDistributedCache(redis, instanceName: "GarnetTest:");
+            });
         }
 
         /*

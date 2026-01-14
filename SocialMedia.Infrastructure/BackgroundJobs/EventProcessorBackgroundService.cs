@@ -59,6 +59,12 @@ public class EventProcessorBackgroundService : BackgroundService
                     }
                 }
             }
+            catch (ObjectDisposedException ex)
+            {
+                _run = false;
+                _logger.LogError(ex, "Error processing pending events");
+                // provider has been disposed
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing pending events");

@@ -70,7 +70,7 @@ public class CommentsController : ControllerBase
         }
 
         var reportId = await _dispatcher.Send<ReportCommentCommand, Guid>(command, cancellationToken);
-        return Ok(new { ReportId = reportId });
+        return Ok(reportId);
     }
 
     [AllowAnonymous]

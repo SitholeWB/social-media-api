@@ -47,6 +47,6 @@ public class PostsController : ControllerBase
         }
 
         var reportId = await _dispatcher.Send<ReportPostCommand, Guid>(command, cancellationToken);
-        return Ok(new { ReportId = reportId });
+        return Ok(reportId);
     }
 }

@@ -1,4 +1,7 @@
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Hosting;
 using Moq;
+using StackExchange.Redis;
 
 namespace SocialMedia.IntegrationTests
 {
@@ -54,6 +57,21 @@ namespace SocialMedia.IntegrationTests
                 {
                     services.Remove(vectorStoreDescriptor);
                 }
+
+                // Replace IConnectionMultiplexer with a mock to avoid Garnet dependency
+                var redisDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionMultiplexer));
+                if (redisDescriptor != null)
+                {
+                    services.Remove(redisDescriptor);
+                }
+
+                // Replace IDistributedCache with in-memory cache for tests
+                var cacheDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDistributedCache));
+                if (cacheDescriptor != null)
+                {
+                    services.Remove(cacheDescriptor);
+                }
+                services.AddDistributedMemoryCache();
             });
         }
     }
