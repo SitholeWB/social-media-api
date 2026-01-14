@@ -27,7 +27,7 @@ public class FilesController : ControllerBase
     [HttpPost]
     [Authorize]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> Upload(string shardKey, IFormFile file)
+    public async Task<IActionResult> Upload([FromRoute] string shardKey, [FromForm] IFormFile file, [FromQuery] string fileId = "", CancellationToken token = default)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
@@ -40,13 +40,17 @@ public class FilesController : ControllerBase
         Activity.Current?.AddTag("file.size", file.Length);
         Activity.Current?.AddTag("file.content_type", file.ContentType);
 
-        var (userFileId, url) = await _fileService.UploadFileAsync(shardKey, userId, file);
-
+        var (userFileId, url) = await _fileService.UploadFileAsync(shardKey, userId, file, fileId, token);
+        if (userFileId == null)
+        {
+            _logger.LogError("File upload failed for user {UserId} in shard {ShardKey}", userId, shardKey);
+            return BadRequest(url);
+        }
         return Ok(new { id = userFileId, url });
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Download(string shardKey, Guid id)
+    public async Task<IActionResult> Download([FromRoute] string shardKey, [FromRoute] Guid id, CancellationToken token)
     {
         // For download, we might verify auth inside service or here. If we want to support public
         // downloads (if logic allows), userId can be null. But the service logic enforced ownership
@@ -56,7 +60,7 @@ public class FilesController : ControllerBase
 
         try
         {
-            var (stream, contentType, fileName) = await _fileService.DownloadFileAsync(shardKey, userId, id);
+            var (stream, contentType, fileName) = await _fileService.DownloadFileAsync(shardKey, userId, id, token);
 
             Activity.Current?.AddTag("file.download_id", id.ToString());
 
@@ -74,7 +78,7 @@ public class FilesController : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize]
-    public async Task<IActionResult> Delete(string shardKey, Guid id)
+    public async Task<IActionResult> Delete([FromRoute] string shardKey, [FromRoute] Guid id, CancellationToken token)
     {
         var userId = GetUserId();
         if (string.IsNullOrEmpty(userId))
@@ -82,7 +86,7 @@ public class FilesController : ControllerBase
 
         try
         {
-            await _fileService.DeleteFileAsync(shardKey, userId, id);
+            await _fileService.DeleteFileAsync(shardKey, userId, id, token);
             return NoContent();
         }
         catch (UnauthorizedAccessException)
