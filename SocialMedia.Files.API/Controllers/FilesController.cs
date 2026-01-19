@@ -24,6 +24,31 @@ public class FilesController : ControllerBase
                ?? User.FindFirst("sub")?.Value;
     }
 
+    [HttpPut("{id}")]
+    [Authorize]
+    [DisableRequestSizeLimit]
+    public async Task<IActionResult> Update([FromRoute] string shardKey, [FromRoute] string id, [FromForm] IFormFile file, CancellationToken token = default)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("User ID not found in token");
+
+        Activity.Current?.AddTag("file.name", file.FileName);
+        Activity.Current?.AddTag("file.size", file.Length);
+        Activity.Current?.AddTag("file.content_type", file.ContentType);
+
+        var (userFileId, url) = await _fileService.UploadFileAsync(shardKey, userId, file, id, token);
+        if (userFileId == null)
+        {
+            _logger.LogError("File upload failed for user {UserId} in shard {ShardKey}", userId, shardKey);
+            return BadRequest(url);
+        }
+        return Ok(new { id = userFileId, url });
+    }
+
     [HttpPost]
     [Authorize]
     [DisableRequestSizeLimit]
