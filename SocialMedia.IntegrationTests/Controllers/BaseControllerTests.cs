@@ -5,6 +5,7 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
 {
     protected readonly IntegrationTestWebApplicationFactory _factory;
     protected readonly HttpClient _client;
+    public string _username = Guid.NewGuid().ToString();
 
     public BaseControllerTests(IntegrationTestWebApplicationFactory factory)
     {
@@ -21,12 +22,14 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
     {
         // Runs once before any tests in this class
         var uniqueId = Guid.NewGuid().ToString("N");
-        var (token, _) = await RegisterAndLoginAsync($"likeuser_post_{uniqueId}@test.com", "password123");
+        _username = $"likeuser_post_{uniqueId}@test.com";
+        var (token, _) = await RegisterAndLoginAsync(_username, "password123");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     protected async Task<(string Token, Guid UserId)> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
     {
+        _username = username;
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
         var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
