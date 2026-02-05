@@ -133,7 +133,6 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
             LastName = "UpdatedLastName",
             Email = $"updated_{uniqueId}@example.com",
             Avatar = "new_avatar_url",
-            Username = $"updated_user_{uniqueId}",
             Surname = "UpdatedSurname"
         };
 

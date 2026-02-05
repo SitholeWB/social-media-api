@@ -18,12 +18,11 @@ public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, bool>
         }
 
         user.Names = request.Request.FirstName;
-        user.Surname = !string.IsNullOrWhiteSpace(request.Request.LastName) 
-            ? request.Request.LastName 
+        user.Surname = !string.IsNullOrWhiteSpace(request.Request.LastName)
+            ? request.Request.LastName
             : request.Request.Surname;
         user.Email = request.Request.Email;
         user.Avatar = request.Request.Avatar;
-        user.Username = request.Request.Username;
 
         await _userRepository.UpdateAsync(user, cancellationToken);
         return true;

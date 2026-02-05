@@ -6,7 +6,8 @@ public class PostReadModel
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }
-    public string AuthorName { get; set; } = string.Empty; // Denormalized
+    public string AuthorName { get; set; } = string.Empty;
+    public string AuthorProfilePicUrl { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? LastModifiedAt { get; set; }
     public ICollection<MediaDto> Media { get; set; } = new List<MediaDto>();

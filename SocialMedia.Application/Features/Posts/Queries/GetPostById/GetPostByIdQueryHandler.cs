@@ -29,6 +29,7 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
             Content = p.Content,
             AuthorId = p.AuthorId,
             AuthorName = p.AuthorName,
+            AuthorProfilePicUrl = p.AuthorProfilePicUrl,
             CreatedAt = p.CreatedAt,
             Media = p.Media,
             LikeCount = p.ReactionCount,

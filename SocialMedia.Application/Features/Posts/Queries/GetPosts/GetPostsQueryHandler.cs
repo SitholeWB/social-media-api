@@ -54,6 +54,7 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
             Content = p.Content,
             AuthorId = p.AuthorId,
             AuthorName = p.AuthorName,
+            AuthorProfilePicUrl = p.AuthorProfilePicUrl,
             CreatedAt = p.CreatedAt,
             Media = p.Media,
             LikeCount = p.ReactionCount,

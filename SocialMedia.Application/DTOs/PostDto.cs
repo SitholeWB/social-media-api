@@ -8,6 +8,7 @@ public class PostDto
     public Guid GroupId { get; set; }
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; } = string.Empty;
+    public string AuthorProfilePicUrl { get; set; } = string.Empty;
     public ICollection<MediaDto> Media { get; set; } = [];
     public bool StatusFullScreen { get; set; } = false;
     public string? CreatedBy { get; set; } = string.Empty;

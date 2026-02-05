@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace SocialMedia.Application;
 
 public class PostCreatedEventHandler :
@@ -6,15 +8,18 @@ public class PostCreatedEventHandler :
     private readonly IPostReadRepository _readRepository;
     private readonly IUserRepository _userRepository; // To get Author Name
     private readonly IPostVectorService _postVectorService;
+    private readonly IConfiguration _configuration;
 
     public PostCreatedEventHandler(
         IPostReadRepository readRepository,
         IUserRepository userRepository,
-        IPostVectorService postVectorService)
+        IPostVectorService postVectorService,
+        IConfiguration configuration)
     {
         _readRepository = readRepository;
         _userRepository = userRepository;
         _postVectorService = postVectorService;
+        _configuration = configuration;
     }
 
     public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
@@ -29,6 +34,7 @@ public class PostCreatedEventHandler :
             var author = await _userRepository.GetByIdAsync(notification.Post.AuthorId, cancellationToken);
             createdBy = author?.GetFullName() ?? "Unknown";
         }
+        var profilesHost = _configuration.GetValue<string>("ProfilesHost") ?? "";
 
         var readModel = new PostReadModel
         {
@@ -37,6 +43,7 @@ public class PostCreatedEventHandler :
             Content = notification.Post.Content,
             AuthorId = notification.Post.AuthorId,
             AuthorName = createdBy,
+            AuthorProfilePicUrl = string.IsNullOrWhiteSpace(profilesHost) ? "" : $"{profilesHost}/api/db1/files/{notification.Post.AuthorId}",
             CreatedAt = notification.Post.CreatedAt,
             Media = notification.Post.Media,
             AdminTags = notification.Post.AdminTags,

@@ -32,6 +32,11 @@ public class UsersController : ControllerBase
     [HttpPut("{userId}")]
     public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
     {
+        var tokenUserId = this.GetUserId();
+        if (tokenUserId != userId)
+        {
+            return BadRequest($"User with Id {tokenUserId} is not allowed to update details for user Id {userId}");
+        }
         var command = new UpdateUserCommand(userId, request);
         var result = await _dispatcher.Send<UpdateUserCommand, bool>(command, cancellationToken);
         return Ok(result);

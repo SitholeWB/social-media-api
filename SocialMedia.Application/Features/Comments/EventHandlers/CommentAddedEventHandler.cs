@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace SocialMedia.Application;
 
 public class CommentAddedEventHandler :
@@ -8,19 +10,22 @@ public class CommentAddedEventHandler :
     private readonly IUserRepository _userRepository; // To get Author Name
     private readonly IPostVectorService _postVectorService; // For vector integration
     private readonly IPostRankService _postRankService; // For vector integration
+    private readonly IConfiguration _configuration;
 
     public CommentAddedEventHandler(
         IPostReadRepository readRepository,
         ICommentReadRepository commentReadRepository,
         IUserRepository userRepository,
         IPostVectorService postVectorService,
-        IPostRankService postRankService)
+        IPostRankService postRankService,
+        IConfiguration configuration)
     {
         _readRepository = readRepository;
         _commentReadRepository = commentReadRepository;
         _userRepository = userRepository;
         _postVectorService = postVectorService;
         _postRankService = postRankService;
+        _configuration = configuration;
     }
 
     public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
@@ -39,6 +44,8 @@ public class CommentAddedEventHandler :
                 var author = await _userRepository.GetByIdAsync(notification.Comment.AuthorId, cancellationToken);
                 createdBy = author?.GetFullName() ?? "Unknown";
             }
+            var profilesHost = _configuration.GetValue<string>("ProfilesHost") ?? "";
+            var authorImageUrl = string.IsNullOrWhiteSpace(profilesHost) ? "" : $"{profilesHost}/api/db1/files/{notification.Comment.AuthorId}";
             var commentDto = new CommentReadDto
             {
                 CommentId = notification.Comment.Id,
@@ -46,7 +53,7 @@ public class CommentAddedEventHandler :
                 Title = notification.Comment.Title,
                 AuthorId = notification.Comment.AuthorId,
                 AuthorName = createdBy,
-                AuthorProfilePicUrl = null,
+                AuthorProfilePicUrl = authorImageUrl,
                 Media = notification.Comment.Media,
                 CreatedAt = notification.Comment.CreatedAt,
                 LikeCount = 0,
@@ -63,7 +70,7 @@ public class CommentAddedEventHandler :
                 Title = notification.Comment.Title,
                 AuthorId = notification.Comment.AuthorId,
                 AuthorName = createdBy,
-                AuthorProfilePicUrl = null,
+                AuthorProfilePicUrl = authorImageUrl,
                 Media = notification.Comment.Media,
                 CreatedAt = notification.Comment.CreatedAt,
                 Stats = new CommentStatsDto { LikeCount = 0 },
