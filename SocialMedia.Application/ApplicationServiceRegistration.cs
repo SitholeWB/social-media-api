@@ -53,6 +53,12 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEventHandler<CommentLikeAddedEvent>, UserActivityEventHandler>();
         services.AddScoped<IEventHandler<PollVotedEvent>, UserActivityEventHandler>();
 
+        // Stats Event Handlers
+        services.AddScoped<IEventHandler<PostCreatedEvent>, StatsEventHandler>();
+        services.AddScoped<IEventHandler<CommentAddedEvent>, StatsEventHandler>();
+        services.AddScoped<IEventHandler<PostLikeAddedEvent>, StatsEventHandler>();
+        services.AddScoped<IEventHandler<CommentLikeAddedEvent>, StatsEventHandler>();
+
         // Groups
         services.AddScoped<ICommandHandler<CreateGroupCommand, Guid>, CreateGroupCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteGroupCommand, bool>, DeleteGroupCommandHandler>();
@@ -83,6 +89,7 @@ public static class ApplicationServiceRegistration
 
         // stats
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, Result<DashboardStatsDto>>, GetDashboardStatsQueryHandler>();
+        services.AddScoped<IQueryHandler<RetrieveStatsQuery, StatsRecord?>, RetrieveStatsQueryHandler>();
 
         // Notifications
         services.AddScoped<IQueryHandler<GetNotificationsQuery, List<NotificationDto>>, GetNotificationsQueryHandler>();

@@ -12,4 +12,20 @@ public class StatsController(IDispatcher dispatcher) : ControllerBase
         var result = await dispatcher.Query<GetDashboardStatsQuery, Result<DashboardStatsDto>>(new GetDashboardStatsQuery(startDate, endDate), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
+
+    [HttpGet("weekly")]
+    public async Task<IActionResult> GetWeeklyStats([FromQuery] DateTime? date, CancellationToken cancellationToken)
+    {
+        var targetDate = date ?? DateTime.UtcNow;
+        var result = await dispatcher.Query<RetrieveStatsQuery, StatsRecord?>(new RetrieveStatsQuery(SocialMedia.Domain.StatsType.Weekly, targetDate), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("monthly")]
+    public async Task<IActionResult> GetMonthlyStats([FromQuery] DateTime? date, CancellationToken cancellationToken)
+    {
+        var targetDate = date ?? DateTime.UtcNow;
+        var result = await dispatcher.Query<RetrieveStatsQuery, StatsRecord?>(new RetrieveStatsQuery(SocialMedia.Domain.StatsType.Monthly, targetDate), cancellationToken);
+        return Ok(result);
+    }
 }

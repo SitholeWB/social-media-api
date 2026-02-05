@@ -1,0 +1,144 @@
+using Microsoft.Extensions.Logging;
+
+using SocialMedia.Domain;
+
+namespace SocialMedia.Application;
+
+public class StatsEventHandler(
+    IStatsRepository statsRepository,
+    IUserActivityRepository userActivityRepository,
+    ILogger<StatsEventHandler> logger) :
+    IEventHandler<PostCreatedEvent>,
+    IEventHandler<CommentAddedEvent>,
+    IEventHandler<PostLikeAddedEvent>,
+    IEventHandler<CommentLikeAddedEvent>
+{
+    public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
+    {
+        await UpdateStatsAsync(notification.Post.CreatedAt,
+            record => record.NewPosts++,
+            record => record.TotalPosts++,
+            notification.Post.AuthorId,
+            cancellationToken);
+    }
+
+    public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
+    {
+        await UpdateStatsAsync(notification.Comment.CreatedAt,
+            record => record.ResultingComments++,
+            null,
+            notification.Comment.AuthorId,
+            cancellationToken);
+    }
+
+    public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
+    {
+        await UpdateReactionStatsAsync(DateTime.UtcNow, notification.Like.UserId, notification.Like.Emoji, cancellationToken);
+    }
+
+    public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
+    {
+        await UpdateReactionStatsAsync(DateTime.UtcNow, notification.Like.UserId, notification.Like.Emoji, cancellationToken);
+    }
+
+    private async Task UpdateStatsAsync(DateTimeOffset activityDate, Action<StatsRecord> updateAction, Action<StatsRecord>? globalCounterAction, Guid userId, CancellationToken cancellationToken)
+    {
+        var weekStart = GetStartOfWeek(activityDate);
+        var monthStart = GetStartOfMonth(activityDate);
+
+        await UpdatePeriodStatsAsync(StatsType.Weekly, weekStart, updateAction, globalCounterAction, userId, cancellationToken);
+        await UpdatePeriodStatsAsync(StatsType.Monthly, monthStart, updateAction, globalCounterAction, userId, cancellationToken);
+    }
+
+    private async Task UpdateReactionStatsAsync(DateTime activityDate, Guid userId, string emoji, CancellationToken cancellationToken)
+    {
+        var weekStart = GetStartOfWeek(activityDate);
+        var monthStart = GetStartOfMonth(activityDate);
+
+        await UpdatePeriodReactionStatsAsync(StatsType.Weekly, weekStart, userId, emoji, cancellationToken);
+        await UpdatePeriodReactionStatsAsync(StatsType.Monthly, monthStart, userId, emoji, cancellationToken);
+    }
+
+    private async Task UpdatePeriodStatsAsync(StatsType type, DateTimeOffset startDate, Action<StatsRecord> updateAction, Action<StatsRecord>? globalCounterAction, Guid userId, CancellationToken cancellationToken)
+    {
+        var record = await GetOrCreateStatsRecordAsync(type, startDate, cancellationToken);
+
+        updateAction(record);
+        globalCounterAction?.Invoke(record);
+
+        await UpdateActiveUsersAsync(record, userId, startDate, cancellationToken);
+
+        await statsRepository.UpdateAsync(record, cancellationToken);
+    }
+
+    private async Task UpdatePeriodReactionStatsAsync(StatsType type, DateTimeOffset startDate, Guid userId, string emoji, CancellationToken cancellationToken)
+    {
+        var record = await GetOrCreateStatsRecordAsync(type, startDate, cancellationToken);
+
+        record.ResultingReactions++;
+
+        var reactionStat = record.ReactionBreakdown.FirstOrDefault(r => r.Emoji == emoji);
+        if (reactionStat == null)
+        {
+            reactionStat = new ReactionStat { Emoji = emoji, Count = 0 };
+            record.ReactionBreakdown.Add(reactionStat);
+        }
+        reactionStat.Count++;
+
+        await UpdateActiveUsersAsync(record, userId, startDate, cancellationToken);
+
+        await statsRepository.UpdateAsync(record, cancellationToken);
+    }
+
+    private async Task UpdateActiveUsersAsync(StatsRecord record, Guid userId, DateTimeOffset startDate, CancellationToken cancellationToken)
+    {
+        // Simple heuristic: If User's LastActiveAt is OLDER than the start of this period, it means
+        // this is their FIRST action in this period. HOWEVER, UserActivityEventHandler updates
+        // LastActiveAt roughly at the same time. So we need to be careful. Better approach: Check
+        // if we have ALREADY counted this user? No, we don't store a list of users in StatsRecord.
+        // Alternative: Query UserActivityRepository to see if they were active in this period
+        // BEFORE this current event? But this current event IS the activity.
+
+        // Let's rely on the UserActivityRepository. If the user's LastActiveAt (before this update)
+        // was < StartDate, then they are "newly active" for this period. But we don't know the
+        // "before" state here easily without fetching User first.
+
+        // Optimization: Fetch UserActivity.
+        var userActivity = await userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
+        var lastActive = userActivity?.LastModifiedAt ?? DateTime.MinValue;
+
+        // If their LAST recorded activity was BEFORE the start of this period, then they are
+        // becoming active now.
+        if (lastActive < startDate)
+        {
+            record.ActiveUsers++;
+        }
+    }
+
+    private async Task<StatsRecord> GetOrCreateStatsRecordAsync(StatsType type, DateTimeOffset startDate, CancellationToken cancellationToken)
+    {
+        var record = await statsRepository.GetCurrentStatsRecordAsync(type, startDate, cancellationToken);
+        if (record == null)
+        {
+            record = new StatsRecord
+            {
+                StatsType = type,
+                Date = startDate,
+                ReactionBreakdown = new List<ReactionStat>()
+            };
+            await statsRepository.AddAsync(record, cancellationToken);
+        }
+        return record;
+    }
+
+    private static DateTimeOffset GetStartOfWeek(DateTimeOffset date)
+    {
+        var diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
+        return date.AddDays(-1 * diff).Date;
+    }
+
+    private static DateTimeOffset GetStartOfMonth(DateTimeOffset date)
+    {
+        return new DateTime(date.Year, date.Month, 1);
+    }
+}

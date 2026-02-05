@@ -1,3 +1,5 @@
+using SocialMedia.Domain;
+
 namespace SocialMedia.Infrastructure;
 
 public class SocialMediaReadDbContext : DbContext
@@ -12,6 +14,7 @@ public class SocialMediaReadDbContext : DbContext
 
     public DbSet<PostReadModel> Posts { get; set; }
     public DbSet<CommentReadModel> Comments { get; set; }
+    public DbSet<StatsRecord> StatsRecords { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -77,6 +80,11 @@ public class SocialMediaReadDbContext : DbContext
             entity.OwnsMany(c => c.Tags, b => b.ToJson());
             entity.OwnsMany(c => c.AdminTags, b => b.ToJson());
             entity.OwnsMany(c => c.Media, b => b.ToJson());
+        });
+
+        modelBuilder.Entity<StatsRecord>(entity =>
+        {
+            entity.OwnsMany(s => s.ReactionBreakdown, b => b.ToJson());
         });
     }
 }
