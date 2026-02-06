@@ -47,8 +47,11 @@ public class UserActivityRepository : Repository<UserActivity>, IUserActivityRep
 
     public async Task UpdateUserLastSeenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        await _dbContext.UserActivities
-                        .Where(u => u.Id == userId)
-                        .ExecuteUpdateAsync(u => u.SetProperty(x => x.LastSeenAt, DateTimeOffset.UtcNow), cancellationToken: cancellationToken);
+        var userActivity = await _dbContext.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == userId, cancellationToken);
+        if (userActivity != null)
+        {
+            userActivity.LastSeenAt = DateTimeOffset.UtcNow;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

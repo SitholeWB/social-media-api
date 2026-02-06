@@ -1,10 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using Google.Apis.Auth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace SocialMedia.Infrastructure;
 
@@ -12,11 +6,13 @@ public class IdentityService : IIdentityService
 {
     private readonly SocialMediaDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IUserActivityRepository _userActivityRepository;
 
-    public IdentityService(SocialMediaDbContext context, IConfiguration configuration)
+    public IdentityService(SocialMediaDbContext context, IConfiguration configuration, IUserActivityRepository userActivityRepository)
     {
         _context = context;
         _configuration = configuration;
+        _userActivityRepository = userActivityRepository;
     }
 
     public async Task<AuthResponse> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -51,7 +47,7 @@ public class IdentityService : IIdentityService
         await _context.SaveChangesAsync(cancellationToken);
 
         var token = GenerateJwtToken(user);
-
+        await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
         return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
 
@@ -91,6 +87,12 @@ public class IdentityService : IIdentityService
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync(cancellationToken);
+            var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, true, cancellationToken);
+            if (userActivity == default)
+            {
+                userActivity = new UserActivity { UserId = userId };
+                await _userActivityRepository.AddAsync(userActivity, cancellationToken);
+            }
         }
 
         if (user.IsBanned)
@@ -103,6 +105,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
+        await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
         return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
 
@@ -132,6 +135,8 @@ public class IdentityService : IIdentityService
         await _context.SaveChangesAsync(cancellationToken);
 
         var token = GenerateJwtToken(user);
+        var userActivity = new UserActivity { UserId = userId };
+        await _userActivityRepository.AddAsync(userActivity, cancellationToken);
 
         return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
     }
