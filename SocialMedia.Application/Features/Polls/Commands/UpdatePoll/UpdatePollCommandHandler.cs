@@ -9,7 +9,7 @@ public class UpdatePollCommandHandler : ICommandHandler<UpdatePollCommand, bool>
         _pollRepository = pollRepository;
     }
 
-    public async Task<bool> Handle(UpdatePollCommand command, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(UpdatePollCommand command, CancellationToken cancellationToken)
     {
         var poll = await _pollRepository.GetByIdAsync(command.PollId, cancellationToken);
         if (poll == null)

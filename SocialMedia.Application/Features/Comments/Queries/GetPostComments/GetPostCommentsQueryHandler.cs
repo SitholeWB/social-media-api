@@ -11,7 +11,7 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<PagedResult<CommentReadDto>> Handle(GetPostCommentsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<CommentReadDto>> HandleAsync(GetPostCommentsQuery request, CancellationToken cancellationToken)
     {
         var comments = await _commentReadRepository.GetByPostIdAsync(request.PostId, request.PageNumber, request.PageSize);
 

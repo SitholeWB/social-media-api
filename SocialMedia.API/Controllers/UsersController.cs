@@ -16,7 +16,7 @@ public class UsersController : ControllerBase
     [HttpPost("block")]
     public async Task<IActionResult> BlockUser([FromBody] BlockUserCommand command, CancellationToken cancellationToken)
     {
-        await _dispatcher.Send<BlockUserCommand, bool>(command, cancellationToken);
+        await _dispatcher.SendAsync<BlockUserCommand, bool>(command, cancellationToken);
         return Ok();
     }
 
@@ -25,7 +25,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> BanUser(Guid userId, [FromBody] bool isBanned, CancellationToken cancellationToken)
     {
         var command = new AdminBlockUserCommand(userId, isBanned);
-        await _dispatcher.Send<AdminBlockUserCommand, bool>(command, cancellationToken);
+        await _dispatcher.SendAsync<AdminBlockUserCommand, bool>(command, cancellationToken);
         return Ok();
     }
 
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
             return BadRequest($"User with Id {tokenUserId} is not allowed to update details for user Id {userId}");
         }
         var command = new UpdateUserCommand(userId, request);
-        var result = await _dispatcher.Send<UpdateUserCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<UpdateUserCommand, bool>(command, cancellationToken);
         return Ok(result);
     }
 
@@ -46,7 +46,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
     {
         var command = new ChangePasswordCommand(userId, request);
-        var result = await _dispatcher.Send<ChangePasswordCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<ChangePasswordCommand, bool>(command, cancellationToken);
         return Ok(result);
     }
 
@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetReportedUsers([FromQuery] int minReports = 5, CancellationToken cancellationToken = default)
     {
         var query = new GetReportedUsersQuery(minReports);
-        var result = await _dispatcher.Query<GetReportedUsersQuery, List<ReportedUserDto>>(query, cancellationToken);
+        var result = await _dispatcher.QueryAsync<GetReportedUsersQuery, List<ReportedUserDto>>(query, cancellationToken);
         return Ok(result);
     }
 }

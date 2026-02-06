@@ -17,7 +17,7 @@ public class CommentLikeAddedEventHandler :
         _postRankService = postRankService;
     }
 
-    public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Like == null)
         {

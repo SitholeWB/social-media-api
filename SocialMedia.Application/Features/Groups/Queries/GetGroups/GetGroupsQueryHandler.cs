@@ -14,7 +14,7 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
         _cache = cache;
     }
 
-    public async Task<PagedResult<GroupDto>> Handle(GetGroupsQuery query, CancellationToken cancellationToken)
+    public async Task<PagedResult<GroupDto>> HandleAsync(GetGroupsQuery query, CancellationToken cancellationToken)
     {
         //var cacheKey = $"groups_page_{query.PageNumber}_size_{query.PageSize}";
 

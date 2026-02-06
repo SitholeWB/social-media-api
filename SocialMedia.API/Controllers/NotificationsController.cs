@@ -18,7 +18,7 @@ public class NotificationsController : ControllerBase
     {
         // In a real app, we should check if the current user is allowed to view these notifications
         var query = new GetNotificationsQuery(userId);
-        var result = await _dispatcher.Query<GetNotificationsQuery, List<NotificationDto>>(query, cancellationToken);
+        var result = await _dispatcher.QueryAsync<GetNotificationsQuery, List<NotificationDto>>(query, cancellationToken);
         return Ok(result);
     }
 }

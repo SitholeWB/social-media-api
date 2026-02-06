@@ -9,7 +9,7 @@ public class LoginWithGoogleCommandHandler : ICommandHandler<LoginWithGoogleComm
         _identityService = identityService;
     }
 
-    public async Task<AuthResponse> Handle(LoginWithGoogleCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> HandleAsync(LoginWithGoogleCommand request, CancellationToken cancellationToken)
     {
         return await _identityService.LoginWithGoogleAsync(request.GoogleLoginRequest, cancellationToken);
     }

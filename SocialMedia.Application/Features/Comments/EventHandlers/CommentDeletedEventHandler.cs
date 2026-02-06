@@ -17,7 +17,7 @@ public class CommentDeletedEventHandler :
         _postRankService = postRankService;
     }
 
-    public async Task Handle(CommentDeletedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentDeletedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Comment == null)
         {

@@ -11,7 +11,7 @@ public class DeleteCommentCommandHandler : ICommandHandler<DeleteCommentCommand,
         _dispatcher = dispatcher;
     }
 
-    public async Task<bool> Handle(DeleteCommentCommand command, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(DeleteCommentCommand command, CancellationToken cancellationToken)
     {
         var comment = await _commentRepository.GetByIdAsync(command.Id, cancellationToken);
         if (comment == null || command.UserId != comment.AuthorId)
@@ -20,7 +20,7 @@ public class DeleteCommentCommandHandler : ICommandHandler<DeleteCommentCommand,
         }
         comment.IsDeleted = true;
         await _commentRepository.UpdateAsync(comment, cancellationToken);
-        await _dispatcher.Publish(new CommentDeletedEvent(comment), cancellationToken);
+        await _dispatcher.PublishAsync(new CommentDeletedEvent(comment), cancellationToken);
         return true;
     }
 }

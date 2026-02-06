@@ -9,7 +9,7 @@ public class GetNotificationsQueryHandler : IQueryHandler<GetNotificationsQuery,
         _notificationRepository = notificationRepository;
     }
 
-    public async Task<List<NotificationDto>> Handle(GetNotificationsQuery request, CancellationToken cancellationToken)
+    public async Task<List<NotificationDto>> HandleAsync(GetNotificationsQuery request, CancellationToken cancellationToken)
     {
         var notifications = await _notificationRepository.GetAllAsync(cancellationToken);
 

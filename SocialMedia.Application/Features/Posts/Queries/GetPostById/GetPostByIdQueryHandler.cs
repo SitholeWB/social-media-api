@@ -11,7 +11,7 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<PostDto?> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
+    public async Task<PostDto?> HandleAsync(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
         var p = await _postRepository.GetByIdAsync(request.Id, cancellationToken);
         if (p == null) return null;

@@ -16,7 +16,7 @@ public class ForgotPasswordCommandHandler : ICommandHandler<ForgotPasswordComman
         _notificationService = notificationService;
     }
 
-    public async Task<bool> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
         var identifier = request.Request.Email.Trim();
         

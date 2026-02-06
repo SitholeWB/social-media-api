@@ -13,7 +13,7 @@ public class CreatePollCommandHandler : ICommandHandler<CreatePollCommand, Guid>
         _groupMemberRepository = groupMemberRepository;
     }
 
-    public async Task<Guid> Handle(CreatePollCommand command, System.Threading.CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreatePollCommand command, System.Threading.CancellationToken cancellationToken)
     {
         // Access Check
         var group = await _groupRepository.GetByIdAsync(command.GroupId, cancellationToken);

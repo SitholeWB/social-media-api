@@ -9,7 +9,7 @@ public class RegisterCommandHandler : ICommandHandler<RegisterCommand, AuthRespo
         _identityService = identityService;
     }
 
-    public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> HandleAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
         return await _identityService.RegisterAsync(request.RegisterRequest, cancellationToken);
     }

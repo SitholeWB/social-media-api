@@ -9,7 +9,7 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, AuthResponse>
         _identityService = identityService;
     }
 
-    public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> HandleAsync(LoginCommand request, CancellationToken cancellationToken)
     {
         return await _identityService.LoginAsync(request.LoginRequest, cancellationToken);
     }

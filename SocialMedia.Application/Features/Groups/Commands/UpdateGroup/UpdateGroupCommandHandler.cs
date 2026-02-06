@@ -9,7 +9,7 @@ public class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupCommand, boo
         _groupRepository = groupRepository;
     }
 
-    public async Task<bool> Handle(UpdateGroupCommand command, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(UpdateGroupCommand command, CancellationToken cancellationToken)
     {
         var group = await _groupRepository.GetByIdAsync(command.GroupId, cancellationToken);
         if (group == null)

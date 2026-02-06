@@ -11,7 +11,7 @@ public class GetReportedUsersQueryHandler : IQueryHandler<GetReportedUsersQuery,
         _userRepository = userRepository;
     }
 
-    public async Task<List<ReportedUserDto>> Handle(GetReportedUsersQuery request, CancellationToken cancellationToken)
+    public async Task<List<ReportedUserDto>> HandleAsync(GetReportedUsersQuery request, CancellationToken cancellationToken)
     {
         // Get reports for posts
         var postReports = await _reportRepository.GetPostReportCountsByAuthorAsync(cancellationToken);

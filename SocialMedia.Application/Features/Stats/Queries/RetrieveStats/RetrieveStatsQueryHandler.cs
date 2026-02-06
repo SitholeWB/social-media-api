@@ -2,7 +2,7 @@ namespace SocialMedia.Application;
 
 public class RetrieveStatsQueryHandler(IStatsRepository statsRepository) : IQueryHandler<RetrieveStatsQuery, StatsRecord?>
 {
-    public async Task<StatsRecord?> Handle(RetrieveStatsQuery request, CancellationToken cancellationToken)
+    public async Task<StatsRecord?> HandleAsync(RetrieveStatsQuery request, CancellationToken cancellationToken)
     {
         if (request.Type == StatsType.Weekly)
         {

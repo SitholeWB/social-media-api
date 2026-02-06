@@ -18,7 +18,7 @@ public class UserActivityEventHandler :
         _logger = logger;
     }
 
-    public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateUserReactionAsync(
             notification.Like.UserId,
@@ -29,7 +29,7 @@ public class UserActivityEventHandler :
             cancellationToken);
     }
 
-    public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateUserReactionAsync(
             notification.Like.UserId,
@@ -40,7 +40,7 @@ public class UserActivityEventHandler :
             cancellationToken);
     }
 
-    public async Task Handle(PollVotedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PollVotedEvent notification, CancellationToken cancellationToken)
     {
         var userActivity = await _userActivityRepository.GetByUserIdAsync(notification.UserId, true, cancellationToken)
                            ?? new UserActivity { UserId = notification.UserId };

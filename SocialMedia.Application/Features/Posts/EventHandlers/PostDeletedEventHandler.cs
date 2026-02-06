@@ -10,7 +10,7 @@ public class PostDeletedEventHandler :
         _postService = postService;
     }
 
-    public async Task Handle(PostDeletedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostDeletedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Post == null)
         {

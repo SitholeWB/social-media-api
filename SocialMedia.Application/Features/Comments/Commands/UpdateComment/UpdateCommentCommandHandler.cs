@@ -9,7 +9,7 @@ public class UpdateCommentCommandHandler : ICommandHandler<UpdateCommentCommand,
         _commentRepository = commentRepository;
     }
 
-    public async Task<bool> Handle(UpdateCommentCommand command, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(UpdateCommentCommand command, CancellationToken cancellationToken)
     {
         var comment = await _commentRepository.GetByIdAsync(command.Id, cancellationToken);
         if (comment == null)

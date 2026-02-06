@@ -11,7 +11,7 @@ public class CreateDefaultGroupsCommandHandler : ICommandHandler<CreateDefaultGr
         _groupRepository = groupRepository;
     }
 
-    public async Task<string> Handle(CreateDefaultGroupsCommand request, CancellationToken cancellationToken)
+    public async Task<string> HandleAsync(CreateDefaultGroupsCommand request, CancellationToken cancellationToken)
     {
         var sb = new StringBuilder();
         foreach (var defaultGroup in request.DefaultGroups)

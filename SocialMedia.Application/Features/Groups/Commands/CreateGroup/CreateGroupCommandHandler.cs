@@ -13,7 +13,7 @@ public class CreateGroupCommandHandler : ICommandHandler<CreateGroupCommand, Gui
         _cache = cache;
     }
 
-    public async Task<Guid> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreateGroupCommand request, CancellationToken cancellationToken)
     {
         var group = new Group
         {

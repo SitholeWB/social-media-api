@@ -19,7 +19,7 @@ public class GetActivePollsQueryHandler : IQueryHandler<GetActivePollsQuery, Pag
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<PagedResult<PollDto>> Handle(GetActivePollsQuery query, CancellationToken cancellationToken)
+    public async Task<PagedResult<PollDto>> HandleAsync(GetActivePollsQuery query, CancellationToken cancellationToken)
     {
         // Visibility Check
         var group = await _groupRepository.GetByIdAsync(query.GroupId, cancellationToken);

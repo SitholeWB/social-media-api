@@ -17,7 +17,7 @@ public class LikesController : ControllerBase
     public async Task<IActionResult> ToggleLike([FromBody] ToggleLikeCommand command, CancellationToken cancellationToken)
     {
         command.UserId = this.GetUserId();
-        var result = await _dispatcher.Send<ToggleLikeCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<ToggleLikeCommand, bool>(command, cancellationToken);
         if (!result)
         {
             return NotFound(); // Post or Comment doesn't exist

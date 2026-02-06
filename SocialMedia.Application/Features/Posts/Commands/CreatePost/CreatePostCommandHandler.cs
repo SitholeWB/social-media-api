@@ -19,7 +19,7 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
         _dispatcher = dispatcher;
     }
 
-    public async Task<Guid> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreatePostCommand request, CancellationToken cancellationToken)
     {
         if (request.PostDto.GroupId != Guid.Empty)
         {
@@ -40,7 +40,7 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, Guid>
         // Reload with File navigation property for the event
         var postWithFile = await _postRepository.GetByIdAsync(createdPost.Id, cancellationToken);
 
-        await _dispatcher.Publish(new PostCreatedEvent(postWithFile ?? createdPost), cancellationToken);
+        await _dispatcher.PublishAsync(new PostCreatedEvent(postWithFile ?? createdPost), cancellationToken);
 
         return createdPost.Id;
     }

@@ -18,7 +18,7 @@ public class DefaultsController : ControllerBase
     public async Task<IActionResult> BanUser(CancellationToken cancellationToken)
     {
         var command = new CreateDefaultGroupsCommand(DefaultConstants.DEFAULT_GROUPS);
-        var result = await _dispatcher.Send<CreateDefaultGroupsCommand, string>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<CreateDefaultGroupsCommand, string>(command, cancellationToken);
         return Ok(result);
     }
 }

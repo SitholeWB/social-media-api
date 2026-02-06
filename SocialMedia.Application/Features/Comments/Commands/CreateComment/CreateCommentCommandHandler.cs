@@ -19,7 +19,7 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
         _dispatcher = dispatcher;
     }
 
-    public async Task<Guid> Handle(CreateCommentCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreateCommentCommand command, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetByIdAsync(command.CreateCommentDto.PostId, cancellationToken);
         if (post == null)
@@ -45,7 +45,7 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
         }
 
         // Publish Event
-        await _dispatcher.Publish(new CommentAddedEvent(createdComment), cancellationToken);
+        await _dispatcher.PublishAsync(new CommentAddedEvent(createdComment), cancellationToken);
 
         return createdComment.Id;
     }

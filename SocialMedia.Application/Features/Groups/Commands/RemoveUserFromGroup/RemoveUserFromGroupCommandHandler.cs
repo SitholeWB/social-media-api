@@ -9,7 +9,7 @@ public class RemoveUserFromGroupCommandHandler : ICommandHandler<RemoveUserFromG
         _groupMemberRepository = groupMemberRepository;
     }
 
-    public async Task<bool> Handle(RemoveUserFromGroupCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(RemoveUserFromGroupCommand request, CancellationToken cancellationToken)
     {
         var member = await _groupMemberRepository.GetByGroupAndUserAsync(request.GroupId, request.UserId, cancellationToken);
 

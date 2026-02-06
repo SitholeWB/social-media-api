@@ -16,7 +16,7 @@ public class GetCommentByIdQueryHandler : IQueryHandler<GetCommentByIdQuery, Com
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<CommentReadDto> Handle(GetCommentByIdQuery query, CancellationToken cancellationToken)
+    public async Task<CommentReadDto> HandleAsync(GetCommentByIdQuery query, CancellationToken cancellationToken)
     {
         var comment = await _commentRepository.GetByIdAsync(query.Id, cancellationToken);
         if (comment == null)

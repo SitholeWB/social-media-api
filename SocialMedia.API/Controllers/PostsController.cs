@@ -18,7 +18,7 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetPostByIdQuery(id) { UserId = this.GetUserId() };
-        var post = await _dispatcher.Query<GetPostByIdQuery, PostDto?>(query, cancellationToken);
+        var post = await _dispatcher.QueryAsync<GetPostByIdQuery, PostDto?>(query, cancellationToken);
         if (post == null)
         {
             return NotFound();
@@ -30,7 +30,7 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> DeleteCommentById(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeletePostCommand(id, this.GetUserId());
-        var comment = await _dispatcher.Send<DeletePostCommand, bool>(command, cancellationToken);
+        var comment = await _dispatcher.SendAsync<DeletePostCommand, bool>(command, cancellationToken);
         if (!comment)
         {
             return NotFound();
@@ -46,7 +46,7 @@ public class PostsController : ControllerBase
             return BadRequest("Post ID mismatch");
         }
 
-        var reportId = await _dispatcher.Send<ReportPostCommand, Guid>(command, cancellationToken);
+        var reportId = await _dispatcher.SendAsync<ReportPostCommand, Guid>(command, cancellationToken);
         return Ok(reportId);
     }
 }

@@ -9,7 +9,7 @@ public class VerifyChainQueryHandler : IQueryHandler<VerifyChainQuery, bool>
         _blockchainService = blockchainService;
     }
 
-    public async Task<bool> Handle(VerifyChainQuery query, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(VerifyChainQuery query, CancellationToken cancellationToken)
     {
         return await _blockchainService.VerifyChainAsync(cancellationToken);
     }

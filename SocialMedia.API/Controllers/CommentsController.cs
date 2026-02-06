@@ -20,7 +20,7 @@ public class CommentsController : ControllerBase
         createCommentDto.AuthorId = this.GetUserId() ?? createCommentDto.AuthorId;
         createCommentDto.Title = this.GetAppName();
         var command = new CreateCommentCommand(createCommentDto);
-        var commentId = await _dispatcher.Send<CreateCommentCommand, Guid>(command, cancellationToken);
+        var commentId = await _dispatcher.SendAsync<CreateCommentCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, commentId);
     }
 
@@ -29,7 +29,7 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> GetCommentById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetCommentByIdQuery(id) { UserId = this.GetUserId() };
-        var comment = await _dispatcher.Query<GetCommentByIdQuery, CommentReadDto>(query, cancellationToken);
+        var comment = await _dispatcher.QueryAsync<GetCommentByIdQuery, CommentReadDto>(query, cancellationToken);
         if (comment == null)
         {
             return NotFound();
@@ -41,7 +41,7 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> UpdateComment(Guid id, [FromBody] string content, CancellationToken cancellationToken)
     {
         var command = new UpdateCommentCommand(id, content);
-        var result = await _dispatcher.Send<UpdateCommentCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<UpdateCommentCommand, bool>(command, cancellationToken);
         if (!result)
         {
             return NotFound();
@@ -53,7 +53,7 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> DeleteComment(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteCommentCommand(id, this.GetUserId().GetValueOrDefault(Guid.Empty));
-        var result = await _dispatcher.Send<DeleteCommentCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<DeleteCommentCommand, bool>(command, cancellationToken);
         if (!result)
         {
             return NotFound();
@@ -69,7 +69,7 @@ public class CommentsController : ControllerBase
             return BadRequest("Comment ID mismatch");
         }
 
-        var reportId = await _dispatcher.Send<ReportCommentCommand, Guid>(command, cancellationToken);
+        var reportId = await _dispatcher.SendAsync<ReportCommentCommand, Guid>(command, cancellationToken);
         return Ok(reportId);
     }
 
@@ -78,7 +78,7 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> GetPostComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var query = new GetPostCommentsQuery(postId, pageNumber, pageSize) { UserId = this.GetUserId() };
-        var result = await _dispatcher.Query<GetPostCommentsQuery, PagedResult<CommentReadDto>>(query, cancellationToken);
+        var result = await _dispatcher.QueryAsync<GetPostCommentsQuery, PagedResult<CommentReadDto>>(query, cancellationToken);
         return Ok(result);
     }
 }

@@ -9,7 +9,7 @@ public class ReportPostCommandHandler : ICommandHandler<ReportPostCommand, Guid>
         _reportRepository = reportRepository;
     }
 
-    public async Task<Guid> Handle(ReportPostCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(ReportPostCommand command, CancellationToken cancellationToken)
     {
         var report = new Report
         {

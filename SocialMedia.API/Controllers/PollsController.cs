@@ -23,7 +23,7 @@ public class PollsController : ControllerBase
 
         try
         {
-            var success = await _dispatcher.Send<VoteOnPollCommand, bool>(command, cancellationToken);
+            var success = await _dispatcher.SendAsync<VoteOnPollCommand, bool>(command, cancellationToken);
             if (!success)
             {
                 return BadRequest("Unable to vote on this poll (it may be inactive or expired).");
@@ -41,7 +41,7 @@ public class PollsController : ControllerBase
     public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetPollQuery(id) { UserId = this.GetUserId() };
-        var poll = await _dispatcher.Query<GetPollQuery, PollDto?>(query, cancellationToken);
+        var poll = await _dispatcher.QueryAsync<GetPollQuery, PollDto?>(query, cancellationToken);
         if (poll == null)
         {
             return NotFound();
@@ -53,7 +53,7 @@ public class PollsController : ControllerBase
     public async Task<IActionResult> VerifyChain(CancellationToken cancellationToken)
     {
         var query = new VerifyChainQuery();
-        var isValid = await _dispatcher.Query<VerifyChainQuery, bool>(query, cancellationToken);
+        var isValid = await _dispatcher.QueryAsync<VerifyChainQuery, bool>(query, cancellationToken);
         return Ok(new { IsValid = isValid });
     }
 
@@ -66,7 +66,7 @@ public class PollsController : ControllerBase
             return BadRequest();
         }
 
-        var result = await _dispatcher.Send<UpdatePollCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<UpdatePollCommand, bool>(command, cancellationToken);
         if (!result)
         {
             return NotFound();
@@ -79,7 +79,7 @@ public class PollsController : ControllerBase
     public async Task<IActionResult> DeletePoll(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeletePollCommand(id);
-        var result = await _dispatcher.Send<DeletePollCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<DeletePollCommand, bool>(command, cancellationToken);
         if (!result)
         {
             return NotFound();

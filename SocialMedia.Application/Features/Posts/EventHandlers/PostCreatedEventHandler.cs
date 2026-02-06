@@ -22,7 +22,7 @@ public class PostCreatedEventHandler :
         _configuration = configuration;
     }
 
-    public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostCreatedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Post == null)
         {

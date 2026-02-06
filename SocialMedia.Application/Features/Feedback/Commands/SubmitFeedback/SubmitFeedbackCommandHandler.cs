@@ -9,7 +9,7 @@ public class SubmitFeedbackCommandHandler : ICommandHandler<SubmitFeedbackComman
         _feedbackRepository = feedbackRepository;
     }
 
-    public async Task<bool> Handle(SubmitFeedbackCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(SubmitFeedbackCommand request, CancellationToken cancellationToken)
     {
         var feedback = new Feedback
         {

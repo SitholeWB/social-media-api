@@ -112,7 +112,7 @@ public class BackgroundEventProcessor : IBackgroundEventProcessor
             // Execute all handlers
             foreach (var handler in handlers)
             {
-                var handleMethod = handlerType.GetMethod("Handle");
+                var handleMethod = handlerType.GetMethod("HandleAsync");
                 if (handleMethod != null)
                 {
                     var task = (Task?)handleMethod.Invoke(handler, new[] { @event, cancellationToken });

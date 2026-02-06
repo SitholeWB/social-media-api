@@ -36,7 +36,7 @@ public class GetGroupQueryHandlerTests
         var query = new GetGroupQuery(groupId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -58,7 +58,7 @@ public class GetGroupQueryHandlerTests
         var query = new GetGroupQuery(groupId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.HandleAsync(query, CancellationToken.None);
 
         // Assert
         result.Should().BeNull();

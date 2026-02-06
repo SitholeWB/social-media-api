@@ -16,7 +16,7 @@ public class GetRecommendedPostsQueryHandler : IQueryHandler<GetRecommendedPosts
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<PagedResult<PostDto>> Handle(GetRecommendedPostsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<PostDto>> HandleAsync(GetRecommendedPostsQuery request, CancellationToken cancellationToken)
     {
         // Get recommended post IDs from vector service
         var recommendedPostIds = await _vectorService.GetRecommendedPostIdsAsync(

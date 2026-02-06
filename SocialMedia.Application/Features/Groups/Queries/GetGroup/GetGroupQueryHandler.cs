@@ -9,7 +9,7 @@ public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>
         _groupRepository = groupRepository;
     }
 
-    public async Task<GroupDto?> Handle(GetGroupQuery query, CancellationToken cancellationToken)
+    public async Task<GroupDto?> HandleAsync(GetGroupQuery query, CancellationToken cancellationToken)
     {
         var group = await _groupRepository.GetByIdAsync(query.GroupId, cancellationToken);
         if (group == null) return null;

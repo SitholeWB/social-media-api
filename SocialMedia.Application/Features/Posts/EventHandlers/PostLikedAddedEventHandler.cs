@@ -13,7 +13,7 @@ public class PostLikedAddedEventHandler :
         _postRankService = postRankService;
     }
 
-    public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Like == null)
         {

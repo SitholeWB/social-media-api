@@ -25,7 +25,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
         _userRepository = userRepository;
     }
 
-    public async Task<bool> Handle(ToggleLikeCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(ToggleLikeCommand request, CancellationToken cancellationToken)
     {
         var existingLike = default(Like?);
         var post = default(Post?);
@@ -114,7 +114,7 @@ public class ToggleLikeCommandHandler : ICommandHandler<ToggleLikeCommand, bool>
 
         if (likeEvent != null)
         {
-            await _dispatcher.Publish(likeEvent, cancellationToken);
+            await _dispatcher.PublishAsync(likeEvent, cancellationToken);
         }
 
         // Update User Last Active

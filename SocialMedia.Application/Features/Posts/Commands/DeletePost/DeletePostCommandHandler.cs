@@ -11,7 +11,7 @@ public class DeletePostCommandHandler : ICommandHandler<DeletePostCommand, bool>
         _dispatcher = dispatcher;
     }
 
-    public async Task<bool> Handle(DeletePostCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(DeletePostCommand request, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetByIdAsync(request.PostId, cancellationToken);
         if (post == null || post.AuthorId != request.UserId)
@@ -20,7 +20,7 @@ public class DeletePostCommandHandler : ICommandHandler<DeletePostCommand, bool>
         }
         post.IsDeleted = true;
         await _postRepository.UpdateAsync(post, cancellationToken);
-        await _dispatcher.Publish(new PostCreatedEvent(post), cancellationToken);
+        await _dispatcher.PublishAsync(new PostCreatedEvent(post), cancellationToken);
 
         return true;
     }

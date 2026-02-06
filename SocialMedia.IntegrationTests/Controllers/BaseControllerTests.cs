@@ -5,7 +5,8 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
 {
     protected readonly IntegrationTestWebApplicationFactory _factory;
     protected readonly HttpClient _client;
-    public string _username = Guid.NewGuid().ToString();
+    protected string _username = Guid.NewGuid().ToString();
+    protected Guid _userId = Guid.NewGuid();
 
     public BaseControllerTests(IntegrationTestWebApplicationFactory factory)
     {
@@ -37,15 +38,13 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
 
         if (isAdmin)
         {
-            using (var scope = _factory.Services.CreateScope())
+            using var scope = _factory.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user != null)
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-                if (user != null)
-                {
-                    user.Role = UserRole.Admin;
-                    await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
-                }
+                user.Role = UserRole.Admin;
+                await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
             }
         }
 
@@ -53,6 +52,7 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
         var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
         var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
-        return (authResponse!.Token, Guid.Parse(authResponse.Id));
+        _userId = Guid.Parse(authResponse!.Id);
+        return (authResponse!.Token, _userId);
     }
 }

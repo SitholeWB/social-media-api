@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
                 return Unauthorized(new { error = "User ID not found in token." });
             }
             var command = new GetUserByIdQuery(userId.Value);
-            var response = await _dispatcher.Query<GetUserByIdQuery, AuthResponse>(command, cancellationToken);
+            var response = await _dispatcher.QueryAsync<GetUserByIdQuery, AuthResponse>(command, cancellationToken);
             return Ok(response);
         }
         catch (Exception ex)
@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
         try
         {
             var command = new LoginCommand(request);
-            var response = await _dispatcher.Send<LoginCommand, AuthResponse>(command, cancellationToken);
+            var response = await _dispatcher.SendAsync<LoginCommand, AuthResponse>(command, cancellationToken);
             return Ok(response);
         }
         catch (Exception ex) when (ex.Message.Contains("Invalid credentials") || ex.Message.Contains("banned"))
@@ -60,7 +60,7 @@ public class AuthController : ControllerBase
         try
         {
             var command = new LoginWithGoogleCommand(request);
-            var response = await _dispatcher.Send<LoginWithGoogleCommand, AuthResponse>(command, cancellationToken);
+            var response = await _dispatcher.SendAsync<LoginWithGoogleCommand, AuthResponse>(command, cancellationToken);
             return Ok(response);
         }
         catch (Exception ex)
@@ -76,7 +76,7 @@ public class AuthController : ControllerBase
         try
         {
             var command = new RegisterCommand(request);
-            var response = await _dispatcher.Send<RegisterCommand, AuthResponse>(command, cancellationToken);
+            var response = await _dispatcher.SendAsync<RegisterCommand, AuthResponse>(command, cancellationToken);
             return Ok(response);
         }
         catch (Exception ex)
@@ -90,7 +90,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request, CancellationToken cancellationToken)
     {
         var command = new ForgotPasswordCommand(request);
-        var result = await _dispatcher.Send<ForgotPasswordCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<ForgotPasswordCommand, bool>(command, cancellationToken);
         return Ok(result);
     }
 }

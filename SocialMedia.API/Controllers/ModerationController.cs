@@ -17,7 +17,7 @@ public class ModerationController : ControllerBase
     public async Task<IActionResult> DeleteReportedContent([FromQuery] int minReports, CancellationToken cancellationToken)
     {
         var command = new DeleteReportedContentCommand(minReports);
-        var deletedCount = await _dispatcher.Send<DeleteReportedContentCommand, int>(command, cancellationToken);
+        var deletedCount = await _dispatcher.SendAsync<DeleteReportedContentCommand, int>(command, cancellationToken);
         return Ok(new { deletedCount = deletedCount });
     }
 }

@@ -18,7 +18,7 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> GetPendingReports([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var query = new GetPendingReportsQuery { PageNumber = pageNumber, PageSize = pageSize };
-        var result = await _dispatcher.Query<GetPendingReportsQuery, PagedResult<ReportDto>>(query, cancellationToken);
+        var result = await _dispatcher.QueryAsync<GetPendingReportsQuery, PagedResult<ReportDto>>(query, cancellationToken);
         return Ok(result);
     }
 }

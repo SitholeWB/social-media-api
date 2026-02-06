@@ -11,7 +11,7 @@ public class StatsEventHandler(
     IEventHandler<PostLikeAddedEvent>,
     IEventHandler<CommentLikeAddedEvent>
 {
-    public async Task Handle(PostCreatedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostCreatedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateStatsAsync(notification.Post.CreatedAt,
             record => record.NewPosts++,
@@ -20,7 +20,7 @@ public class StatsEventHandler(
             cancellationToken);
     }
 
-    public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentAddedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateStatsAsync(notification.Comment.CreatedAt,
             record => record.ResultingComments++,
@@ -29,12 +29,12 @@ public class StatsEventHandler(
             cancellationToken);
     }
 
-    public async Task Handle(PostLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(PostLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateReactionStatsAsync(DateTimeOffset.UtcNow, notification.Like.UserId, notification.Like.Emoji, cancellationToken);
     }
 
-    public async Task Handle(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentLikeAddedEvent notification, CancellationToken cancellationToken)
     {
         await UpdateReactionStatsAsync(DateTimeOffset.UtcNow, notification.Like.UserId, notification.Like.Emoji, cancellationToken);
     }

@@ -8,12 +8,12 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         // Arrange
 
         // Create a post first
-        var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = Guid.NewGuid() };
+        var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = _userId };
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         postResponse.EnsureSuccessStatusCode();
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment", AuthorId = Guid.NewGuid() };
+        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment", AuthorId = _userId };
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
@@ -28,7 +28,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
     public async Task CreateComment_WithInvalidPost_ReturnsInternalServerError_Or_NotFound()
     {
         // Arrange
-        var createCommentDto = new CreateCommentDto { PostId = Guid.NewGuid(), Content = "Test Comment", AuthorId = Guid.NewGuid() };
+        var createCommentDto = new CreateCommentDto { PostId = Guid.NewGuid(), Content = "Test Comment", AuthorId = _userId };
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
@@ -46,7 +46,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         // Arrange
 
         // Create a post
-        var createPostDto = new CreatePostDto { Title = "Test Post 2", Content = "Content 2", AuthorId = Guid.NewGuid() };
+        var createPostDto = new CreatePostDto { Title = "Test Post 2", Content = "Content 2", AuthorId = _userId };
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
@@ -54,7 +54,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Create a comment
-        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment 2", AuthorId = Guid.NewGuid() };
+        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment 2", AuthorId = _userId };
         await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Process pending events to update read model
@@ -77,7 +77,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         // Arrange
 
         // Create a post
-        var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = Guid.NewGuid() };
+        var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = _userId };
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
@@ -139,12 +139,12 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         // Arrange
 
         // Create a post
-        var createPostDto = new CreatePostDto { Title = "Post for Report", Content = "Content", AuthorId = Guid.NewGuid() };
+        var createPostDto = new CreatePostDto { Title = "Post for Report", Content = "Content", AuthorId = _userId };
         var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Create a comment
-        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Report", AuthorId = Guid.NewGuid() };
+        var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Report", AuthorId = _userId };
         var commentResponse = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
         var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 

@@ -29,7 +29,7 @@ public class DeletePollCommandHandlerTests
         var command = new DeletePollCommand(pollId);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -47,7 +47,7 @@ public class DeletePollCommandHandlerTests
         var command = new DeletePollCommand(pollId);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();

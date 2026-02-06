@@ -33,7 +33,7 @@ public class UpdatePollCommandHandlerTests
         var command = new UpdatePollCommand(pollId, "New Question", false, DateTime.UtcNow.AddDays(1), true, Guid.NewGuid());
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -53,7 +53,7 @@ public class UpdatePollCommandHandlerTests
         var command = new UpdatePollCommand(pollId, "New Question", false, null, false, Guid.NewGuid());
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();

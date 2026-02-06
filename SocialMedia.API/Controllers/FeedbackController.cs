@@ -17,7 +17,7 @@ public class FeedbackController : ControllerBase
     public async Task<IActionResult> SubmitFeedback([FromBody] SubmitFeedbackRequest request, CancellationToken cancellationToken)
     {
         var command = new SubmitFeedbackCommand(request);
-        var result = await _dispatcher.Send<SubmitFeedbackCommand, bool>(command, cancellationToken);
+        var result = await _dispatcher.SendAsync<SubmitFeedbackCommand, bool>(command, cancellationToken);
         return Ok(result);
     }
 }

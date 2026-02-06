@@ -9,7 +9,7 @@ public class BlockUserCommandHandler : ICommandHandler<BlockUserCommand, bool>
         _userBlockRepository = userBlockRepository;
     }
 
-    public async Task<bool> Handle(BlockUserCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(BlockUserCommand request, CancellationToken cancellationToken)
     {
         if (request.BlockerId == request.BlockedUserId)
         {

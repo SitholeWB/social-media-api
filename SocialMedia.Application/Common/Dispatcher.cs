@@ -15,7 +15,7 @@ public class Dispatcher : IDispatcher
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<TResult> Send<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
+    public async Task<TResult> SendAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
     {
         using var activity = ActivitySource.StartActivity($"Command: {typeof(TCommand).Name}", ActivityKind.Internal);
         activity?.SetTag(TelemetryConstants.CommandType, typeof(TCommand).Name);
@@ -44,7 +44,7 @@ public class Dispatcher : IDispatcher
             }
 
             var handler = _serviceProvider.GetRequiredService<ICommandHandler<TCommand, TResult>>();
-            var result = await handler.Handle(command, cancellationToken);
+            var result = await handler.HandleAsync(command, cancellationToken);
 
             stopwatch.Stop();
             CommandCounter.Add(1, new KeyValuePair<string, object?>(TelemetryConstants.CommandType, typeof(TCommand).Name), new KeyValuePair<string, object?>(TelemetryConstants.Success, "true"));
@@ -66,7 +66,7 @@ public class Dispatcher : IDispatcher
         }
     }
 
-    public async Task<TResult> Query<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>
+    public async Task<TResult> QueryAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>
     {
         using var activity = ActivitySource.StartActivity($"Query: {typeof(TQuery).Name}", ActivityKind.Internal);
         activity?.SetTag(TelemetryConstants.QueryType, typeof(TQuery).Name);
@@ -75,7 +75,7 @@ public class Dispatcher : IDispatcher
         try
         {
             var handler = _serviceProvider.GetRequiredService<IQueryHandler<TQuery, TResult>>();
-            var result = await handler.Handle(query, cancellationToken);
+            var result = await handler.HandleAsync(query, cancellationToken);
 
             stopwatch.Stop();
             QueryCounter.Add(1, new KeyValuePair<string, object?>(TelemetryConstants.QueryType, typeof(TQuery).Name), new KeyValuePair<string, object?>(TelemetryConstants.Success, "true"));
@@ -97,7 +97,7 @@ public class Dispatcher : IDispatcher
         }
     }
 
-    public async Task Publish<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
         using var activity = ActivitySource.StartActivity($"Event: {typeof(TEvent).Name}", ActivityKind.Internal);
         activity?.SetTag(TelemetryConstants.EventType, typeof(TEvent).Name);

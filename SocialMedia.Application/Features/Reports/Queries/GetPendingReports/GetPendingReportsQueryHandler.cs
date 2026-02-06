@@ -9,7 +9,7 @@ public class GetPendingReportsQueryHandler : IQueryHandler<GetPendingReportsQuer
         _reportRepository = reportRepository;
     }
 
-    public async Task<PagedResult<ReportDto>> Handle(GetPendingReportsQuery query, CancellationToken cancellationToken)
+    public async Task<PagedResult<ReportDto>> HandleAsync(GetPendingReportsQuery query, CancellationToken cancellationToken)
     {
         var (reports, totalCount) = await _reportRepository.GetPendingReportsPagedAsync(query.PageNumber, query.PageSize, cancellationToken);
         var dtos = reports.Select(r => new ReportDto

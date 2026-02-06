@@ -52,6 +52,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEventHandler<PostLikeAddedEvent>, UserActivityEventHandler>();
         services.AddScoped<IEventHandler<CommentLikeAddedEvent>, UserActivityEventHandler>();
         services.AddScoped<IEventHandler<PollVotedEvent>, UserActivityEventHandler>();
+        services.AddScoped<IEventHandler<PostQueryEvent>, PostQueryEventHandler>();
 
         // Stats Event Handlers
         services.AddScoped<IEventHandler<PostCreatedEvent>, StatsEventHandler>();

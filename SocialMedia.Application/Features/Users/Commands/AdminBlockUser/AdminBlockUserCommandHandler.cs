@@ -9,7 +9,7 @@ public class AdminBlockUserCommandHandler : ICommandHandler<AdminBlockUserComman
         _userRepository = userRepository;
     }
 
-    public async Task<bool> Handle(AdminBlockUserCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(AdminBlockUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
 

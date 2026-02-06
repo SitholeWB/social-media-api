@@ -7,22 +7,25 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
     private readonly IGroupMemberRepository _groupMemberRepository;
     private readonly IUserActivityRepository _userActivityRepository;
     private readonly IPostRankService _postRankService;
+    private readonly IDispatcher _dispatcher;
 
     public GetPostsQueryHandler(
         IPostReadRepository readRepository,
         IGroupRepository groupRepository,
         IGroupMemberRepository groupMemberRepository,
         IUserActivityRepository userActivityRepository,
-        IPostRankService postRankService)
+        IPostRankService postRankService,
+        IDispatcher dispatcher)
     {
         _readRepository = readRepository;
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
         _userActivityRepository = userActivityRepository;
         _postRankService = postRankService;
+        _dispatcher = dispatcher;
     }
 
-    public async Task<PagedResult<PostDto>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<PostDto>> HandleAsync(GetPostsQuery request, CancellationToken cancellationToken)
     {
         var group = await _groupRepository.GetByIdAsync(request.GroupId, cancellationToken);
         if (group != null && group.Type == GroupType.Private)
@@ -45,6 +48,7 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
         if (request.UserId.HasValue)
         {
             userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, false, cancellationToken);
+            await _dispatcher.PublishAsync(new PostQueryEvent(request.UserId.Value), cancellationToken);
         }
 
         var dtos = posts.Select(p => new PostDto

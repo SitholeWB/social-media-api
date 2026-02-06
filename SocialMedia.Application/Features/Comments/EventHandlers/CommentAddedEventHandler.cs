@@ -28,7 +28,7 @@ public class CommentAddedEventHandler :
         _configuration = configuration;
     }
 
-    public async Task Handle(CommentAddedEvent notification, CancellationToken cancellationToken)
+    public async Task HandleAsync(CommentAddedEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Comment == null)
         {

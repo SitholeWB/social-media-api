@@ -19,7 +19,7 @@ public class GetPollQueryHandler : IQueryHandler<GetPollQuery, PollDto?>
         _userActivityRepository = userActivityRepository;
     }
 
-    public async Task<PollDto?> Handle(GetPollQuery query, CancellationToken cancellationToken)
+    public async Task<PollDto?> HandleAsync(GetPollQuery query, CancellationToken cancellationToken)
     {
         var poll = await _pollRepository.GetByIdAsync(query.PollId, cancellationToken);
         if (poll == null)

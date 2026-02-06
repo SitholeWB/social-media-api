@@ -9,7 +9,7 @@ public class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, AuthRespo
         _identityService = identityService;
     }
 
-    public async Task<AuthResponse> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> HandleAsync(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         return await _identityService.GetUserByIdAsync(request.UserId, cancellationToken);
     }

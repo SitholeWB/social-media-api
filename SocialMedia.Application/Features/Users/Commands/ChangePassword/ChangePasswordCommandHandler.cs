@@ -11,7 +11,7 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
         _identityService = identityService;
     }
 
-    public async Task<bool> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)

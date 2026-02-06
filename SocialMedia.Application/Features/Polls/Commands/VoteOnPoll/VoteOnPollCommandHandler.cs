@@ -25,7 +25,7 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         _dispatcher = dispatcher;
     }
 
-    public async Task<bool> Handle(VoteOnPollCommand command, System.Threading.CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(VoteOnPollCommand command, System.Threading.CancellationToken cancellationToken)
     {
         var poll = await _pollRepository.GetByIdAsync(command.PollId, cancellationToken);
         if (poll == null || !poll.IsActive || (poll.ExpiresAt.HasValue && poll.ExpiresAt < DateTime.UtcNow))
@@ -77,7 +77,7 @@ public class VoteOnPollCommandHandler : ICommandHandler<VoteOnPollCommand, bool>
         await _blockchainService.AddVoteAsync(vote.Id, userIdForBlockchain, command.PollOptionId, cancellationToken);
 
         // 4. Publish Event
-        await _dispatcher.Publish(new PollVotedEvent(command.PollId, command.PollOptionId, command.UserId), cancellationToken);
+        await _dispatcher.PublishAsync(new PollVotedEvent(command.PollId, command.PollOptionId, command.UserId), cancellationToken);
 
         return true;
     }

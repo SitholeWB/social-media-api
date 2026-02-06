@@ -11,7 +11,7 @@ public class AddUserToGroupCommandHandler : ICommandHandler<AddUserToGroupComman
         _groupMemberRepository = groupMemberRepository;
     }
 
-    public async Task<bool> Handle(AddUserToGroupCommand request, CancellationToken cancellationToken)
+    public async Task<bool> HandleAsync(AddUserToGroupCommand request, CancellationToken cancellationToken)
     {
         var exists = await _groupMemberRepository.ExistsAsync(request.GroupId, request.UserId, cancellationToken);
 

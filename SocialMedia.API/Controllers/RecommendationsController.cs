@@ -28,7 +28,7 @@ public class RecommendationsController : ControllerBase
             PageSize = pageSize
         };
 
-        var result = await _dispatcher.Query<GetRecommendedPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
+        var result = await _dispatcher.QueryAsync<GetRecommendedPostsQuery, PagedResult<PostDto>>(query, cancellationToken);
         return Ok(result);
     }
 }
