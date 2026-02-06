@@ -57,7 +57,7 @@ public class StatsIntegrationTests(IntegrationTestWebApplicationFactory factory)
         Assert.Equal(initialComments + 1, stats.ResultingComments);
 
         // --- 3. Add Like (Reaction) ---
-        var toggleLikeCommand = new ToggleLikeCommand(authorId, postId, commentId, "❤️", _username); // Heart emoji
+        var toggleLikeCommand = new ToggleLikeCommand(null, postId, null, "❤️", null); // Heart emoji
         var likeResponse = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, likeResponse.StatusCode);
 
