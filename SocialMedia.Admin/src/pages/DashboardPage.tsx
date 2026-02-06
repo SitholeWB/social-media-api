@@ -1,9 +1,9 @@
 // pages/DashboardPage.tsx
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchDashboardStats, setDateRange, resetDateRange } from '../store/slices/dashboardSlice';
+import { fetchWeeklyStats, fetchMonthlyStats, setViewType, setSelectedDate } from '../store/slices/dashboardSlice';
 import { useAuth } from '../hooks/useAuth';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 
 // Material-UI Components
 import Box from '@mui/material/Box';
@@ -16,6 +16,8 @@ import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import TodayIcon from '@mui/icons-material/Today';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -27,114 +29,70 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PageHeader from '../components/PageHeader';
 
-// Chart Components (optional - install recharts if needed)
-// import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
 export default function DashboardPage() {
 	const dispatch = useAppDispatch();
-	const { user, isAdmin } = useAuth();
-	const { stats, loading, error, dateRange } = useAppSelector((state) => state.dashboard);
+	const { isAdmin } = useAuth();
+	const { statsRecord, loading, error, viewType, selectedDate } = useAppSelector((state) => state.dashboard);
 
-	const [localDateRange, setLocalDateRange] = React.useState(dateRange);
-
-	// Fetch stats on mount and when dateRange changes
+	// Fetch stats on mount and when viewType or selectedDate changes
 	React.useEffect(() => {
-		dispatch(fetchDashboardStats(dateRange));
-	}, [dispatch, dateRange]);
+		if (viewType === 'weekly') {
+			dispatch(fetchWeeklyStats(selectedDate));
+		} else {
+			dispatch(fetchMonthlyStats(selectedDate));
+		}
+	}, [dispatch, viewType, selectedDate]);
 
-	const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
-		setLocalDateRange(prev => ({ ...prev, [field]: value }));
+	const handleViewTypeChange = (
+		_event: React.MouseEvent<HTMLElement>,
+		newViewType: 'weekly' | 'monthly' | null,
+	) => {
+		if (newViewType !== null) {
+			dispatch(setViewType(newViewType));
+		}
 	};
 
-	const handleApplyDateRange = () => {
-		dispatch(setDateRange(localDateRange));
-	};
-
-	const handleResetDateRange = () => {
-		const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
-		const today = format(new Date(), 'yyyy-MM-dd');
-
-		setLocalDateRange({
-			startDate: thirtyDaysAgo,
-			endDate: today,
-		});
-
-		dispatch(resetDateRange());
+	const handleDateChange = (value: string) => {
+		dispatch(setSelectedDate(value));
 	};
 
 	const handleRefresh = () => {
-		dispatch(fetchDashboardStats(dateRange));
+		if (viewType === 'weekly') {
+			dispatch(fetchWeeklyStats(selectedDate));
+		} else {
+			dispatch(fetchMonthlyStats(selectedDate));
+		}
 	};
 
-	const handleLast7Days = () => {
-		const sevenDaysAgo = format(subDays(new Date(), 7), 'yyyy-MM-dd');
-		const today = format(new Date(), 'yyyy-MM-dd');
-
-		setLocalDateRange({
-			startDate: sevenDaysAgo,
-			endDate: today,
-		});
-
-		dispatch(setDateRange({
-			startDate: sevenDaysAgo,
-			endDate: today,
-		}));
-	};
-
-	const handleLast30Days = () => {
-		const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
-		const today = format(new Date(), 'yyyy-MM-dd');
-
-		setLocalDateRange({
-			startDate: thirtyDaysAgo,
-			endDate: today,
-		});
-
-		dispatch(setDateRange({
-			startDate: thirtyDaysAgo,
-			endDate: today,
-		}));
-	};
-
-	const handleThisMonth = () => {
-		const today = new Date();
-		const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-		setLocalDateRange({
-			startDate: format(firstDayOfMonth, 'yyyy-MM-dd'),
-			endDate: format(today, 'yyyy-MM-dd'),
-		});
-
-		dispatch(setDateRange({
-			startDate: format(firstDayOfMonth, 'yyyy-MM-dd'),
-			endDate: format(today, 'yyyy-MM-dd'),
-		}));
+	const handleThisPeriod = () => {
+		dispatch(setSelectedDate(format(new Date(), 'yyyy-MM-dd')));
 	};
 
 	// Calculate growth percentages
 	const calculateGrowth = (total: number, newInPeriod: number) => {
-		if (total - newInPeriod === 0) return 100; // Avoid division by zero
-		return ((newInPeriod / (total - newInPeriod)) * 100).toFixed(1);
+		if (total === 0 || total === newInPeriod) return '0';
+		const previous = total - newInPeriod;
+		if (previous <= 0) return '100';
+		return ((newInPeriod / previous) * 100).toFixed(1);
 	};
 
 	// Format numbers with commas
 	const formatNumber = (num: number) => {
 		return num.toLocaleString('en-US');
 	};
-	/*
-		if (!isAdmin) {
-			return (
-				<Box sx={{ p: 4, textAlign: 'center' }}>
-					<Alert severity="warning" sx={{ mb: 3 }}>
-						You need administrator privileges to access the dashboard.
-					</Alert>
-					<Typography variant="body2" color="text.secondary">
-						Contact your administrator for access.
-					</Typography>
-				</Box>
-			);
-		}
-	*/
+
+	if (!isAdmin) {
+		return (
+			<Box sx={{ p: 4, textAlign: 'center' }}>
+				<Alert severity="warning" sx={{ mb: 3 }}>
+					You need administrator privileges to access the dashboard.
+				</Alert>
+				<Typography variant="body2" color="text.secondary">
+					Contact your administrator for access.
+				</Typography>
+			</Box>
+		);
+	}
 
 	return (
 		<Box sx={{ width: '100%' }}>
@@ -156,7 +114,7 @@ export default function DashboardPage() {
 				}
 			/>
 
-			{/* Date Range Selector */}
+			{/* Period Selector */}
 			<Paper
 				elevation={0}
 				sx={{
@@ -168,92 +126,57 @@ export default function DashboardPage() {
 				}}
 			>
 				<Stack spacing={3}>
-					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-						<DateRangeIcon color="primary" />
-						<Typography variant="h6" fontWeight={600}>
-							Date Range Filter
-						</Typography>
+					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<DateRangeIcon color="primary" />
+							<Typography variant="h6" fontWeight={600}>
+								Stats Period
+							</Typography>
+						</Box>
+
+						<ToggleButtonGroup
+							color="primary"
+							value={viewType}
+							exclusive
+							onChange={handleViewTypeChange}
+							aria-label="View Type"
+							size="small"
+						>
+							<ToggleButton value="weekly">Weekly</ToggleButton>
+							<ToggleButton value="monthly">Monthly</ToggleButton>
+						</ToggleButtonGroup>
 					</Box>
 
 					<Grid container spacing={2} alignItems="center">
-						<Grid size={{ xs: 12, md: 5 }}>
+						<Grid size={{ xs: 12, md: 8 }}>
 							<TextField
-								label="Start Date"
+								label="Select Date in Period"
 								type="date"
 								fullWidth
-								value={localDateRange.startDate || ''}
-								onChange={(e) => handleDateChange('startDate', e.target.value)}
+								value={selectedDate}
+								onChange={(e) => handleDateChange(e.target.value)}
 								InputLabelProps={{ shrink: true }}
 								disabled={loading}
+								helperText={`Showing stats for the ${viewType} containing this date.`}
 							/>
 						</Grid>
-						<Grid size={{ xs: 12, md: 5 }}>
-							<TextField
-								label="End Date"
-								type="date"
-								fullWidth
-								value={localDateRange.endDate || ''}
-								onChange={(e) => handleDateChange('endDate', e.target.value)}
-								InputLabelProps={{ shrink: true }}
-								disabled={loading}
-							/>
-						</Grid>
-						<Grid size={{ xs: 12, md: 2 }}>
+						<Grid size={{ xs: 12, md: 4 }}>
 							<Button
-								variant="contained"
-								onClick={handleApplyDateRange}
+								variant="outlined"
+								onClick={handleThisPeriod}
 								disabled={loading}
 								fullWidth
+								startIcon={<TodayIcon />}
 								sx={{ textTransform: 'none', height: '56px' }}
 							>
-								Apply
+								Today / This Period
 							</Button>
 						</Grid>
 					</Grid>
 
-					{/* Quick Date Range Buttons */}
-					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-						<Button
-							variant="outlined"
-							size="small"
-							onClick={handleLast7Days}
-							disabled={loading}
-							sx={{ textTransform: 'none' }}
-						>
-							Last 7 Days
-						</Button>
-						<Button
-							variant="outlined"
-							size="small"
-							onClick={handleLast30Days}
-							disabled={loading}
-							sx={{ textTransform: 'none' }}
-						>
-							Last 30 Days
-						</Button>
-						<Button
-							variant="outlined"
-							size="small"
-							onClick={handleThisMonth}
-							disabled={loading}
-							sx={{ textTransform: 'none' }}
-						>
-							This Month
-						</Button>
-						<Button
-							variant="outlined"
-							size="small"
-							onClick={handleResetDateRange}
-							disabled={loading}
-							sx={{ textTransform: 'none' }}
-						>
-							Reset
-						</Button>
-					</Box>
-
-					{dateRange.startDate && dateRange.endDate && (
+					{statsRecord && (
 						<Typography variant="body2" color="text.secondary">
-							Showing data from <strong>{dateRange.startDate}</strong> to <strong>{dateRange.endDate}</strong>
+							Showing <strong>{viewType}</strong> stats starting from <strong>{format(new Date(statsRecord.date), 'PPP')}</strong>
 						</Typography>
 					)}
 				</Stack>
@@ -267,19 +190,19 @@ export default function DashboardPage() {
 			)}
 
 			{/* Loading State */}
-			{loading && !stats && (
+			{loading && !statsRecord && (
 				<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
 					<CircularProgress />
 				</Box>
 			)}
 
 			{/* Statistics Cards */}
-			{stats && (
+			{statsRecord && (
 				<>
-					{/* User Statistics */}
+					{/* Activity Statistics */}
 					<Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
 						<PeopleIcon color="primary" />
-						User Statistics
+						User Activity for this {viewType === 'weekly' ? 'Week' : 'Month'}
 					</Typography>
 
 					<Grid container spacing={3} sx={{ mb: 4 }}>
@@ -308,15 +231,15 @@ export default function DashboardPage() {
 								<Stack spacing={1}>
 									<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 										<Typography variant="body2" color="text.secondary">
-											Total Users
+											Active Users
 										</Typography>
 										<PeopleIcon color="primary" />
 									</Box>
 									<Typography variant="h4" fontWeight={700}>
-										{formatNumber(stats.totalUsers)}
+										{formatNumber(statsRecord.activeUsers)}
 									</Typography>
-									<Typography variant="body2" color="success.main">
-										Active Users: {formatNumber(stats.activeUsers)} ({((stats.activeUsers / stats.totalUsers) * 100).toFixed(1)}%)
+									<Typography variant="body2" color="text.secondary">
+										Users performing actions during this period
 									</Typography>
 								</Stack>
 							</Paper>
@@ -347,15 +270,15 @@ export default function DashboardPage() {
 								<Stack spacing={1}>
 									<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 										<Typography variant="body2" color="text.secondary">
-											User Activity
+											New Posts
 										</Typography>
-										<TimelineIcon color="success" />
+										<PostAddIcon color="success" />
 									</Box>
 									<Typography variant="h4" fontWeight={700}>
-										{formatNumber(stats.activeUsers)}
+										{formatNumber(statsRecord.newPosts)}
 									</Typography>
-									<Typography variant="body2" color="primary.main">
-										{stats.activeUsers === stats.totalUsers ? 'All users active!' : `${stats.totalUsers - stats.activeUsers} inactive users`}
+									<Typography variant="body2" color="success.main">
+										{calculateGrowth(statsRecord.totalPosts, statsRecord.newPosts)}% growth
 									</Typography>
 								</Stack>
 							</Paper>
@@ -369,7 +292,7 @@ export default function DashboardPage() {
 					</Typography>
 
 					<Grid container spacing={3} sx={{ mb: 4 }}>
-						{/* Posts */}
+						{/* Global Posts */}
 						<Grid size={{ xs: 12, md: 4 }}>
 							<Paper
 								elevation={0}
@@ -395,21 +318,16 @@ export default function DashboardPage() {
 								<Stack spacing={1}>
 									<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 										<Typography variant="body2" color="text.secondary">
-											Total Posts
+											Total Posts (Cumulative)
 										</Typography>
-										<PostAddIcon color="info" />
+										<TimelineIcon color="info" />
 									</Box>
 									<Typography variant="h4" fontWeight={700}>
-										{formatNumber(stats.totalPosts)}
+										{formatNumber(statsRecord.totalPosts)}
 									</Typography>
-									<Stack direction="row" spacing={2} alignItems="center">
-										<Typography variant="body2" color="success.main">
-											+{formatNumber(stats.newPostsInPeriod)} new
-										</Typography>
-										<Typography variant="caption" color="text.secondary">
-											{calculateGrowth(stats.totalPosts, stats.newPostsInPeriod)}% growth
-										</Typography>
-									</Stack>
+									<Typography variant="body2" color="info.main">
+										Global post count at period end
+									</Typography>
 								</Stack>
 							</Paper>
 						</Grid>
@@ -440,21 +358,16 @@ export default function DashboardPage() {
 								<Stack spacing={1}>
 									<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 										<Typography variant="body2" color="text.secondary">
-											Total Comments
+											New Comments
 										</Typography>
 										<CommentIcon color="warning" />
 									</Box>
 									<Typography variant="h4" fontWeight={700}>
-										{formatNumber(stats.totalComments)}
+										{formatNumber(statsRecord.resultingComments)}
 									</Typography>
-									<Stack direction="row" spacing={2} alignItems="center">
-										<Typography variant="body2" color="success.main">
-											+{formatNumber(stats.newCommentsInPeriod)} new
-										</Typography>
-										<Typography variant="caption" color="text.secondary">
-											{calculateGrowth(stats.totalComments, stats.newCommentsInPeriod)}% growth
-										</Typography>
-									</Stack>
+									<Typography variant="body2" color="warning.main">
+										In response to posts this period
+									</Typography>
 								</Stack>
 							</Paper>
 						</Grid>
@@ -485,21 +398,16 @@ export default function DashboardPage() {
 								<Stack spacing={1}>
 									<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 										<Typography variant="body2" color="text.secondary">
-											Total Reactions
+											New Reactions
 										</Typography>
 										<ThumbUpIcon color="error" />
 									</Box>
 									<Typography variant="h4" fontWeight={700}>
-										{formatNumber(stats.totalReactions)}
+										{formatNumber(statsRecord.resultingReactions)}
 									</Typography>
-									<Stack direction="row" spacing={2} alignItems="center">
-										<Typography variant="body2" color="success.main">
-											+{formatNumber(stats.newReactionsInPeriod)} new
-										</Typography>
-										<Typography variant="caption" color="text.secondary">
-											{calculateGrowth(stats.totalReactions, stats.newReactionsInPeriod)}% growth
-										</Typography>
-									</Stack>
+									<Typography variant="body2" color="error.main">
+										Likes & reactions across the platform
+									</Typography>
 								</Stack>
 							</Paper>
 						</Grid>
@@ -529,7 +437,7 @@ export default function DashboardPage() {
 											New Posts
 										</Typography>
 										<Typography variant="h6" color="info.main">
-											{formatNumber(stats.newPostsInPeriod)}
+											{formatNumber(statsRecord.newPosts)}
 										</Typography>
 									</Box>
 									<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -537,7 +445,7 @@ export default function DashboardPage() {
 											New Comments
 										</Typography>
 										<Typography variant="h6" color="warning.main">
-											{formatNumber(stats.newCommentsInPeriod)}
+											{formatNumber(statsRecord.resultingComments)}
 										</Typography>
 									</Box>
 								</Stack>
@@ -549,7 +457,7 @@ export default function DashboardPage() {
 											New Reactions
 										</Typography>
 										<Typography variant="h6" color="error.main">
-											{formatNumber(stats.newReactionsInPeriod)}
+											{formatNumber(statsRecord.resultingReactions)}
 										</Typography>
 									</Box>
 									<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -557,8 +465,8 @@ export default function DashboardPage() {
 											Engagement Rate
 										</Typography>
 										<Typography variant="h6" color="success.main">
-											{stats.totalPosts > 0
-												? ((stats.totalReactions + stats.totalComments) / stats.totalPosts).toFixed(2)
+											{statsRecord.newPosts > 0
+												? ((statsRecord.resultingReactions + statsRecord.resultingComments) / statsRecord.newPosts).toFixed(2)
 												: '0.00'
 											}
 										</Typography>
@@ -568,40 +476,54 @@ export default function DashboardPage() {
 						</Grid>
 					</Paper>
 
-					{/* Charts Section (Optional - if you install recharts) */}
-					{/*
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            border: '1px solid',
-                            borderColor: 'divider',
-                            borderRadius: 2,
-                            mb: 3,
-                        }}
-                    >
-                        <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
-                            Activity Trends
-                        </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="posts" stroke="#8884d8" activeDot={{ r: 8 }} />
-                                <Line type="monotone" dataKey="comments" stroke="#82ca9d" />
-                                <Line type="monotone" dataKey="reactions" stroke="#ffc658" />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                    */}
+					{/* Reaction Breakdown */}
+					{statsRecord.reactionBreakdown && statsRecord.reactionBreakdown.length > 0 && (
+						<Paper
+							elevation={0}
+							sx={{
+								p: 3,
+								border: '1px solid',
+								borderColor: 'divider',
+								borderRadius: 2,
+								mb: 3,
+							}}
+						>
+							<Typography variant="h6" fontWeight={600} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+								<ThumbUpIcon color="primary" />
+								Reaction Breakdown
+							</Typography>
+
+							<Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+								{statsRecord.reactionBreakdown.map((item, index) => (
+									<Paper
+										key={index}
+										elevation={0}
+										sx={{
+											p: 2,
+											minWidth: '80px',
+											textAlign: 'center',
+											border: '1px solid',
+											borderColor: 'divider',
+											borderRadius: 2,
+											backgroundColor: 'action.hover'
+										}}
+									>
+										<Typography variant="h4" sx={{ mb: 1 }}>
+											{item.emoji}
+										</Typography>
+										<Typography variant="h6" fontWeight={700}>
+											{formatNumber(item.count)}
+										</Typography>
+									</Paper>
+								))}
+							</Box>
+						</Paper>
+					)}
 				</>
 			)}
 
 			{/* Empty State */}
-			{!loading && !stats && !error && (
+			{!loading && !statsRecord && !error && (
 				<Paper
 					elevation={0}
 					sx={{
@@ -613,10 +535,10 @@ export default function DashboardPage() {
 					}}
 				>
 					<Typography variant="h6" color="text.secondary" gutterBottom>
-						No dashboard data available
+						No stats found for this {viewType} period
 					</Typography>
 					<Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-						Try refreshing or adjusting the date range
+						Try refreshing or selecting a different date
 					</Typography>
 					<Button
 						variant="contained"
