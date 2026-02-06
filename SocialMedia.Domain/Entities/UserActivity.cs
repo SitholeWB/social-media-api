@@ -3,6 +3,9 @@ namespace SocialMedia.Domain;
 public class UserActivity : BaseEntity
 {
     public Guid UserId { get; set; }
+
+    public DateTimeOffset? LastSeenAt { get; set; }
+
     public List<UserReactionActivity> Reactions { get; set; } = new();
     public List<UserVoteActivity> Votes { get; set; } = new();
 

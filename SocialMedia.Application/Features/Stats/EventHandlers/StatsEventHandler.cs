@@ -96,26 +96,28 @@ public class StatsEventHandler(
         // "before" state here easily without fetching User first.
 
         // Optimization: Fetch UserActivity.
-        var userActivity = await userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
-        var lastActive = userActivity?.LastModifiedAt ?? DateTimeOffset.MinValue;
+        var userActivity = await userActivityRepository.GetByUserIdAsync(userId, true, cancellationToken);
+        var lastActive = userActivity?.LastSeenAt ?? DateTimeOffset.MinValue;
 
         // If their LAST recorded activity was BEFORE the start of this period, then they are
         // becoming active now.
         if (lastActive < startDate)
         {
             record.ActiveUsers++;
+            await userActivityRepository.UpdateUserLastSeenAsync(userId, cancellationToken);
         }
     }
 
     private async Task<StatsRecord> GetOrCreateStatsRecordAsync(StatsType type, DateTimeOffset startDate, CancellationToken cancellationToken)
     {
-        var record = await statsRepository.GetCurrentStatsRecordAsync(type, startDate, cancellationToken);
+        var date = type == StatsType.Weekly ? startDate.ToWeekStartDate() : startDate.ToMonthStartDate();
+        var record = await statsRepository.GetCurrentStatsRecordAsync(type, date, cancellationToken);
         if (record == null)
         {
             record = new StatsRecord
             {
                 StatsType = type,
-                Date = startDate,
+                Date = date,
                 ReactionBreakdown = new List<ReactionStat>()
             };
             await statsRepository.AddAsync(record, cancellationToken);

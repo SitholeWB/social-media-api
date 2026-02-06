@@ -44,7 +44,7 @@ public class GetPostsQueryHandler : IQueryHandler<GetPostsQuery, PagedResult<Pos
         UserActivity? userActivity = null;
         if (request.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, false, cancellationToken);
         }
 
         var dtos = posts.Select(p => new PostDto

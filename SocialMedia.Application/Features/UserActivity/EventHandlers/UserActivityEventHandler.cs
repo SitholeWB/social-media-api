@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace SocialMedia.Application;
 
@@ -9,16 +8,13 @@ public class UserActivityEventHandler :
     IEventHandler<PollVotedEvent>
 {
     private readonly IUserActivityRepository _userActivityRepository;
-    private readonly IDistributedCache _cache;
     private readonly ILogger<UserActivityEventHandler> _logger;
 
     public UserActivityEventHandler(
         IUserActivityRepository userActivityRepository,
-        IDistributedCache cache,
         ILogger<UserActivityEventHandler> logger)
     {
         _userActivityRepository = userActivityRepository;
-        _cache = cache;
         _logger = logger;
     }
 
@@ -46,7 +42,7 @@ public class UserActivityEventHandler :
 
     public async Task Handle(PollVotedEvent notification, CancellationToken cancellationToken)
     {
-        var userActivity = await _userActivityRepository.GetByUserIdAsync(notification.UserId, cancellationToken)
+        var userActivity = await _userActivityRepository.GetByUserIdAsync(notification.UserId, true, cancellationToken)
                            ?? new UserActivity { UserId = notification.UserId };
 
         if (userActivity.Id == Guid.Empty)
@@ -68,7 +64,7 @@ public class UserActivityEventHandler :
         string emoji,
         CancellationToken cancellationToken)
     {
-        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, cancellationToken);
+        var userActivity = await _userActivityRepository.GetByUserIdAsync(userId, true, cancellationToken);
 
         if (userActivity == default)
         {
@@ -91,8 +87,7 @@ public class UserActivityEventHandler :
 
     private async Task InvalidateCacheAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var cacheKey = $"user_activity_{userId}";
-        await _cache.RemoveAsync(cacheKey, cancellationToken);
+        await _userActivityRepository.RefreshCacheAsync(userId, cancellationToken);
         _logger.LogInformation("Invalidated UserActivity cache for {UserId}", userId);
     }
 }

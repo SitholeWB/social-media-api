@@ -46,7 +46,7 @@ public class GetPollQueryHandler : IQueryHandler<GetPollQuery, PollDto?>
         UserActivity? userActivity = null;
         if (query.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, false, cancellationToken);
         }
 
         return poll.ToDto(userActivity);

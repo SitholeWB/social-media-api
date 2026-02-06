@@ -19,7 +19,7 @@ public class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, PostDto?>
         UserActivity? userActivity = null;
         if (request.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, false, cancellationToken);
         }
 
         return new PostDto

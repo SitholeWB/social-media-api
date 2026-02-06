@@ -18,7 +18,7 @@ public class GetPostCommentsQueryHandler : IQueryHandler<GetPostCommentsQuery, P
         UserActivity? userActivity = null;
         if (request.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, false, cancellationToken);
         }
 
         var dtos = comments.Select(c => new CommentReadDto

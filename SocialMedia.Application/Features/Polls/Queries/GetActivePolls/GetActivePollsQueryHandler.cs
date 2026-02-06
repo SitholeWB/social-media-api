@@ -41,7 +41,7 @@ public class GetActivePollsQueryHandler : IQueryHandler<GetActivePollsQuery, Pag
         UserActivity? userActivity = null;
         if (query.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(query.UserId.Value, false, cancellationToken);
         }
 
         var dtos = polls.Select(p => p.ToDto(userActivity)).ToList();

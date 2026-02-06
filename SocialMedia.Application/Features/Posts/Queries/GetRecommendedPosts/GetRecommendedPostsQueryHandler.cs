@@ -50,7 +50,7 @@ public class GetRecommendedPostsQueryHandler : IQueryHandler<GetRecommendedPosts
         UserActivity? userActivity = null;
         if (request.UserId.HasValue)
         {
-            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, cancellationToken);
+            userActivity = await _userActivityRepository.GetByUserIdAsync(request.UserId.Value, false, cancellationToken);
         }
 
         var dtos = posts.Select(p => new PostDto
