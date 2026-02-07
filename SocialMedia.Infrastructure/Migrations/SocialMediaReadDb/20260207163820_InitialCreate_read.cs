@@ -3,15 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SocialMedia.Infrastructure.Migrations
+namespace SocialMedia.Infrastructure.Migrations.SocialMediaReadDb
 {
     /// <inheritdoc />
-    public partial class AddStatsRecords : Migration
+    public partial class InitialCreate_read : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            /*
             migrationBuilder.CreateTable(
                 name: "CommentReads",
                 columns: table => new
@@ -66,7 +65,6 @@ namespace SocialMedia.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_PostReads", x => x.Id);
                 });
-            */
 
             migrationBuilder.CreateTable(
                 name: "StatsRecords",
@@ -89,7 +87,6 @@ namespace SocialMedia.Infrastructure.Migrations
                     table.PrimaryKey("PK_StatsRecords", x => x.Id);
                 });
 
-            /*
             migrationBuilder.CreateIndex(
                 name: "IX_CommentReads_PostId",
                 table: "CommentReads",
@@ -121,21 +118,18 @@ namespace SocialMedia.Infrastructure.Migrations
                 name: "IX_Posts_ReactionCount",
                 table: "PostReads",
                 column: "ReactionCount");
-            */
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            /*
             migrationBuilder.DropTable(
                 name: "CommentReads");
 
             migrationBuilder.DropTable(
                 name: "PostReads");
-            */
 
-             migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "StatsRecords");
         }
     }
