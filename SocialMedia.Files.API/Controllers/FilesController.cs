@@ -27,7 +27,8 @@ public class FilesController : ControllerBase
     [HttpPut("{id}")]
     [Authorize]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> Update([FromRoute] string shardKey, [FromRoute] string id, [FromForm] IFormFile file, CancellationToken token = default)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Update([FromRoute] string shardKey, [FromRoute] string id, IFormFile file, CancellationToken token = default)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
@@ -52,7 +53,8 @@ public class FilesController : ControllerBase
     [HttpPost]
     [Authorize]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> Upload([FromRoute] string shardKey, [FromForm] IFormFile file, [FromQuery] string fileId = "", CancellationToken token = default)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Upload([FromRoute] string shardKey, IFormFile file, [FromQuery] string fileId = "", CancellationToken token = default)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
