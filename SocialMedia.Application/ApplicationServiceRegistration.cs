@@ -89,7 +89,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<UpdatePollCommand, bool>, UpdatePollCommandHandler>();
 
         // stats
-        services.AddScoped<IQueryHandler<GetDashboardStatsQuery, Result<DashboardStatsDto>>, GetDashboardStatsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetStatsHistoryQuery, Result<StatsHistoryDto>>, GetStatsHistoryQueryHandler>();
         services.AddScoped<IQueryHandler<RetrieveStatsQuery, StatsRecord?>, RetrieveStatsQueryHandler>();
 
         // Notifications

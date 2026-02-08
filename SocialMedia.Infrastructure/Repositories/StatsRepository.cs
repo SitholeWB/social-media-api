@@ -8,6 +8,17 @@ public class StatsRepository(SocialMediaReadDbContext context) : IStatsRepositor
             .FirstOrDefaultAsync(s => s.StatsType == type && s.Date == date, cancellationToken);
     }
 
+    public async Task<StatsHistoryDto> GetCurrentStatsHistoryAsync(int count, CancellationToken cancellationToken)
+    {
+        var weeks = await context.StatsRecords.Where(x => x.StatsType == StatsType.Weekly).OrderByDescending(s => s.Date).Take(count).ToListAsync(cancellationToken);
+        var months = await context.StatsRecords.Where(x => x.StatsType == StatsType.Monthly).OrderByDescending(s => s.Date).Take(count).ToListAsync(cancellationToken);
+        return new StatsHistoryDto
+        {
+            Monthly = months,
+            Weekly = weeks
+        };
+    }
+
     public async Task AddAsync(StatsRecord statsRecord, CancellationToken cancellationToken)
     {
         await context.StatsRecords.AddAsync(statsRecord, cancellationToken);
