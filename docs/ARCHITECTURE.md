@@ -4,14 +4,16 @@ This project follows **Clean Architecture** principles, emphasizing separation o
 
 ## Project Structure
 
-The solution is divided into four main layers:
+The solution is divided into multiple layers and projects:
 
-### 1. SocialMedia.Domain
+### Core Layers
+
+#### 1. SocialMedia.Domain
 - **Role**: The core of the application. Contains enterprise logic and entities.
 - **Dependencies**: None.
 - **Contents**: Entities, Value Objects, Domain Events, Repository Interfaces.
 
-### 2. SocialMedia.Application
+#### 2. SocialMedia.Application
 - **Role**: Orchestrates business logic and use cases.
 - **Dependencies**: SocialMedia.Domain.
 - **Contents**: 
@@ -20,17 +22,29 @@ The solution is divided into four main layers:
     - **Interfaces**: Abstractions for infrastructure (e.g., `IEmailService`).
     - **Validators**: FluentValidation rules.
 
-### 3. SocialMedia.Infrastructure
+#### 3. SocialMedia.Infrastructure
 - **Role**: Implements interfaces defined in Application and Domain.
 - **Dependencies**: SocialMedia.Application, SocialMedia.Domain.
 - **Contents**: 
     - **Persistence**: Entity Framework Core `DbContext` and Repository implementations.
-    - **Services**: External service implementations (e.g., Blockchain, File Storage).
+    - **Services**: External service implementations (e.g., Blockchain, Vector Embeddings).
 
-### 4. SocialMedia.API
-- **Role**: The entry point for the application.
+### Presentation & API Layers
+
+#### 4. SocialMedia.API
+- **Role**: The main REST API entry point for the application.
 - **Dependencies**: SocialMedia.Application, SocialMedia.Infrastructure.
 - **Contents**: Controllers, Middleware, Program.cs configuration.
+
+#### 5. SocialMedia.Files.API
+- **Role**: Microservice for file upload/download with database sharding support.
+- **Dependencies**: Minimal - has its own DbContext for file metadata.
+- **Contents**: File management controllers, sharding logic, file storage service.
+
+#### 6. SocialMedia.Admin
+- **Role**: React-based Single Page Application for system administration.
+- **Technology**: React, TypeScript, Vite, Redux Toolkit, Firebase Auth.
+- **Contents**: Dashboard UI, user management, content moderation interface.
 
 ## CQRS Pattern
 
@@ -114,6 +128,113 @@ graph LR
 ### Thread Safety
 
 In-memory repositories use `ConcurrentDictionary<Guid, T>` for thread-safe concurrent access during background event processing.
+
+## Microservices Architecture
+
+The solution employs a microservices approach for specific concerns:
+
+### File Management Microservice
+
+**SocialMedia.Files.API** is a separate microservice responsible for file uploads and downloads:
+
+- **Database Sharding**: Supports multiple database connections for horizontal scaling
+- **Route-based Shard Selection**: Shard key can be specified in the route (`/{shardKey}/files`)
+- **Deduplication**: Uses `UserFile` entity to track file ownership and prevent duplicate storage
+- **Independent Deployment**: Can be scaled independently from the main API
+
+```mermaid
+graph LR
+    Client[Client App]
+    MainAPI[SocialMedia.API]
+    FilesAPI[SocialMedia.Files.API]
+    DB1[(Shard DB1)]
+    DB2[(Shard DB2)]
+    
+    Client -->|Posts/Comments| MainAPI
+    Client -->|File Upload/Download| FilesAPI
+    FilesAPI -->|Route: /db1/files| DB1
+    FilesAPI -->|Route: /db2/files| DB2
+```
+
+### Benefits
+
+- **Scalability**: File service can scale independently based on storage needs
+- **Separation of Concerns**: File management logic isolated from business logic
+- **Flexibility**: Easy to swap storage backends or add CDN integration
+
+## Vector Embeddings & Recommendations
+
+The system includes an AI-powered recommendation engine using semantic similarity:
+
+### Architecture
+
+```mermaid
+graph TB
+    Post[New Post Created]
+    Generator[Embedding Generator]
+    Model[TinyBERT Model]
+    VectorDB[(SQLite Vector DB)]
+    Query[User Query]
+    Similarity[Similarity Search]
+    Results[Recommended Posts]
+    
+    Post --> Generator
+    Generator --> Model
+    Model --> VectorDB
+    Query --> Similarity
+    VectorDB --> Similarity
+    Similarity --> Results
+```
+
+### Components
+
+**TensorFlow.NET Integration**:
+- Uses TensorFlow.NET to run TinyBERT model locally
+- No external API calls required
+- Model downloaded and cached on first use
+
+**Embedding Generation**:
+- Posts are converted to 384-dimensional vectors
+- Captures semantic meaning of post content
+- Stored in SQLite database for fast retrieval
+
+**Similarity Search**:
+- Cosine similarity used to find related posts
+- User activity influences recommendations
+- Pagination support for large result sets
+
+### Benefits
+
+- **Privacy**: All processing happens locally, no data sent to external services
+- **Performance**: Fast similarity search using optimized vector operations
+- **Accuracy**: Semantic understanding beyond keyword matching
+
+## Database Sharding
+
+The Files API implements database sharding for horizontal scalability:
+
+### Sharding Strategy
+
+- **Shard Key**: Route-based selection (e.g., `/db1/files`, `/db2/files`)
+- **Configuration**: Connection strings defined in `appsettings.json`
+- **Fallback**: Defaults to `db1` if shard key not specified
+
+### Implementation
+
+```csharp
+// DbContext configured per-request based on shard key
+services.AddDbContext<FileDbContext>((sp, options) => {
+    var shardKey = GetShardKeyFromRoute(); // e.g., "db1" or "db2"
+    var connectionString = config.GetConnectionString(shardKey);
+    options.UseSqlServer(connectionString);
+});
+```
+
+### Use Cases
+
+- **Geographic Distribution**: Different shards for different regions
+- **Load Balancing**: Distribute files across multiple databases
+- **Tenant Isolation**: Separate databases for different customers
 
 ## Blockchain Integration
 

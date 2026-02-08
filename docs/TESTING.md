@@ -151,11 +151,22 @@ public class PostTests : IClassFixture<IntegrationTestWebApplicationFactory>
 public class CommentTests : IClassFixture<IntegrationTestWebApplicationFactory>
 ```
 
+## Test Projects
+
+The solution includes multiple test projects:
+
+- **SocialMedia.IntegrationTests**: Integration tests for the main API using `WebApplicationFactory`
+- **SocialMedia.Files.API.IntegrationTests**: Integration tests for the File Management API
+- **SocialMedia.UnitTests**: Unit tests for domain logic and handlers
+
 ### Running Tests
 
 ```bash
 # Run all tests
 dotnet test
+
+# Run specific test project
+dotnet test SocialMedia.IntegrationTests
 
 # Run specific test class
 dotnet test --filter "FullyQualifiedName~PostsControllerTests"
@@ -163,3 +174,4 @@ dotnet test --filter "FullyQualifiedName~PostsControllerTests"
 # Run with detailed output
 dotnet test --logger "console;verbosity=detailed"
 ```
+

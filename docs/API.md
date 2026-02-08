@@ -17,7 +17,9 @@ The SocialMedia API is a RESTful interface built with ASP.NET Core. It uses stan
 | **Moderation** | Content moderation tools. | `/api/v1/Moderation` |
 | **Reports** | Handling user reports. | `/api/v1/Reports` |
 | **Defaults** | System initialization and defaults. | `/api/v1/Defaults` |
-| **Stats** | Dashboard and usage statistics. | `/api/v1/Stats` |
+| **Stats** | Dashboard and usage statistics (history, weekly, monthly). | `/api/v1/Stats` |
+| **Feedback** | User feedback submission. | `/api/v1/feedback` |
+| **Recommendations** | AI-powered post recommendations based on vector similarity. | `/api/v1/recommendations` |
 
 ## Authentication Flow
 
@@ -274,9 +276,117 @@ The API enforces access rules based on the `GroupType`:
 - **Voting on Polls**: Handled in `VoteOnPollCommandHandler`. Users must have posting permissions in the group to vote.
 - **Group Creation**: The user creating a group is automatically assigned as the `CreatorId`.
 
-### New Group Poll Endpoints
-
 | Method | Path | Description | Access |
 |--------|------|-------------|--------|
 | **POST** | `/api/v1/groups/{groupId}/polls` | Create a new poll in a group. | Group Member |
 | **GET** | `/api/v1/groups/{groupId}/polls` | Get active polls for a group. | Group Viewer |
+
+## Recommendations System
+
+The API includes an AI-powered recommendation system that suggests posts based on semantic similarity using vector embeddings.
+
+### How It Works
+
+1. **Embedding Generation**: Posts are converted to vector embeddings using a TinyBERT model (TensorFlow.NET)
+2. **Vector Storage**: Embeddings are stored in a SQLite vector database
+3. **Similarity Search**: User queries are compared against stored vectors to find semantically similar posts
+4. **Personalization**: Recommendations are based on user activity and preferences
+
+### Get Recommended Posts
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller as RecommendationsController
+    participant Dispatcher
+    participant Handler as GetRecommendedPostsHandler
+    participant VectorService
+    participant VectorDB[(Vector DB)]
+    participant ReadRepo
+
+    Client->>Controller: GET /api/v1/recommendations/recommended
+    Controller->>Dispatcher: Query(GetRecommendedPostsQuery)
+    Dispatcher->>Handler: Handle(query)
+    Handler->>VectorService: GetRecommendedPostIds(userId)
+    VectorService->>VectorDB: Similarity Search
+    VectorDB-->>VectorService: Similar Post IDs
+    VectorService-->>Handler: Post IDs
+    Handler->>ReadRepo: GetPostsByIds(postIds)
+    ReadRepo-->>Handler: PostReadModels
+    Handler-->>Dispatcher: PagedResult<PostDto>
+    Dispatcher-->>Controller: PagedResult
+    Controller-->>Client: 200 OK + Recommended Posts
+```
+
+**Endpoint**: `GET /api/v1/recommendations/recommended`
+
+**Query Parameters**:
+- `pageNumber` (optional, default: 1)
+- `pageSize` (optional, default: 10)
+
+**Response**: `PagedResult<PostDto>` with semantically similar posts
+
+## Statistics & Analytics
+
+The Stats controller provides dashboard analytics with period-based tracking.
+
+### Available Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| **GET** | `/api/v1/stats/history` | Get historical stats records |
+| **GET** | `/api/v1/stats/weekly` | Get weekly statistics for a specific date |
+| **GET** | `/api/v1/stats/monthly` | Get monthly statistics for a specific date |
+
+### Stats Collection Flow
+
+```mermaid
+sequenceDiagram
+    participant Scheduler as Background Service
+    participant Handler as CollectStatsHandler
+    participant Repo as StatsRepository
+    participant DB[(Database)]
+
+    Note over Scheduler: Runs periodically (daily/weekly)
+    Scheduler->>Handler: Trigger Stats Collection
+    Handler->>DB: Query Active Users
+    Handler->>DB: Query New Posts
+    Handler->>DB: Query Comments Count
+    Handler->>DB: Query Reactions Count
+    Handler->>DB: Query Reaction Breakdown
+    Handler->>Repo: Save StatsRecord
+    Repo->>DB: INSERT StatsRecord
+    DB-->>Repo: Success
+```
+
+### StatsRecord Structure
+
+Each `StatsRecord` contains:
+- **StatsType**: `Weekly` or `Monthly`
+- **Date**: The period start date
+- **TotalPosts**: Total posts in the system
+- **ActiveUsers**: Users active in the period
+- **NewPosts**: Posts created in the period
+- **ResultingComments**: Comments on posts in the period
+- **ResultingReactions**: Reactions on posts in the period
+- **ReactionBreakdown**: Array of `{emoji, count}` showing reaction distribution
+
+## Feedback System
+
+Users can submit feedback about the application.
+
+**Endpoint**: `POST /api/v1/feedback`
+
+**Request Body**:
+```json
+{
+  "content": "User feedback message"
+}
+```
+
+**Response**: `200 OK` with boolean success indicator
+
+## File Management API
+
+The file management functionality is handled by a separate microservice (`SocialMedia.Files.API`) with database sharding support. See [Files API Documentation](FILES_API.md) for detailed information.
+

@@ -13,6 +13,7 @@ classDiagram
         +string PasswordHash
         +UserRole Role
         +bool IsBanned
+        +DateTimeOffset? LastActiveAt
     }
 
     class Post {
@@ -118,10 +119,52 @@ classDiagram
         +Guid BlockedId
     }
 
+    class Feedback {
+        +Guid Id
+        +string Content
+        +Guid UserId
+    }
+
+    class StatsRecord {
+        +Guid Id
+        +StatsType StatsType
+        +DateTimeOffset Date
+        +int TotalPosts
+        +int ActiveUsers
+        +int NewPosts
+        +int ResultingComments
+        +int ResultingReactions
+    }
+
+    class ReactionStat {
+        +string Emoji
+        +int Count
+    }
+
+    class UserActivity {
+        +Guid Id
+        +Guid UserId
+        +DateTimeOffset? LastSeenAt
+    }
+
+    class UserReactionActivity {
+        +Guid EntityId
+        +string EntityType
+        +string Emoji
+    }
+
+    class UserVoteActivity {
+        +Guid PollId
+        +Guid OptionId
+        +DateTimeOffset VotedAt
+    }
+
     User "1" -- "*" Post : Creates
     User "1" -- "*" Comment : Writes
     User "1" -- "*" Like : Likes
     User "1" -- "*" Vote : Votes
+    User "1" -- "*" Feedback : Submits
+    User "1" -- "0..1" UserActivity : Has
     
     Post "1" -- "*" Comment : Has
     Post "1" -- "*" Like : Has
@@ -137,6 +180,10 @@ classDiagram
     User "1" -- "*" GroupMember : Member Of
     User "1" -- "*" Notification : Receives
     User "1" -- "*" UserBlock : Blocks/Blocked By
+
+    StatsRecord "1" -- "*" ReactionStat : Contains
+    UserActivity "1" -- "*" UserReactionActivity : Tracks
+    UserActivity "1" -- "*" UserVoteActivity : Tracks
 
 
     class OutboxEvent {
@@ -170,7 +217,7 @@ classDiagram
 
 ## Entities Description
 
-- **User**: Represents a registered user of the system.
+- **User**: Represents a registered user of the system. Includes `LastActiveAt` for activity tracking.
 - **Post**: A content item created by a user, which can contain text and media.
 - **Comment**: A response to a post, which can also contain text and media.
 - **Like**: Represents a user's positive reaction to a post or comment.
@@ -182,6 +229,12 @@ classDiagram
 - **UserBlock**: Represents a block relationship between two users.
 - **OutboxEvent**: Stores domain events for reliable asynchronous processing using the Outbox pattern.
 - **GroupMember**: Represents a user's membership in a group.
+- **Feedback**: User-submitted feedback about the application.
+- **StatsRecord**: Periodic statistics snapshot (Weekly or Monthly) containing metrics like active users, posts, comments, and reactions.
+- **ReactionStat**: Breakdown of reactions by emoji type, used within StatsRecord.
+- **UserActivity**: Tracks detailed user activity including reactions and votes. Contains JSON collections of UserReactionActivity and UserVoteActivity.
+- **UserReactionActivity**: Individual reaction tracked within UserActivity (entity ID, type, and emoji).
+- **UserVoteActivity**: Individual poll vote tracked within UserActivity (poll ID, option ID, and timestamp).
 
 
 ## Read Models
