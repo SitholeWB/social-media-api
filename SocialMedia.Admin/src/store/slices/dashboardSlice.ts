@@ -1,9 +1,9 @@
 // store/slices/dashboardSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { dashboardService, DashboardStats, DateRange, StatsRecord } from '../../services/dashboardService';
+import { dashboardService, StatsHistory, DateRange, StatsRecord } from '../../services/dashboardService';
 
 interface DashboardState {
-	stats: DashboardStats | null; // Keep for backward compatibility if needed
+	statsHistory: StatsHistory | null; // Keep for backward compatibility if needed
 	statsRecord: StatsRecord | null;
 	loading: boolean;
 	error: string | null;
@@ -13,7 +13,7 @@ interface DashboardState {
 }
 
 const initialState: DashboardState = {
-	stats: null,
+	statsHistory: null,
 	statsRecord: null,
 	loading: false,
 	error: null,
@@ -26,10 +26,10 @@ const initialState: DashboardState = {
 	},
 };
 
-export const fetchDashboardStats = createAsyncThunk(
-	'dashboard/fetchStats',
-	async (dateRange?: DateRange) => {
-		const stats = await dashboardService.getDashboardStats(dateRange);
+export const fetchStatsHistory = createAsyncThunk(
+	'dashboard/fetchStatsHistory',
+	async () => {
+		const stats = await dashboardService.getStatsHistory();
 		return stats;
 	}
 );
@@ -71,22 +71,22 @@ const dashboardSlice = createSlice({
 			};
 		},
 		clearStats: (state) => {
-			state.stats = null;
+			state.statsHistory = null;
 			state.statsRecord = null;
 			state.error = null;
 		},
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchDashboardStats.pending, (state) => {
+			.addCase(fetchStatsHistory.pending, (state) => {
 				state.loading = true;
 				state.error = null;
 			})
-			.addCase(fetchDashboardStats.fulfilled, (state, action: PayloadAction<DashboardStats>) => {
+			.addCase(fetchStatsHistory.fulfilled, (state, action: PayloadAction<StatsHistory>) => {
 				state.loading = false;
-				state.stats = action.payload;
+				state.statsHistory = action.payload;
 			})
-			.addCase(fetchDashboardStats.rejected, (state, action) => {
+			.addCase(fetchStatsHistory.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message || 'Failed to fetch dashboard stats';
 			})

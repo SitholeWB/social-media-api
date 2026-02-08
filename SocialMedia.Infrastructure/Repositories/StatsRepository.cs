@@ -14,8 +14,8 @@ public class StatsRepository(SocialMediaReadDbContext context) : IStatsRepositor
         var months = await context.StatsRecords.Where(x => x.StatsType == StatsType.Monthly).OrderByDescending(s => s.Date).Take(count).ToListAsync(cancellationToken);
         return new StatsHistoryDto
         {
-            Monthly = months,
-            Weekly = weeks
+            Months = months,
+            Weeks = weeks
         };
     }
 

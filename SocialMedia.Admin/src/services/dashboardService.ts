@@ -25,15 +25,9 @@ export interface StatsRecord {
 	reactionBreakdown: ReactionStat[];
 }
 
-export interface DashboardStats {
-	totalUsers: number;
-	activeUsers: number;
-	totalPosts: number;
-	newPostsInPeriod: number;
-	totalComments: number;
-	newCommentsInPeriod: number;
-	totalReactions: number;
-	newReactionsInPeriod: number;
+export interface StatsHistory {
+	weeks: any[];
+	months: any[];
 }
 
 export interface DateRange {
@@ -42,21 +36,13 @@ export interface DateRange {
 }
 
 export const dashboardService = {
-	getDashboardStats: (dateRange?: DateRange): Promise<DashboardStats> => {
+	getStatsHistory: (): Promise<StatsHistory> => {
 		const params = new URLSearchParams();
-
-		if (dateRange?.startDate) {
-			params.append('startDate', dateRange.startDate);
-		}
-
-		if (dateRange?.endDate) {
-			params.append('endDate', dateRange.endDate);
-		}
-
+		params.append('count', '12');
 		const queryString = params.toString();
-		const url = `/api/v1.0/stats/dashboard${queryString ? `?${queryString}` : ''}`;
+		const url = `/api/v1.0/stats/history${queryString ? `?${queryString}` : ''}`;
 
-		return fetchJson<DashboardStats>(url);
+		return fetchJson<StatsHistory>(url);
 	},
 
 	getWeeklyStats: (date?: string): Promise<StatsRecord | null> => {
