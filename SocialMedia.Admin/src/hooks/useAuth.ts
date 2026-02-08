@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { authService, LoginRequest, RegisterRequest, AuthResponse, User } from '../services/authService';
 import { secureStorage } from '../utils/secureStorage'; // Your secure storage utility
+import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
 	user: User | null;
@@ -9,6 +10,12 @@ interface AuthState {
 	error: string | null;
 	isInitialized: boolean;
 }
+
+interface JwtPayload {
+	role?: string;
+	// add other claims if needed
+}
+
 
 export function useAuth() {
 	const [state, setState] = useState<AuthState>({
@@ -29,12 +36,16 @@ export function useAuth() {
 			const secureUser = await secureStorage.getItem<User>('auth_user_secure');
 
 			if (secureUser) {
-				// Also update localStorage for backward compatibility
-				authService.logout(); // Clear any old data
-				if (secureUser.token) {
+				// Update localStorage for backward compatibility only if different
+				if (secureUser.token && localStorage.getItem('auth_token') !== secureUser.token) {
 					localStorage.setItem('auth_token', secureUser.token);
 				}
-				localStorage.setItem('auth_user', JSON.stringify(secureUser));
+
+				const localUserStr = localStorage.getItem('auth_user');
+				const secureUserStr = JSON.stringify(secureUser);
+				if (localUserStr !== secureUserStr) {
+					localStorage.setItem('auth_user', secureUserStr);
+				}
 
 				setState(prev => ({ ...prev, user: secureUser, isInitialized: true }));
 				return;
@@ -239,13 +250,24 @@ export function useAuth() {
 	}, []);
 
 	const hasRole = useCallback((role: string | string[]): boolean => {
-		if (!state.user?.role) return false;
+		if (!state.user?.token) return false;
 
-		if (Array.isArray(role)) {
-			return role.includes(state.user.role);
+		try {
+			const decoded: JwtPayload = jwtDecode(state.user.token);
+
+			if (!decoded.role) return false;
+
+			const userRole = decoded.role.toLowerCase();
+
+			if (Array.isArray(role)) {
+				return role.some(r => r.toLowerCase() === userRole);
+			}
+
+			return userRole === role.toLowerCase();
+		} catch (error) {
+			console.error("Failed to decode JWT", error);
+			return false;
 		}
-
-		return state.user.role === role;
 	}, [state.user]);
 
 	const hasPermission = useCallback((permission: string | string[]): boolean => {

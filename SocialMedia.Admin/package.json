@@ -26,6 +26,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "latest",
     "firebase": "^12.6.0",
+    "jwt-decode": "^4.0.0",
     "react": "latest",
     "react-dom": "latest",
     "react-redux": "^9.2.0",

@@ -29,6 +29,7 @@ import EditPollPage from './pages/EditPollPage';
 import ViewPollPage from './pages/ViewPollPage';
 import ReportedPostsPage from './pages/ReportedPostsPage';
 import DashboardPage from './pages/DashboardPage';
+import { AuthProvider } from './contexts/AuthContext';
 
 const xThemeComponents = {
 	...chartsCustomizations,
@@ -90,7 +91,9 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
 export default function App(props: { disableCustomTheme?: boolean }) {
 	return (
 		<Provider store={store}>
-			<AppContent {...props} />
+			<AuthProvider>
+				<AppContent {...props} />
+			</AuthProvider>
 		</Provider>
 	);
 }

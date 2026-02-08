@@ -7,14 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SocialMedia.Application\SocialMedia.Application.csproj" />
   </ItemGroup>
 

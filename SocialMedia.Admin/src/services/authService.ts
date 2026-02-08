@@ -1,5 +1,5 @@
-// services/authService.ts - Updated to work with your fetchJson
-import { fetchJson, authStorage, API_BASE_URL } from './api';
+// services/authService.ts - Updated to work with your fetchJson and secureStorage
+import { fetchJson, authStorage } from './api';
 
 export interface LoginRequest {
 	username: string;
@@ -41,7 +41,7 @@ export const authService = {
 		});
 
 		if (response.token) {
-			// Save token
+			// Save token to localStorage via authStorage
 			authStorage.setToken(response.token);
 
 			// Create and save user object
@@ -55,6 +55,11 @@ export const authService = {
 				expiresAt: response.expiresAt,
 			};
 			authStorage.setUser(user);
+
+			// Sync with secure storage
+			import('../utils/secureStorage').then(({ secureStorage }) => {
+				secureStorage.setItem('auth_user_secure', user).catch(console.error);
+			});
 		}
 
 		return response;
@@ -79,6 +84,11 @@ export const authService = {
 				expiresAt: response.expiresAt,
 			};
 			authStorage.setUser(user);
+
+			// Sync with secure storage
+			import('../utils/secureStorage').then(({ secureStorage }) => {
+				secureStorage.setItem('auth_user_secure', user).catch(console.error);
+			});
 		}
 
 		return response;
@@ -103,6 +113,11 @@ export const authService = {
 				expiresAt: response.expiresAt,
 			};
 			authStorage.setUser(user);
+
+			// Sync with secure storage
+			import('../utils/secureStorage').then(({ secureStorage }) => {
+				secureStorage.setItem('auth_user_secure', user).catch(console.error);
+			});
 		}
 
 		return response;
@@ -110,8 +125,10 @@ export const authService = {
 
 	logout(): void {
 		authStorage.clear();
-		// Optionally call logout API if you have one
-		// fetchJson('/api/v1.0/auth/logout', { method: 'POST' }).catch(console.error);
+		// Sync with secure storage
+		import('../utils/secureStorage').then(({ secureStorage }) => {
+			secureStorage.removeItem('auth_user_secure');
+		}).catch(console.error);
 	},
 
 	getToken(): string | null {
@@ -131,7 +148,7 @@ export const authService = {
 		const existingUser = authStorage.getUser();
 
 		if (!token) {
-			authStorage.clear();
+			this.logout();
 			return null;
 		}
 
@@ -145,21 +162,23 @@ export const authService = {
 			const response = await fetchJson<User>('/api/v1.0/auth/me');
 
 			// Add token to user object
-			const userWithToken = {
+			const user: User = {
 				...response,
 				token: token
 			};
 
 			// Save to storage
-			authStorage.setUser(userWithToken);
+			authStorage.setUser(user);
 
-			return userWithToken;
+			// Sync with secure storage
+			import('../utils/secureStorage').then(({ secureStorage }) => {
+				secureStorage.setItem('auth_user_secure', user).catch(console.error);
+			});
+
+			return user;
 		} catch (error: any) {
 			if (error.message.includes('Unauthorized') || error.message.includes('401')) {
-				authStorage.clear();
-				if (window.location.pathname !== '/login') {
-					window.location.href = '/login';
-				}
+				this.logout();
 			}
 			return null;
 		}
@@ -183,6 +202,11 @@ export const authService = {
 						user.expiresAt = response.expiresAt;
 					}
 					authStorage.setUser(user);
+
+					// Sync with secure storage
+					import('../utils/secureStorage').then(({ secureStorage }) => {
+						secureStorage.setItem('auth_user_secure', user).catch(console.error);
+					});
 				}
 
 				return response;
@@ -191,7 +215,7 @@ export const authService = {
 			return null;
 		} catch (error) {
 			console.error('Failed to refresh token:', error);
-			authStorage.clear();
+			this.logout();
 			throw error;
 		}
 	},
