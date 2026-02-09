@@ -9,7 +9,7 @@ import {
   setSelectedDate 
 } from '../store/slices/dashboardSlice';
 import { useAuth } from '../hooks/useAuth';
-import { format, parseISO, isSameMonth, isSameWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 
 // Material-UI Components
 import Box from '@mui/material/Box';
@@ -103,6 +103,20 @@ interface PeriodStats {
   totalPosts: number;
 }
 
+// Safe date formatting function
+const safeFormatDate = (dateString: string | null | undefined, dateFormat: string): string => {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = parseISO(dateString);
+    if (!isValid(date)) return 'Invalid Date';
+    return format(date, dateFormat);
+  } catch (error) {
+    console.error('Error formatting date:', error, dateString);
+    return 'Date Error';
+  }
+};
+
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const { isAdmin } = useAuth();
@@ -115,15 +129,27 @@ export default function DashboardPage() {
     selectedDate 
   } = useAppSelector((state) => state.dashboard);
 
+  // Track if data is loaded
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
   // Fetch stats on mount and when viewType or selectedDate changes
   React.useEffect(() => {
-    if (viewType === 'weekly') {
-      dispatch(fetchWeeklyStats(selectedDate));
-    } else {
-      dispatch(fetchMonthlyStats(selectedDate));
-    }
-    // Fetch history data for charts
-    dispatch(fetchStatsHistory());
+    const fetchData = async () => {
+      try {
+        if (viewType === 'weekly') {
+          await dispatch(fetchWeeklyStats(selectedDate));
+        } else {
+          await dispatch(fetchMonthlyStats(selectedDate));
+        }
+        await dispatch(fetchStatsHistory());
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    fetchData();
   }, [dispatch, viewType, selectedDate]);
 
   const handleViewTypeChange = (
@@ -139,17 +165,22 @@ export default function DashboardPage() {
     dispatch(setSelectedDate(value));
   };
 
-  const handleRefresh = () => {
-    if (viewType === 'weekly') {
-      dispatch(fetchWeeklyStats(selectedDate));
-    } else {
-      dispatch(fetchMonthlyStats(selectedDate));
+  const handleRefresh = async () => {
+    try {
+      if (viewType === 'weekly') {
+        await dispatch(fetchWeeklyStats(selectedDate));
+      } else {
+        await dispatch(fetchMonthlyStats(selectedDate));
+      }
+      await dispatch(fetchStatsHistory());
+    } catch (error) {
+      console.error('Error refreshing data:', error);
     }
-    dispatch(fetchStatsHistory());
   };
 
   const handleThisPeriod = () => {
-    dispatch(setSelectedDate(format(new Date(), 'yyyy-MM-dd')));
+    const today = new Date();
+    dispatch(setSelectedDate(format(today, 'yyyy-MM-dd')));
   };
 
   // Calculate growth percentages
@@ -167,10 +198,7 @@ export default function DashboardPage() {
 
   // Format date for display
   const formatChartDate = (dateString: string) => {
-    const date = parseISO(dateString);
-    return viewType === 'weekly' 
-      ? format(date, 'MMM dd')
-      : format(date, 'MMM yyyy');
+    return safeFormatDate(dateString, viewType === 'weekly' ? 'MMM dd' : 'MMM yyyy');
   };
 
   // Get current period stats
@@ -179,18 +207,13 @@ export default function DashboardPage() {
     if (!dataPoints || dataPoints.length === 0) return null;
     
     // Sort by date descending (newest first) and get the most recent
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    const sortedData = [...dataPoints].sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
     
-    return {
-      date: sortedData[0].date,
-      activeUsers: sortedData[0].activeUsers,
-      newPosts: sortedData[0].newPosts,
-      resultingComments: sortedData[0].resultingComments,
-      resultingReactions: sortedData[0].resultingReactions,
-      totalPosts: sortedData[0].totalPosts,
-    };
+    return sortedData[0] || null;
   };
 
   // Get previous period stats
@@ -199,24 +222,18 @@ export default function DashboardPage() {
     if (!dataPoints || dataPoints.length < 2) return null;
     
     // Sort by date descending (newest first) and get the second most recent
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    const sortedData = [...dataPoints].sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
     
-    return {
-      date: sortedData[1].date,
-      activeUsers: sortedData[1].activeUsers,
-      newPosts: sortedData[1].newPosts,
-      resultingComments: sortedData[1].resultingComments,
-      resultingReactions: sortedData[1].resultingReactions,
-      totalPosts: sortedData[1].totalPosts,
-    };
+    return sortedData[1] || null;
   };
 
   // Calculate comparison data between current and previous period
   const calculateComparisonData = () => {
     const current = getCurrentPeriodStats();
-    const previous = getPreviousPeriodStats();
     
     if (!current) {
       return {
@@ -227,6 +244,8 @@ export default function DashboardPage() {
         totalPosts: { current: 0, previous: 0, change: 0, changePercentage: 0 },
       };
     }
+
+    const previous = getPreviousPeriodStats();
 
     const calculateChange = (currentVal: number, previousVal: number) => {
       const change = currentVal - previousVal;
@@ -280,19 +299,14 @@ export default function DashboardPage() {
       };
     }
 
-    // Get all available data points (up to 12) sorted chronologically
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    const labels = sortedData.map(item => {
-      const date = parseISO(item.date);
-      if (viewType === 'weekly') {
-        return format(date, 'MMM dd');
-      } else {
-        return format(date, 'MMM yyyy');
-      }
+    // Get all available data points sorted chronologically
+    const sortedData = [...dataPoints].sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      return dateA.getTime() - dateB.getTime();
     });
+
+    const labels = sortedData.map(item => formatChartDate(item.date));
 
     return {
       labels,
@@ -316,26 +330,6 @@ export default function DashboardPage() {
           fill: false,
           pointRadius: 4,
           pointHoverRadius: 6,
-        },
-        {
-          label: 'Comments',
-          data: sortedData.map(item => item.resultingComments),
-          borderColor: CHART_COLORS.warning,
-          backgroundColor: `${CHART_COLORS.warning}20`,
-          tension: 0.3,
-          fill: false,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-        },
-        {
-          label: 'Reactions',
-          data: sortedData.map(item => item.resultingReactions),
-          borderColor: CHART_COLORS.secondary,
-          backgroundColor: `${CHART_COLORS.secondary}20`,
-          tension: 0.3,
-          fill: false,
-          pointRadius: 4,
-          pointHoverRadius: 6,
         }
       ]
     };
@@ -354,7 +348,7 @@ export default function DashboardPage() {
     }
 
     const currentLabel = formatChartDate(current.date);
-    const previousLabel = previous ? formatChartDate(previous.date) : 'Previous Period';
+    const previousLabel = previous ? formatChartDate(previous.date) : 'Previous';
     
     return {
       labels: [previousLabel, currentLabel],
@@ -369,18 +363,6 @@ export default function DashboardPage() {
           label: 'New Posts',
           data: [previous?.newPosts || 0, current.newPosts],
           backgroundColor: CHART_COLORS.success,
-          borderRadius: 6,
-        },
-        {
-          label: 'Comments',
-          data: [previous?.resultingComments || 0, current.resultingComments],
-          backgroundColor: CHART_COLORS.warning,
-          borderRadius: 6,
-        },
-        {
-          label: 'Reactions',
-          data: [previous?.resultingReactions || 0, current.resultingReactions],
-          backgroundColor: CHART_COLORS.secondary,
           borderRadius: 6,
         }
       ]
@@ -398,9 +380,11 @@ export default function DashboardPage() {
       };
     }
 
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    const sortedData = [...dataPoints].sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
 
     const labels = sortedData.map(item => formatChartDate(item.date));
 
@@ -416,56 +400,6 @@ export default function DashboardPage() {
           fill: true,
           pointRadius: 4,
           pointHoverRadius: 6,
-        },
-        {
-          label: 'New Posts',
-          data: sortedData.map(item => item.newPosts),
-          borderColor: CHART_COLORS.success,
-          backgroundColor: `${CHART_COLORS.success}20`,
-          tension: 0.3,
-          fill: false,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-        }
-      ]
-    };
-  };
-
-  // Prepare data for engagement rate chart (Comments + Reactions per Post)
-  const prepareEngagementRateChartData = (): ChartData<'bar'> => {
-    const dataPoints = viewType === 'weekly' ? statsHistory?.weeks : statsHistory?.months;
-    
-    if (!dataPoints || dataPoints.length === 0) {
-      return {
-        labels: [],
-        datasets: []
-      };
-    }
-
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    const engagementRates = sortedData.map(item => {
-      if (item.newPosts === 0) return 0;
-      return (item.resultingComments + item.resultingReactions) / item.newPosts;
-    });
-
-    const labels = sortedData.map(item => formatChartDate(item.date));
-
-    return {
-      labels,
-      datasets: [
-        {
-          label: 'Engagement Rate',
-          data: engagementRates,
-          backgroundColor: engagementRates.map(rate => 
-            rate > 5 ? CHART_COLORS.success :
-            rate > 2 ? CHART_COLORS.primary :
-            rate > 0 ? CHART_COLORS.warning :
-            CHART_COLORS.gray
-          ),
-          borderRadius: 4,
         }
       ]
     };
@@ -508,7 +442,7 @@ export default function DashboardPage() {
     };
   };
 
-  // Calculate averages for the last 12 periods
+  // Calculate averages for the available periods
   const calculateAverages = () => {
     const dataPoints = viewType === 'weekly' ? statsHistory?.weeks : statsHistory?.months;
     
@@ -522,9 +456,11 @@ export default function DashboardPage() {
       };
     }
 
-    const sortedData = [...dataPoints].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    const sortedData = [...dataPoints].sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
 
     const totalActiveUsers = sortedData.reduce((sum, item) => sum + item.activeUsers, 0);
     const totalNewPosts = sortedData.reduce((sum, item) => sum + item.newPosts, 0);
@@ -540,7 +476,7 @@ export default function DashboardPage() {
     };
   };
 
-  // Chart options
+  // Chart options optimized for mobile
   const lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -548,14 +484,15 @@ export default function DashboardPage() {
       legend: {
         position: 'top' as const,
         labels: {
-          padding: 15,
+          padding: 10,
           usePointStyle: true,
+          boxWidth: 6,
         }
       },
       tooltip: {
         mode: 'index' as const,
         intersect: false,
-        padding: 10,
+        padding: 8,
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         titleColor: '#333',
         bodyColor: '#666',
@@ -571,7 +508,7 @@ export default function DashboardPage() {
         },
         ticks: {
           precision: 0,
-          padding: 8,
+          padding: 5,
         }
       },
       x: {
@@ -579,7 +516,9 @@ export default function DashboardPage() {
           display: false,
         },
         ticks: {
-          padding: 8,
+          padding: 5,
+          maxRotation: 45,
+          minRotation: 45,
         }
       }
     },
@@ -596,14 +535,15 @@ export default function DashboardPage() {
       legend: {
         position: 'top' as const,
         labels: {
-          padding: 15,
+          padding: 10,
           usePointStyle: true,
+          boxWidth: 6,
         }
       },
       tooltip: {
         mode: 'index' as const,
         intersect: false,
-        padding: 10,
+        padding: 8,
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         titleColor: '#333',
         bodyColor: '#666',
@@ -619,7 +559,7 @@ export default function DashboardPage() {
         },
         ticks: {
           precision: 0,
-          padding: 8,
+          padding: 5,
         }
       },
       x: {
@@ -627,7 +567,7 @@ export default function DashboardPage() {
           display: false,
         },
         ticks: {
-          padding: 8,
+          padding: 5,
         }
       }
     },
@@ -640,13 +580,13 @@ export default function DashboardPage() {
       legend: {
         position: 'bottom' as const,
         labels: {
-          padding: 15,
+          padding: 10,
           usePointStyle: true,
-          boxWidth: 10,
+          boxWidth: 8,
         }
       },
       tooltip: {
-        padding: 10,
+        padding: 8,
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         titleColor: '#333',
         bodyColor: '#666',
@@ -686,8 +626,8 @@ export default function DashboardPage() {
 
   if (!isAdmin) {
     return (
-      <Box sx={{ p: 4, textAlign: 'center' }}>
-        <Alert severity="warning" sx={{ mb: 3 }}>
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Alert severity="warning" sx={{ mb: 2 }}>
           You need administrator privileges to access the dashboard.
         </Alert>
         <Typography variant="body2" color="text.secondary">
@@ -702,18 +642,19 @@ export default function DashboardPage() {
   const currentPeriodStats = getCurrentPeriodStats();
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', p: { xs: 1, sm: 2, md: 3 } }}>
       <PageHeader
         title="Dashboard"
         subtitle="Platform Statistics & Analytics"
         action={
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={1}>
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={handleRefresh}
               disabled={loading}
               sx={{ textTransform: 'none' }}
+              size="small"
             >
               Refresh
             </Button>
@@ -725,18 +666,18 @@ export default function DashboardPage() {
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: { xs: 2, sm: 3 },
           mb: 3,
           border: '1px solid',
           borderColor: 'divider',
           borderRadius: 2,
         }}
       >
-        <Stack spacing={3}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack spacing={2}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <DateRangeIcon color="primary" />
-              <Typography variant="h6" fontWeight={600}>
+              <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                 Stats Period
               </Typography>
             </Box>
@@ -748,9 +689,10 @@ export default function DashboardPage() {
               onChange={handleViewTypeChange}
               aria-label="View Type"
               size="small"
+              sx={{ flexWrap: 'wrap' }}
             >
-              <ToggleButton value="weekly">Weekly</ToggleButton>
-              <ToggleButton value="monthly">Monthly</ToggleButton>
+              <ToggleButton value="weekly" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Weekly</ToggleButton>
+              <ToggleButton value="monthly" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Monthly</ToggleButton>
             </ToggleButtonGroup>
           </Box>
 
@@ -765,6 +707,7 @@ export default function DashboardPage() {
                 InputLabelProps={{ shrink: true }}
                 disabled={loading}
                 helperText={`Showing stats for the ${viewType} containing this date.`}
+                size="small"
               />
             </Grid>
             <Grid size={{ xs: 12, md: 4 }}>
@@ -774,9 +717,10 @@ export default function DashboardPage() {
                 disabled={loading}
                 fullWidth
                 startIcon={<TodayIcon />}
-                sx={{ textTransform: 'none', height: '56px' }}
+                sx={{ textTransform: 'none', height: '40px' }}
+                size="small"
               >
-                Today / This Period
+                This Period
               </Button>
             </Grid>
           </Grid>
@@ -785,14 +729,15 @@ export default function DashboardPage() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
               <InfoIcon fontSize="small" />
               <Typography variant="caption">
-                Showing {averages.totalPeriods} {viewType === 'weekly' ? 'weeks' : 'months'} of data (max 12 records)
+                Showing {averages.totalPeriods} {viewType === 'weekly' ? 'weeks' : 'months'} of data
               </Typography>
             </Box>
           )}
 
-          {statsRecord && (
-            <Typography variant="body2" color="text.secondary">
-              Showing <strong>{viewType}</strong> stats starting from <strong>{format(new Date(statsRecord.date), 'PPP')}</strong>
+          {statsRecord && statsRecord.date && (
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+              Showing <strong>{viewType}</strong> stats starting from{' '}
+              <strong>{safeFormatDate(statsRecord.date, 'PPP')}</strong>
             </Typography>
           )}
         </Stack>
@@ -800,208 +745,113 @@ export default function DashboardPage() {
 
       {/* Error Display */}
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
       {/* Loading State */}
       {loading && !statsRecord && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
           <CircularProgress />
         </Box>
       )}
 
       {/* Statistics Cards */}
-      {statsRecord && currentPeriodStats && (
+      {statsRecord && currentPeriodStats && isInitialized && (
         <>
-          {/* Period Comparison Cards */}
-          <Typography variant="h6" fontWeight={600} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Period Comparison Cards - Mobile Optimized */}
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <TrendingUp color="primary" />
-            {viewType === 'weekly' ? 'Week-over-Week' : 'Month-over-Month'} Comparison
+            <Box component="span" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              {viewType === 'weekly' ? 'Week-over-Week' : 'Month-over-Month'} Comparison
+            </Box>
           </Typography>
 
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  height: '100%',
-                }}
-              >
-                <Stack spacing={1}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Active Users
-                    </Typography>
-                    {getTrendIcon(comparisonData.activeUsers.change)}
-                  </Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {formatNumber(comparisonData.activeUsers.current)}
-                  </Typography>
-                  <Typography variant="body2" color={getChangeColor(comparisonData.activeUsers.change)}>
-                    {formatChangeText(comparisonData.activeUsers.change, comparisonData.activeUsers.changePercentage)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Avg: {averages.avgActiveUsers.toFixed(1)}
-                  </Typography>
-                </Stack>
-              </Paper>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  height: '100%',
-                }}
-              >
-                <Stack spacing={1}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      New Posts
-                    </Typography>
-                    {getTrendIcon(comparisonData.newPosts.change)}
-                  </Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {formatNumber(comparisonData.newPosts.current)}
-                  </Typography>
-                  <Typography variant="body2" color={getChangeColor(comparisonData.newPosts.change)}>
-                    {formatChangeText(comparisonData.newPosts.change, comparisonData.newPosts.changePercentage)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Avg: {averages.avgNewPosts.toFixed(1)}
-                  </Typography>
-                </Stack>
-              </Paper>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  height: '100%',
-                }}
-              >
-                <Stack spacing={1}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Comments
-                    </Typography>
-                    {getTrendIcon(comparisonData.comments.change)}
-                  </Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {formatNumber(comparisonData.comments.current)}
-                  </Typography>
-                  <Typography variant="body2" color={getChangeColor(comparisonData.comments.change)}>
-                    {formatChangeText(comparisonData.comments.change, comparisonData.comments.changePercentage)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Avg: {averages.avgComments.toFixed(1)}
-                  </Typography>
-                </Stack>
-              </Paper>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  height: '100%',
-                }}
-              >
-                <Stack spacing={1}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Reactions
-                    </Typography>
-                    {getTrendIcon(comparisonData.reactions.change)}
-                  </Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {formatNumber(comparisonData.reactions.current)}
-                  </Typography>
-                  <Typography variant="body2" color={getChangeColor(comparisonData.reactions.change)}>
-                    {formatChangeText(comparisonData.reactions.change, comparisonData.reactions.changePercentage)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Avg: {averages.avgReactions.toFixed(1)}
-                  </Typography>
-                </Stack>
-              </Paper>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  height: '100%',
-                }}
-              >
-                <Stack spacing={1}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Total Posts
-                    </Typography>
-                    <TimelineIcon color="info" />
-                  </Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    {formatNumber(comparisonData.totalPosts.current)}
-                  </Typography>
-                  <Typography variant="body2" color="info.main">
-                    +{comparisonData.totalPosts.change} this period
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Cumulative total
-                  </Typography>
-                </Stack>
-              </Paper>
-            </Grid>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            {[
+              { key: 'activeUsers', label: 'Active Users', icon: <PeopleIcon /> },
+              { key: 'newPosts', label: 'New Posts', icon: <PostAddIcon /> },
+              { key: 'comments', label: 'Comments', icon: <CommentIcon /> },
+              { key: 'reactions', label: 'Reactions', icon: <ThumbUpIcon /> },
+              { key: 'totalPosts', label: 'Total Posts', icon: <TimelineIcon /> },
+            ].map((metric) => {
+              const data = comparisonData[metric.key as keyof typeof comparisonData];
+              const avgKey = `avg${metric.label.replace(' ', '')}` as keyof typeof averages;
+              const average = averages[avgKey] || 0;
+              
+              return (
+                <Grid size={{ xs: 12, sm: 6, md: 2.4 }} key={metric.key}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      height: '100%',
+                      minHeight: '120px',
+                    }}
+                  >
+                    <Stack spacing={0.5}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                          {metric.label}
+                        </Typography>
+                        <Box sx={{ fontSize: '0.875rem' }}>
+                          {metric.icon}
+                        </Box>
+                      </Box>
+                      <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                        {formatNumber(data.current)}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        {getTrendIcon(data.change)}
+                        <Typography 
+                          variant="caption" 
+                          sx={{ 
+                            fontSize: '0.7rem',
+                            color: getChangeColor(data.change)
+                          }}
+                        >
+                          {formatChangeText(data.change, data.changePercentage)}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                        Avg: {average.toFixed(1)}
+                      </Typography>
+                    </Stack>
+                  </Paper>
+                </Grid>
+              );
+            })}
           </Grid>
 
-          {/* Charts Section */}
-          <Typography variant="h6" fontWeight={600} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Charts Section - Mobile Optimized */}
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <ShowChartIcon color="primary" />
-            Last {averages.totalPeriods} {viewType === 'weekly' ? 'Weeks' : 'Months'} Analysis
+            <Box component="span" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              Historical Analysis
+            </Box>
           </Typography>
 
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
             {/* Full Year Trend Chart */}
             <Grid size={{ xs: 12, lg: 8 }}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
-                  height: '450px',
+                  height: { xs: '300px', sm: '350px', md: '400px' },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TimelineIcon fontSize="small" />
-                  {viewType === 'weekly' ? '12-Week' : '12-Month'} Trend Overview
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  {viewType === 'weekly' ? 'Weekly' : 'Monthly'} Trend Overview
                 </Typography>
-                <Box sx={{ height: 'calc(450px - 60px)' }}>
+                <Box sx={{ height: 'calc(100% - 40px)' }}>
                   {statsHistory && statsHistory.weeks.length > 0 ? (
                     <Line 
                       data={prepareYearTrendChartData()} 
@@ -1009,7 +859,7 @@ export default function DashboardPage() {
                     />
                   ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                      <Typography color="text.secondary">
+                      <Typography color="text.secondary" align="center">
                         Loading trend data...
                       </Typography>
                     </Box>
@@ -1023,18 +873,17 @@ export default function DashboardPage() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
-                  height: '450px',
+                  height: { xs: '300px', sm: '350px', md: '400px' },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TrendingUp fontSize="small" />
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                   Period Comparison
                 </Typography>
-                <Box sx={{ height: 'calc(450px - 60px)' }}>
+                <Box sx={{ height: 'calc(100% - 40px)' }}>
                   {statsHistory && statsHistory.weeks.length > 1 ? (
                     <Bar 
                       data={prepareComparisonBarChartData()} 
@@ -1043,7 +892,7 @@ export default function DashboardPage() {
                   ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                       <Typography color="text.secondary" align="center">
-                        Need at least 2 periods<br />for comparison
+                        Need at least 2 periods
                       </Typography>
                     </Box>
                   )}
@@ -1056,18 +905,17 @@ export default function DashboardPage() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
-                  height: '400px',
+                  height: { xs: '300px', sm: '350px' },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PostAddIcon fontSize="small" />
-                  Posts Growth & Cumulative Total
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Cumulative Posts Growth
                 </Typography>
-                <Box sx={{ height: 'calc(400px - 60px)' }}>
+                <Box sx={{ height: 'calc(100% - 40px)' }}>
                   {statsHistory && statsHistory.weeks.length > 0 ? (
                     <Line 
                       data={prepareCumulativePostsChartData()} 
@@ -1084,45 +932,31 @@ export default function DashboardPage() {
               </Paper>
             </Grid>
 
-            {/* Engagement Rate Chart */}
+            {/* Reaction Breakdown */}
             <Grid size={{ xs: 12, lg: 6 }}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
-                  height: '400px',
+                  height: { xs: '300px', sm: '350px' },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ThumbUpIcon fontSize="small" />
-                  Engagement Rate (Comments + Reactions per Post)
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  Reaction Distribution
                 </Typography>
-                <Box sx={{ height: 'calc(400px - 60px)' }}>
-                  {statsHistory && statsHistory.weeks.length > 0 ? (
-                    <Bar 
-                      data={prepareEngagementRateChartData()} 
-                      options={{
-                        ...barChartOptions,
-                        plugins: {
-                          ...barChartOptions.plugins,
-                          tooltip: {
-                            ...barChartOptions.plugins?.tooltip,
-                            callbacks: {
-                              label: (context) => {
-                                return `Engagement Rate: ${context.raw.toFixed(2)}`;
-                              }
-                            }
-                          }
-                        }
-                      }}
+                <Box sx={{ height: 'calc(100% - 40px)' }}>
+                  {statsRecord.reactionBreakdown && statsRecord.reactionBreakdown.length > 0 ? (
+                    <Doughnut 
+                      data={prepareReactionBreakdownChartData()} 
+                      options={doughnutChartOptions}
                     />
                   ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                      <Typography color="text.secondary">
-                        Loading engagement data...
+                      <Typography color="text.secondary" align="center">
+                        No reaction data available
                       </Typography>
                     </Box>
                   )}
@@ -1131,64 +965,52 @@ export default function DashboardPage() {
             </Grid>
           </Grid>
 
-          {/* Current Period Detailed Stats */}
+          {/* Current Period Details - Mobile Optimized */}
           <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <CalendarMonthIcon color="primary" />
-            Current {viewType === 'weekly' ? 'Week' : 'Month'} Details
+            <Box component="span" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              Current {viewType === 'weekly' ? 'Week' : 'Month'} Details
+            </Box>
           </Typography>
 
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 4 }}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
                   height: '100%',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '4px',
-                    backgroundColor: 'primary.main',
-                  },
                 }}
               >
-                <Stack spacing={1.5}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Period Summary
-                    </Typography>
-                    <InfoIcon color="primary" />
-                  </Box>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    Period Summary
+                  </Typography>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Period Date
+                      Date
                     </Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {currentPeriodStats.date ? format(parseISO(currentPeriodStats.date), 'PPP') : 'N/A'}
+                    <Typography variant="body2" fontWeight={600}>
+                      {safeFormatDate(currentPeriodStats.date, 'PPP')}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
                       Active Users
                     </Typography>
-                    <Typography variant="h6" color="primary.main">
+                    <Typography variant="body1" color="primary.main">
                       {formatNumber(currentPeriodStats.activeUsers)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      New Content Created
+                      New Posts
                     </Typography>
                     <Typography variant="body1">
-                      {formatNumber(currentPeriodStats.newPosts)} posts
+                      {formatNumber(currentPeriodStats.newPosts)}
                     </Typography>
                   </Box>
                 </Stack>
@@ -1199,44 +1021,30 @@ export default function DashboardPage() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
                   height: '100%',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '4px',
-                    backgroundColor: 'success.main',
-                  },
                 }}
               >
-                <Stack spacing={1.5}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Engagement Metrics
-                    </Typography>
-                    <CommentIcon color="success" />
-                  </Box>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    Engagement
+                  </Typography>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Comments Generated
+                      Comments
                     </Typography>
-                    <Typography variant="h6" color="success.main">
+                    <Typography variant="body1" color="success.main">
                       {formatNumber(currentPeriodStats.resultingComments)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Reactions Received
+                      Reactions
                     </Typography>
-                    <Typography variant="h6" color="warning.main">
+                    <Typography variant="body1" color="warning.main">
                       {formatNumber(currentPeriodStats.resultingReactions)}
                     </Typography>
                   </Box>
@@ -1244,8 +1052,8 @@ export default function DashboardPage() {
                     <Typography variant="caption" color="text.secondary" display="block">
                       Total Engagement
                     </Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {formatNumber(currentPeriodStats.resultingComments + currentPeriodStats.resultingReactions)} interactions
+                    <Typography variant="body2" fontWeight={600}>
+                      {formatNumber(currentPeriodStats.resultingComments + currentPeriodStats.resultingReactions)}
                     </Typography>
                   </Box>
                 </Stack>
@@ -1256,36 +1064,22 @@ export default function DashboardPage() {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
+                  p: 2,
                   border: '1px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
                   height: '100%',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '4px',
-                    backgroundColor: 'info.main',
-                  },
                 }}
               >
-                <Stack spacing={1.5}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Posts Overview
-                    </Typography>
-                    <TimelineIcon color="info" />
-                  </Box>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    Posts Overview
+                  </Typography>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Current Period Posts
+                      This Period
                     </Typography>
-                    <Typography variant="h6" color="info.main">
+                    <Typography variant="body1" color="info.main">
                       {formatNumber(currentPeriodStats.newPosts)}
                     </Typography>
                   </Box>
@@ -1293,15 +1087,15 @@ export default function DashboardPage() {
                     <Typography variant="caption" color="text.secondary" display="block">
                       Cumulative Total
                     </Typography>
-                    <Typography variant="h6" color="teal">
+                    <Typography variant="body1" color="teal">
                       {formatNumber(currentPeriodStats.totalPosts)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Growth This Period
+                      Growth
                     </Typography>
-                    <Typography variant="body1" fontWeight={600} color="success.main">
+                    <Typography variant="body2" fontWeight={600} color="success.main">
                       +{calculateGrowth(currentPeriodStats.totalPosts, currentPeriodStats.newPosts)}%
                     </Typography>
                   </Box>
@@ -1309,86 +1103,15 @@ export default function DashboardPage() {
               </Paper>
             </Grid>
           </Grid>
-
-          {/* Reaction Breakdown */}
-          {statsRecord.reactionBreakdown && statsRecord.reactionBreakdown.length > 0 && (
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={600} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <ThumbUpIcon color="primary" />
-                    Reaction Breakdown
-                  </Typography>
-
-                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    {statsRecord.reactionBreakdown.map((item, index) => (
-                      <Paper
-                        key={index}
-                        elevation={0}
-                        sx={{
-                          p: 2,
-                          minWidth: '80px',
-                          textAlign: 'center',
-                          border: '1px solid',
-                          borderColor: 'divider',
-                          borderRadius: 2,
-                          backgroundColor: 'action.hover'
-                        }}
-                      >
-                        <Typography variant="h4" sx={{ mb: 1 }}>
-                          {item.emoji}
-                        </Typography>
-                        <Typography variant="h6" fontWeight={700}>
-                          {formatNumber(item.count)}
-                        </Typography>
-                      </Paper>
-                    ))}
-                  </Box>
-                </Paper>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    height: '100%',
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={600} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CalendarMonthIcon color="primary" />
-                    Reaction Distribution
-                  </Typography>
-                  <Box sx={{ height: '250px' }}>
-                    <Doughnut 
-                      data={prepareReactionBreakdownChartData()} 
-                      options={doughnutChartOptions}
-                    />
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-          )}
         </>
       )}
 
       {/* Empty State */}
-      {!loading && !statsRecord && !error && (
+      {!loading && !statsRecord && !error && isInitialized && (
         <Paper
           elevation={0}
           sx={{
-            p: 4,
+            p: 3,
             border: '1px solid',
             borderColor: 'divider',
             borderRadius: 2,
@@ -1398,7 +1121,7 @@ export default function DashboardPage() {
           <Typography variant="h6" color="text.secondary" gutterBottom>
             No stats found for this {viewType} period
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Try refreshing or selecting a different date
           </Typography>
           <Button
@@ -1406,6 +1129,7 @@ export default function DashboardPage() {
             startIcon={<RefreshIcon />}
             onClick={handleRefresh}
             sx={{ textTransform: 'none' }}
+            size="small"
           >
             Refresh Dashboard
           </Button>
