@@ -17,27 +17,27 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="10.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Garnet" Version="1.1.0" />
     <PackageReference Include="Microsoft.ML.TensorFlow" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.SqliteVec" Version="1.68.0-preview" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.16.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.5" />
     <PackageReference Include="TensorFlow.NET" Version="0.150.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.4" />
   </ItemGroup>
