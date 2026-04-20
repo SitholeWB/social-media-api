@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.19.0" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <ProjectReference Include="..\SocialMedia.ServiceDefaults\SocialMedia.ServiceDefaults.csproj" />
   </ItemGroup>
 
