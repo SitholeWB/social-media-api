@@ -24,7 +24,7 @@ public class IdentityService : IIdentityService
             throw new Exception("User Not Found");
         }
         var token = GenerateJwtToken(user);
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -48,7 +48,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
         await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }
 
     public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default)
@@ -106,7 +106,7 @@ public class IdentityService : IIdentityService
         var token = GenerateJwtToken(user);
 
         await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -138,7 +138,7 @@ public class IdentityService : IIdentityService
         var userActivity = new UserActivity { UserId = userId };
         await _userActivityRepository.AddAsync(userActivity, cancellationToken);
 
-        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }
 
     private string GenerateJwtToken(User user)
@@ -169,6 +169,7 @@ public class IdentityService : IIdentityService
                 new Claim(ClaimTypes.Name, fullNames),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
                 new Claim(ClaimTypes.Actor, appName),
+                new Claim("tenantId", user.TenantId.ToString()),
             }),
             Expires = DateTime.UtcNow.AddMonths(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

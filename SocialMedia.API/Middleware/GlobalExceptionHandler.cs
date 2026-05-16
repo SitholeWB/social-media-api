@@ -44,6 +44,23 @@ public class GlobalExceptionHandler : IExceptionHandler
             return true;
         }
 
-        return false;
+        var genericProblemDetails = new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "Server Error",
+            Detail = exception.Message,
+            Instance = httpContext.Request.Path
+        };
+
+        var env = httpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+        if (!env.IsProduction())
+        {
+            genericProblemDetails.Extensions["stackTrace"] = exception.StackTrace;
+        }
+
+        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await httpContext.Response.WriteAsJsonAsync(genericProblemDetails, cancellationToken);
+
+        return true;
     }
 }

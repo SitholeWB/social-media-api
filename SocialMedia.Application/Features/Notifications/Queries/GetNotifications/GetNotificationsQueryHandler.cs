@@ -16,7 +16,7 @@ public class GetNotificationsQueryHandler : IQueryHandler<GetNotificationsQuery,
         return notifications
             .Where(n => n.UserId == request.UserId)
             .OrderByDescending(n => n.CreatedAt)
-            .Select(n => new NotificationDto(n.Id, n.Message, n.Type, n.RelatedId, n.IsRead, n.CreatedAt))
+            .Select(n => new NotificationDto(n.Id, n.TenantId, n.Message, n.Type, n.RelatedId, n.IsRead, n.CreatedAt))
             .ToList();
     }
 }

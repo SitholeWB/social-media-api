@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/recommendations")]
+[Route("api/v{version:apiVersion}/{tenantId}/recommendations")]
 [ApiController]
 public class RecommendationsController : ControllerBase
 {

@@ -20,7 +20,8 @@ public class GetPendingReportsQueryHandler : IQueryHandler<GetPendingReportsQuer
             Status = r.Status,
             PostId = r.PostId,
             CommentId = r.CommentId,
-            CreatedAt = r.CreatedAt
+            CreatedAt = r.CreatedAt,
+            TenantId = r.TenantId
         }).ToList();
 
         return new PagedResult<ReportDto>(dtos, totalCount, query.PageNumber, query.PageSize);

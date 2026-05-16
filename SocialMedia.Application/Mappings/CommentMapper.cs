@@ -14,7 +14,8 @@ public static class CommentMapper
             Media = comment.Media,
             CreatedAt = comment.CreatedAt,
             AdminTags = comment.AdminTags,
-            Tags = comment.Tags
+            Tags = comment.Tags,
+            TenantId = comment.TenantId
         };
     }
 

@@ -59,7 +59,8 @@ public class CommentAddedEventHandler :
                 LikeCount = 0,
                 Reactions = new List<ReactionReadDto>(),
                 AdminTags = notification.Comment.AdminTags,
-                Tags = notification.Comment.Tags
+                Tags = notification.Comment.Tags,
+                TenantId = notification.Comment.TenantId
             };
 
             var commentReadModel = new CommentReadModel
@@ -76,7 +77,8 @@ public class CommentAddedEventHandler :
                 Stats = new CommentStatsDto { LikeCount = 0 },
                 Reactions = new List<ReactionReadDto>(),
                 Tags = notification.Comment.Tags,
-                AdminTags = notification.Comment.AdminTags
+                AdminTags = notification.Comment.AdminTags,
+                TenantId = notification.Comment.TenantId
             };
 
             await _commentReadRepository.AddAsync(commentReadModel, cancellationToken);

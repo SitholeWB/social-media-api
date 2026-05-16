@@ -6,11 +6,15 @@ import Stack from '@mui/material/Stack';
 import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
 import SideMenu from './components/SideMenu';
+import { useTenant } from './contexts/TenantContext';
 
 export default function Layout() {
+	const { themeConfig } = useTenant();
+	const isTopNav = themeConfig?.layout === 'top-nav';
+
 	return (
-		<Box sx={{ display: 'flex' }}>
-			<SideMenu />
+		<Box sx={{ display: 'flex', flexDirection: isTopNav ? 'column' : 'row' }}>
+			{!isTopNav && <SideMenu />}
 			<AppNavbar />
 			{/* Main content */}
 			<Box

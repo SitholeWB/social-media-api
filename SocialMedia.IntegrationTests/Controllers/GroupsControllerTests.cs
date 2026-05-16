@@ -17,7 +17,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
         var command = new CreateGroupCommand("", "Description", GroupType.Public, Guid.Empty);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -30,7 +30,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
         var command = new CreateGroupCommand("Test Group", "Description", GroupType.Public, Guid.Empty);
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/groups", command, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", command, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -44,12 +44,12 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     {
         // Arrange
         var createCommand = new CreateGroupCommand("Test Group 2", "Description", GroupType.Public, Guid.Empty);
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
 
         // Act
-        var response = await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsync($"{Constants.ApiBase}/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -61,13 +61,13 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     {
         // Arrange
         var createCommand = new CreateGroupCommand("Test Group 3", "Description", GroupType.Public, Guid.Empty);
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
         var userId = Guid.NewGuid();
-        await _client.PostAsync($"/api/v1/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
+        await _client.PostAsync($"{Constants.ApiBase}/groups/{groupId}/users/{userId}", null, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/groups/{groupId}/users/{userId}", TestContext.Current.CancellationToken);
+        var response = await _client.DeleteAsync($"{Constants.ApiBase}/groups/{groupId}/users/{userId}", TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -82,7 +82,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
         var command = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", GroupType.Private);
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", command, TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}", command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -95,7 +95,7 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
         var groupId = Guid.NewGuid();
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/groups/{groupId}", TestContext.Current.CancellationToken);
+        var response = await _client.DeleteAsync($"{Constants.ApiBase}/groups/{groupId}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -106,13 +106,13 @@ public class GroupsControllerTests(IntegrationTestWebApplicationFactory factory)
     {
         // Arrange
         var createCommand = new CreateGroupCommand("Group to Update", "Desc", GroupType.Public, Guid.Empty);
-        var createResponse = await _client.PostAsJsonAsync("/api/v1/groups", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", createCommand, TestContext.Current.CancellationToken);
         var groupId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var updateCommand = new UpdateGroupCommand(groupId, "Updated Name", "Updated Desc", GroupType.Private);
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/groups/{groupId}", updateCommand, TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}", updateCommand, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);

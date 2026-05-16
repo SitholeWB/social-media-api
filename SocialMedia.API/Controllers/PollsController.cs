@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/polls")]
+[Route("api/v{version:apiVersion}/{tenantId}/polls")]
 [ApiController]
 [Authorize]
 public class PollsController : ControllerBase

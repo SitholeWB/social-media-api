@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/reports")]
+[Route("api/v{version:apiVersion}/{tenantId}/reports")]
 [ApiController]
 [Authorize]
 public class ReportsController : ControllerBase

@@ -19,7 +19,7 @@ public class FeedbackControllerTests(IntegrationTestWebApplicationFactory factor
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/feedback", feedbackRequest, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/feedback", feedbackRequest, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();

@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/reactions")]
+[Route("api/v{version:apiVersion}/{tenantId}/reactions")]
 [ApiController]
 [Authorize]
 public class LikesController : ControllerBase

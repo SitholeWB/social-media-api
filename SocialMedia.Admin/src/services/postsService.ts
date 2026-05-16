@@ -7,6 +7,7 @@ export interface Media {
 
 export interface Post {
 	id: string;
+	tenantId: string;
 	groupId: string;
 	title?: string;
 	content: string;

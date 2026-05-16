@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/groups")]
+[Route("api/v{version:apiVersion}/{tenantId}/groups")]
 [ApiController]
 [Authorize]
 public class GroupsController : ControllerBase
@@ -56,7 +56,7 @@ public class GroupsController : ControllerBase
         }
         createPostDto.AuthorId = userId.Value;
         createPostDto.CreatedBy = this.GetUserNames();
-        createPostDto.Title = this.GetAppName();
+        createPostDto.Title = this.GetAppName() ?? "Social Media";
         var command = new CreatePostCommand(createPostDto);
         var postId = await _dispatcher.SendAsync<CreatePostCommand, Guid>(command, cancellationToken);
         return CreatedAtAction(nameof(CreatePost), new { id = postId }, postId);

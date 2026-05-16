@@ -7,6 +7,7 @@ import { feedbackCustomizations } from './customizations/feedback';
 import { navigationCustomizations } from './customizations/navigation';
 import { surfacesCustomizations } from './customizations/surfaces';
 import { colorSchemes, typography, shadows, shape } from './themePrimitives';
+import { useTenant } from '../contexts/TenantContext';
 
 interface AppThemeProps {
 	children: React.ReactNode;
@@ -19,6 +20,7 @@ interface AppThemeProps {
 
 export default function AppTheme(props: AppThemeProps) {
 	const { children, disableCustomTheme, themeComponents } = props;
+	const { themeConfig } = useTenant();
 	const theme = React.useMemo(() => {
 		return disableCustomTheme
 			? {}
@@ -28,8 +30,27 @@ export default function AppTheme(props: AppThemeProps) {
 					colorSchemeSelector: 'data-mui-color-scheme',
 					cssVarPrefix: 'template',
 				},
-				colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
-				typography,
+				colorSchemes: {
+					...colorSchemes,
+					light: {
+						...colorSchemes?.light,
+						palette: {
+							...colorSchemes?.light?.palette,
+							primary: {
+								...colorSchemes?.light?.palette?.primary,
+								...(themeConfig?.primaryColor && { main: themeConfig.primaryColor })
+							},
+							secondary: {
+								...colorSchemes?.light?.palette?.secondary,
+								...(themeConfig?.secondaryColor && { main: themeConfig.secondaryColor })
+							}
+						}
+					}
+				},
+				typography: {
+					...typography,
+					...(themeConfig?.fontFamily && { fontFamily: themeConfig.fontFamily })
+				},
 				shadows,
 				shape,
 				components: {
@@ -41,7 +62,7 @@ export default function AppTheme(props: AppThemeProps) {
 					...themeComponents,
 				},
 			});
-	}, [disableCustomTheme, themeComponents]);
+	}, [disableCustomTheme, themeComponents, themeConfig]);
 	if (disableCustomTheme) {
 		return <React.Fragment>{children}</React.Fragment>;
 	}

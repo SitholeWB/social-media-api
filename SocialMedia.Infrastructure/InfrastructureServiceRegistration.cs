@@ -15,6 +15,9 @@ public static class InfrastructureServiceRegistration
 
         //services.AddDbContext<SocialMediaReadDbContext>(options =>
         //    options.UseMySql(connectionStringRead, ServerVersion.AutoDetect(connectionStringRead)));
+        services.AddHttpContextAccessor();
+        services.AddScoped<ITenantProvider, TenantProvider>();
+
         if (isTesting)
         {
             services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("write_db"));
@@ -22,8 +25,18 @@ public static class InfrastructureServiceRegistration
         }
         else
         {
-            services.AddDbContext<SocialMediaDbContext>(options => options.UseSqlServer(connectionString));
-            services.AddDbContext<SocialMediaReadDbContext>(options => options.UseSqlServer(connectionStringRead));
+            services.AddDbContext<SocialMediaDbContext>((sp, options) => {
+                var tenantProvider = sp.GetRequiredService<ITenantProvider>();
+                var tenantId = tenantProvider.GetTenantId();
+                var connString = configuration.GetConnectionString($"Tenant_{tenantId}") ?? connectionString;
+                options.UseSqlServer(connString);
+            });
+            services.AddDbContext<SocialMediaReadDbContext>((sp, options) => {
+                var tenantProvider = sp.GetRequiredService<ITenantProvider>();
+                var tenantId = tenantProvider.GetTenantId();
+                var connString = configuration.GetConnectionString($"TenantRead_{tenantId}") ?? connectionStringRead;
+                options.UseSqlServer(connString);
+            });
         }
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -40,6 +53,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserActivityRepository, UserActivityRepository>();
         services.AddScoped<IStatsRepository, StatsRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
 
         services.AddScoped<IPostReadRepository, PostReadRepository>();
         services.AddScoped<ICommentReadRepository, CommentReadRepository>();

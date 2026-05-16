@@ -18,7 +18,8 @@ public static class PostMapper
             Tags = post.Tags,
             LikeCount = post.Likes?.Count ?? 0,
             CommentCount = post.Comments?.Count ?? 0,
-            StatusFullScreen = post.StatusFullScreen
+            StatusFullScreen = post.StatusFullScreen,
+            TenantId = post.TenantId
         };
     }
 

@@ -3,6 +3,7 @@ namespace SocialMedia.Domain;
 public class PostReadModel
 {
     public Guid Id { get; set; }
+    public Guid TenantId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public Guid AuthorId { get; set; }

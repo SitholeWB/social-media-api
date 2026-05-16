@@ -8,6 +8,7 @@ export enum GroupType {
 
 export interface Group {
 	id: string;
+	tenantId: string;
 	name: string;
 	description: string;
 	type: GroupType;

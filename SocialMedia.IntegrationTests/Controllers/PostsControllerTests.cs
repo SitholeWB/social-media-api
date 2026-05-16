@@ -18,7 +18,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -28,7 +28,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Verify retrieval
-        var getResponse = await _client.GetAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", TestContext.Current.CancellationToken);
+        var getResponse = await _client.GetAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         var result = await getResponse.Content.ReadFromJsonAsync<PagedResult<PostDto>>(TestContext.Current.CancellationToken);
         Assert.NotNull(result);
@@ -42,7 +42,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         var postId = Guid.NewGuid();
 
-        var response = await _client.GetAsync($"/api/v1/posts/{postId}", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync($"{Constants.ApiBase}/posts/{postId}", TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -52,13 +52,13 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Arrange
         var createPostDto = new CreatePostDto { Title = "Post to Report", Content = "Content", AuthorId = Guid.NewGuid() };
-        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var reportCommand = new ReportPostCommand(postId, Guid.NewGuid()) { Reason = "Spam" };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/posts/{postId}/report", reportCommand, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -71,7 +71,7 @@ public class PostsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Test Content", AuthorId = Guid.NewGuid() };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);

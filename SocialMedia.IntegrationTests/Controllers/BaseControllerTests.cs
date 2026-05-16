@@ -28,28 +28,28 @@ public class BaseControllerTests : IClassFixture<IntegrationTestWebApplicationFa
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
-    protected async Task<(string Token, Guid UserId)> RegisterAndLoginAsync(string username, string password, bool isAdmin = false)
+    protected async Task<(string Token, Guid UserId)> RegisterAndLoginAsync(string username, string password, bool isAdmin = false, bool isSuperAdmin = false)
     {
         _username = username;
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
+        var registerResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
 
-        if (isAdmin)
+        if (isAdmin || isSuperAdmin)
         {
             using var scope = _factory.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
             if (user != null)
             {
-                user.Role = UserRole.Admin;
+                user.Role = isSuperAdmin ? UserRole.SuperAdmin : UserRole.Admin;
                 await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
             }
         }
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var loginResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
         var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         _userId = Guid.Parse(authResponse!.Id);

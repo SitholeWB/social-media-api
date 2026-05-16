@@ -18,7 +18,8 @@ public static class PollMapper
             IsAnonymous = poll.IsAnonymous,
             HasVoted = vote != null,
             VotedOptionId = vote?.OptionId,
-            Options = poll.Options.Select(o => o.ToDto()).ToList()
+            Options = poll.Options.Select(o => o.ToDto()).ToList(),
+            TenantId = poll.TenantId
         };
     }
 

@@ -17,7 +17,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         {
             // Create a group first
             var groupCommand = new CreateGroupCommand("Double Vote Group", "Desc", GroupType.Everyone, Guid.NewGuid());
-            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", groupCommand, TestContext.Current.CancellationToken);
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
@@ -30,7 +30,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             };
 
             // Act
-            var response = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", command, TestContext.Current.CancellationToken);
+            var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}/polls", command, TestContext.Current.CancellationToken);
 
             // Assert
             if (!response.IsSuccessStatusCode)
@@ -57,7 +57,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         {
             // Create a group first
             var groupCommand = new CreateGroupCommand("Vote Test Group", "Desc", GroupType.Everyone, Guid.NewGuid());
-            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", groupCommand, TestContext.Current.CancellationToken);
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
@@ -68,12 +68,12 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
+            var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
             createResponse.EnsureSuccessStatusCode();
             var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Get the poll to find option IDs
-            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+            var getResponse = await _client.GetAsync($"{Constants.ApiBase}/polls/{pollId}", TestContext.Current.CancellationToken);
             if (!getResponse.IsSuccessStatusCode)
             {
                 var error = await getResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -92,7 +92,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             };
 
             // Act
-            var voteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
+            var voteResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
 
             // Assert
             if (!voteResponse.IsSuccessStatusCode)
@@ -117,7 +117,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         {
             // Create a group first
             var groupCommand = new CreateGroupCommand("Double Vote Group", "Desc", GroupType.Everyone, Guid.NewGuid());
-            var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+            var groupResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", groupCommand, TestContext.Current.CancellationToken);
             var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
             // Arrange
@@ -128,10 +128,10 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
                 CreatorId = Guid.NewGuid()
             };
-            var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
+            var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
             var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
-            var getResponse = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+            var getResponse = await _client.GetAsync($"{Constants.ApiBase}/polls/{pollId}", TestContext.Current.CancellationToken);
             var poll = await getResponse.Content.ReadFromJsonAsync<PollDto>(TestContext.Current.CancellationToken);
             Assert.NotNull(poll);
             var optionId = poll!.Options[0].Id;
@@ -145,8 +145,8 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             };
 
             // Act
-            await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
-            var secondVoteResponse = await _client.PostAsJsonAsync($"/api/v1/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
+            await _client.PostAsJsonAsync($"{Constants.ApiBase}/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
+            var secondVoteResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/polls/{pollId}/vote", voteCommand, TestContext.Current.CancellationToken);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, secondVoteResponse.StatusCode);
@@ -162,7 +162,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     public async Task GetPoll_ShouldReturnNotFound_WhenPollDoesNotExist()
     {
         var pollId = Guid.NewGuid();
-        var response = await _client.GetAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync($"{Constants.ApiBase}/polls/{pollId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
@@ -174,7 +174,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var command = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(1), false, Guid.NewGuid());
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", command, TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/polls/{pollId}", command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -187,7 +187,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
         var pollId = Guid.NewGuid();
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+        var response = await _client.DeleteAsync($"{Constants.ApiBase}/polls/{pollId}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -198,7 +198,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Create a group first
         var groupCommand = new CreateGroupCommand("Update Poll Group", "Desc", GroupType.Everyone, Guid.NewGuid());
-        var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+        var groupResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", groupCommand, TestContext.Current.CancellationToken);
         var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Arrange
@@ -209,13 +209,13 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var updateCommand = new UpdatePollCommand(pollId, "Updated Question", true, DateTime.UtcNow.AddDays(2), false, groupId);
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/polls/{pollId}", updateCommand, TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/polls/{pollId}", updateCommand, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -226,7 +226,7 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         // Create a group first
         var groupCommand = new CreateGroupCommand("Delete Poll Group", "Desc", GroupType.Everyone, Guid.NewGuid());
-        var groupResponse = await _client.PostAsJsonAsync("/api/v1/groups", groupCommand, TestContext.Current.CancellationToken);
+        var groupResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups", groupCommand, TestContext.Current.CancellationToken);
         var groupId = await groupResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Arrange
@@ -237,11 +237,11 @@ public class PollsControllerTests(IntegrationTestWebApplicationFactory factory) 
             ExpiresAt = DateTime.UtcNow.AddDays(1),
             CreatorId = Guid.NewGuid()
         };
-        var createResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
+        var createResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{groupId}/polls", createCommand, TestContext.Current.CancellationToken);
         var pollId = await createResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/polls/{pollId}", TestContext.Current.CancellationToken);
+        var response = await _client.DeleteAsync($"{Constants.ApiBase}/polls/{pollId}", TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }

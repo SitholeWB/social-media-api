@@ -9,6 +9,7 @@ export interface PollOption {
 
 export interface Poll {
 	id: string;
+	tenantId: string;
 	question: string;
 	isActive: boolean;
 	expiresAt?: string;

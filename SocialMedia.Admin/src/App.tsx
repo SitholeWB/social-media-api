@@ -88,11 +88,15 @@ function AppContent(props: { disableCustomTheme?: boolean }) {
 	);
 }
 
+import { TenantProvider } from './contexts/TenantContext';
+
 export default function App(props: { disableCustomTheme?: boolean }) {
 	return (
 		<Provider store={store}>
 			<AuthProvider>
-				<AppContent {...props} />
+				<TenantProvider>
+					<AppContent {...props} />
+				</TenantProvider>
 			</AuthProvider>
 		</Provider>
 	);

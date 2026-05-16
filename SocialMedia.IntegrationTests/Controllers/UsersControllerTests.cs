@@ -6,7 +6,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
     {
         var email = $"{username}@example.com";
         var registerRequest = new RegisterRequest(username, email, password);
-        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
+        var registerResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", registerRequest, TestContext.Current.CancellationToken);
         registerResponse.EnsureSuccessStatusCode();
         var registerAuthResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
 
@@ -25,7 +25,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         }
 
         var loginRequest = new LoginRequest(username, password);
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var loginResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
         var authResponse = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
         return (authResponse!.Token, Guid.Parse(authResponse.Id));
@@ -42,7 +42,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         // 2. User 1 Blocks User 2
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user1Token);
         var blockCommand = new BlockUserCommand(user1Id, user2Id);
-        var response = await _client.PostAsJsonAsync("/api/v1/users/block", blockCommand, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/users/block", blockCommand, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -59,12 +59,12 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // 2. Admin Bans User
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-        var response = await _client.PostAsJsonAsync($"/api/v1/users/{userId}/ban", true, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/users/{userId}/ban", true, TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
 
         // 3. User Tries to Login
         var loginRequest = new LoginRequest($"user_ban_{uniqueId}", "password123");
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var loginResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
@@ -81,7 +81,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/users/{targetUserId}/ban", true, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/users/{targetUserId}/ban", true, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -96,7 +96,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
         // Act
-        var response = await _client.GetAsync("/api/v1/users/reported?minReports=1", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync($"{Constants.ApiBase}/users/reported?minReports=1", TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -113,7 +113,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
 
         // Act
-        var response = await _client.GetAsync("/api/v1/users/reported?minReports=1", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync($"{Constants.ApiBase}/users/reported?minReports=1", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -137,7 +137,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         };
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/users/{userId}", updateRequest, TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/users/{userId}", updateRequest, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -161,7 +161,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/users/{userId}/change-password", changePwdRequest, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/users/{userId}/change-password", changePwdRequest, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -170,7 +170,7 @@ public class UsersControllerTests(IntegrationTestWebApplicationFactory factory) 
 
         // Verify login with new password
         var loginRequest = new LoginRequest($"pwd_{uniqueId}", "newPassword123");
-        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var loginResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
         loginResponse.EnsureSuccessStatusCode();
     }
 }

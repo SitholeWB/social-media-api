@@ -3,6 +3,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7
 export const FILES_API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7221';
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user'; // Added for user data
+const TENANT_KEY = 'tenant_id'; // Added for tenant data
 
 // Store refresh token attempt state
 let isRefreshing = false;
@@ -22,8 +23,14 @@ function onTokenRefreshed(token: string) {
 // Enhanced fetchJson with better auth integration
 export async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 	const token = localStorage.getItem(TOKEN_KEY);
+const tenantId = localStorage.getItem(TENANT_KEY) || '00000000-0000-0000-0000-000000000000';
 
-	const response = await fetch(`${API_BASE_URL}${url}`, {
+	let finalUrl = url;
+	if (url.startsWith('/api/v1/') && !url.startsWith('/api/v1/tenants')) {
+		finalUrl = `/api/v1/${tenantId}/${url.substring(8)}`;
+	}
+
+	const response = await fetch(`${API_BASE_URL}${finalUrl}`, {
 		...options,
 		headers: {
 			'Content-Type': 'application/json',
@@ -109,5 +116,17 @@ export const authStorage = {
 		const token = this.getToken();
 		const user = this.getUser();
 		return !!(token && user);
+	}
+};
+
+export const tenantStorage = {
+	setTenantId(id: string): void {
+		localStorage.setItem(TENANT_KEY, id);
+	},
+	getTenantId(): string | null {
+		return localStorage.getItem(TENANT_KEY);
+	},
+	removeTenantId(): void {
+		localStorage.removeItem(TENANT_KEY);
 	}
 };

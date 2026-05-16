@@ -10,7 +10,8 @@ public static class LikeMapper
             UserId = like.UserId,
             PostId = like.PostId,
             CommentId = like.CommentId,
-            Emoji = like.Emoji
+            Emoji = like.Emoji,
+            TenantId = like.TenantId
         };
     }
 }

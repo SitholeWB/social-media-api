@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/auth")]
+[Route("api/v{version:apiVersion}/{tenantId}/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {

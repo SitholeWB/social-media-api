@@ -3,6 +3,7 @@ namespace SocialMedia.Application;
 public class PollDto
 {
     public Guid Id { get; set; }
+    public Guid TenantId { get; set; }
     public string Question { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }

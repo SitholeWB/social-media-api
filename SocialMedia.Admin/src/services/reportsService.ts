@@ -10,6 +10,7 @@ export enum ReportStatus {
 
 export interface Report {
 	id: string;
+	tenantId: string;
 	reporterId: string;
 	reason: string;
 	status: ReportStatus;

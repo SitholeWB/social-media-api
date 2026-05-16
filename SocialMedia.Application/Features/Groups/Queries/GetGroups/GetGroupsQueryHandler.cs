@@ -34,7 +34,8 @@ public class GetGroupsQueryHandler : IQueryHandler<GetGroupsQuery, PagedResult<G
             Description = g.Description,
             Type = g.Type,
             CreatorId = g.CreatorId,
-            CreatedAt = g.CreatedAt
+            CreatedAt = g.CreatedAt,
+            TenantId = g.TenantId
         }).ToList();
 
         var result = new PagedResult<GroupDto>(dtos, totalCount, query.PageNumber, query.PageSize);

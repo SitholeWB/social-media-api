@@ -8,7 +8,14 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { register, clearError } from '../store/slices/authSlice';
+import { tenantStorage, API_BASE_URL } from '../services/api';
 import { register, clearError } from '../store/slices/authSlice';
 
 export default function RegisterPage() {
@@ -22,6 +29,9 @@ export default function RegisterPage() {
 		password: '',
 		confirmPassword: '',
 	});
+	const [tenants, setTenants] = React.useState<any[]>([]);
+	const [selectedTenant, setSelectedTenant] = React.useState<string>('');
+	const [loadingTenants, setLoadingTenants] = React.useState(true);
 
 	const [validationError, setValidationError] = React.useState<string | null>(null);
 
@@ -37,9 +47,41 @@ export default function RegisterPage() {
 		};
 	}, [dispatch]);
 
+	React.useEffect(() => {
+		const fetchTenants = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/v1/tenants`);
+				if (response.ok) {
+					const data = await response.json();
+					setTenants(data);
+					if (data.length > 0) {
+						setSelectedTenant(data[0].id);
+						tenantStorage.setTenantId(data[0].id);
+					}
+				}
+			} catch (error) {
+				console.error('Failed to fetch tenants', error);
+			} finally {
+				setLoadingTenants(false);
+			}
+		};
+		fetchTenants();
+	}, []);
+
+	const handleTenantChange = (event: any) => {
+		const newTenant = event.target.value;
+		setSelectedTenant(newTenant);
+		tenantStorage.setTenantId(newTenant);
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setValidationError(null);
+
+		if (!selectedTenant) {
+			setValidationError('Please select a tenant');
+			return;
+		}
 
 		if (formData.password !== formData.confirmPassword) {
 			setValidationError('Passwords do not match');
@@ -106,6 +148,25 @@ export default function RegisterPage() {
 
 					<form onSubmit={handleSubmit}>
 						<Stack spacing={2.5}>
+							{loadingTenants ? (
+								<Box display="flex" justifyContent="center">
+									<CircularProgress size={24} />
+								</Box>
+							) : (
+								<FormControl fullWidth required>
+									<InputLabel id="tenant-select-label">Tenant</InputLabel>
+									<Select
+										labelId="tenant-select-label"
+										value={selectedTenant}
+										onChange={handleTenantChange}
+										label="Tenant"
+									>
+										{tenants.map((t) => (
+											<MenuItem key={t.id} value={t.id}>{t.name}</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							)}
 							<TextField
 								label="Username"
 								fullWidth

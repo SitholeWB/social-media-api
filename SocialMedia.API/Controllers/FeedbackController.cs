@@ -1,7 +1,7 @@
 namespace SocialMedia.API.Controllers;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/feedback")]
+[Route("api/v{version:apiVersion}/{tenantId}/feedback")]
 [ApiController]
 [Authorize]
 public class FeedbackController : ControllerBase

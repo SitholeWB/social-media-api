@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/defaults")]
+[Route("api/v{version:apiVersion}/{tenantId}/defaults")]
 [ApiController]
 [Authorize]
 public class DefaultsController : ControllerBase

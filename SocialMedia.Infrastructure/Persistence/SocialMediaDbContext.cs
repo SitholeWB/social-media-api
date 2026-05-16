@@ -2,8 +2,13 @@ namespace SocialMedia.Infrastructure;
 
 public class SocialMediaDbContext : DbContext
 {
-    public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options) : base(options)
+    private readonly ITenantProvider? _tenantProvider;
+    public Guid CurrentTenantId { get; set; }
+
+    public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options, ITenantProvider? tenantProvider = null) : base(options)
     {
+        _tenantProvider = tenantProvider;
+        CurrentTenantId = _tenantProvider?.GetTenantId() ?? Guid.Empty;
     }
 
     public SocialMediaDbContext()
@@ -27,6 +32,19 @@ public class SocialMediaDbContext : DbContext
     public DbSet<PollVoteRecord> PollVoteRecords { get; set; }
     public DbSet<UserActivity> UserActivities { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<Tenant> Tenants { get; set; }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>().Where(e => e.State == EntityState.Added))
+        {
+            if (entry.Entity.TenantId == Guid.Empty && CurrentTenantId != Guid.Empty)
+            {
+                entry.Entity.TenantId = CurrentTenantId;
+            }
+        }
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -46,6 +64,17 @@ public class SocialMediaDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var method = typeof(SocialMediaDbContext)
+                    .GetMethod(nameof(SetGlobalQueryFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?.MakeGenericMethod(entityType.ClrType);
+                method?.Invoke(this, new object[] { modelBuilder });
+            }
+        }
 
         modelBuilder.Entity<Post>()
             .HasMany(p => p.Comments)
@@ -137,5 +166,10 @@ public class SocialMediaDbContext : DbContext
             entity.OwnsMany(ua => ua.Reactions, b => b.ToJson());
             entity.OwnsMany(ua => ua.Votes, b => b.ToJson());
         });
+    }
+
+    private void SetGlobalQueryFilter<T>(ModelBuilder builder) where T : BaseEntity
+    {
+        builder.Entity<T>().HasQueryFilter(e => CurrentTenantId == Guid.Empty || e.TenantId == CurrentTenantId);
     }
 }

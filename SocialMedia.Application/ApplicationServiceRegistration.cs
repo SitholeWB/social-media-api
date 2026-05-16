@@ -98,6 +98,12 @@ public static class ApplicationServiceRegistration
         // Services
         services.AddScoped<IPostService, PostService>();
 
+        // Tenants
+        services.AddScoped<IQueryHandler<GetTenantsQuery, List<TenantDto>>, GetTenantsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateTenantCommand, Guid>, CreateTenantCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateTenantCommand, bool>, UpdateTenantCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteTenantCommand, bool>, DeleteTenantCommandHandler>();
+
         return services;
     }
 }

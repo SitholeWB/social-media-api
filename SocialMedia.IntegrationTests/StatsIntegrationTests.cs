@@ -15,7 +15,7 @@ public class StatsIntegrationTests(IntegrationTestWebApplicationFactory factory)
         };
 
         // --- 1. Create Post ---
-        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
@@ -23,7 +23,7 @@ public class StatsIntegrationTests(IntegrationTestWebApplicationFactory factory)
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Verify Weekly Stats (NewPosts should be 1, TotalPosts >= 1)
-        var statsResponse = await _client.GetAsync("/api/v1/stats/weekly", TestContext.Current.CancellationToken);
+        var statsResponse = await _client.GetAsync($"{Constants.ApiBase}/stats/weekly", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, statsResponse.StatusCode);
         var stats = await statsResponse.Content.ReadFromJsonAsync<StatsRecord>(TestContext.Current.CancellationToken);
 
@@ -43,7 +43,7 @@ public class StatsIntegrationTests(IntegrationTestWebApplicationFactory factory)
             Content = "Stats Comment",
             AuthorId = authorId
         };
-        var commentResponse = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var commentResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Created, commentResponse.StatusCode);
         var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
@@ -51,21 +51,21 @@ public class StatsIntegrationTests(IntegrationTestWebApplicationFactory factory)
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Verify Stats (ResultingComments should increase)
-        statsResponse = await _client.GetAsync("/api/v1/stats/weekly", TestContext.Current.CancellationToken);
+        statsResponse = await _client.GetAsync($"{Constants.ApiBase}/stats/weekly", TestContext.Current.CancellationToken);
         stats = await statsResponse.Content.ReadFromJsonAsync<StatsRecord>(TestContext.Current.CancellationToken);
         Assert.NotNull(stats);
         Assert.Equal(initialComments + 1, stats.ResultingComments);
 
         // --- 3. Add Like (Reaction) ---
         var toggleLikeCommand = new ToggleLikeCommand(null, postId, null, "❤️", null); // Heart emoji
-        var likeResponse = await _client.PostAsJsonAsync("/api/v1/reactions/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
+        var likeResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/reactions/toggle", toggleLikeCommand, TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, likeResponse.StatusCode);
 
         // Process Events
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Verify Stats (ResultingReactions increased, Breakdown contains emoji)
-        statsResponse = await _client.GetAsync("/api/v1/stats/weekly", TestContext.Current.CancellationToken);
+        statsResponse = await _client.GetAsync($"{Constants.ApiBase}/stats/weekly", TestContext.Current.CancellationToken);
         stats = await statsResponse.Content.ReadFromJsonAsync<StatsRecord>(TestContext.Current.CancellationToken);
         Assert.NotNull(stats);
         Assert.Equal(initialReactions + 1, stats.ResultingReactions);

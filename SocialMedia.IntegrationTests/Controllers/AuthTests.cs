@@ -12,7 +12,7 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         var request = new RegisterRequest("testuser", "test@example.com", "password123");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", request, TestContext.Current.CancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -33,12 +33,12 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         // Arrange
         var client = _factory.CreateClient();
         var registerRequest = new RegisterRequest("loginuser", "login@example.com", "password123");
-        await client.PostAsJsonAsync("/api/v1/auth/register", registerRequest, TestContext.Current.CancellationToken);
+        await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", registerRequest, TestContext.Current.CancellationToken);
 
         var loginRequest = new LoginRequest("loginuser", "password123");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -58,10 +58,10 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         // Arrange
         var client = _factory.CreateClient();
         var request = new RegisterRequest("duplicateuser", "duplicate@example.com", "password123");
-        await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+        await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", request, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode); // Or BadRequest depending on implementation
@@ -73,10 +73,10 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         // Arrange
         var client = _factory.CreateClient();
         var request = new RegisterRequest("duplIcateUser", "dupLicAte@example.com", "password123");
-        await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+        await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", request, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/register", request, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/register", request, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode); // Or BadRequest depending on implementation
@@ -90,7 +90,7 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         var loginRequest = new LoginRequest("nonexistentuser", "wrongpassword");
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/login", loginRequest, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/login", loginRequest, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -110,7 +110,7 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         // it. Ideally, we should use a test-specific startup or service replacement.
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/v1/auth/google", request, TestContext.Current.CancellationToken);
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/google", request, TestContext.Current.CancellationToken);
 
         // Assert Without mocking, this will likely fail validation. We will assert that it returns
         // *some* response, likely 500 or 400 due to invalid token. To make this a true positive
@@ -131,7 +131,7 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/auth/forgot-password", forgotPwdRequest, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/auth/forgot-password", forgotPwdRequest, TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();

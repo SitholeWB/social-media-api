@@ -4,8 +4,13 @@ namespace SocialMedia.Infrastructure;
 
 public class SocialMediaReadDbContext : DbContext
 {
-    public SocialMediaReadDbContext(DbContextOptions<SocialMediaReadDbContext> options) : base(options)
+    private readonly ITenantProvider? _tenantProvider;
+    public Guid CurrentTenantId { get; set; }
+
+    public SocialMediaReadDbContext(DbContextOptions<SocialMediaReadDbContext> options, ITenantProvider? tenantProvider = null) : base(options)
     {
+        _tenantProvider = tenantProvider;
+        CurrentTenantId = _tenantProvider?.GetTenantId() ?? Guid.Empty;
     }
 
     public SocialMediaReadDbContext()
@@ -33,6 +38,20 @@ public class SocialMediaReadDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<PostReadModel>().HasQueryFilter(e => CurrentTenantId == Guid.Empty || e.TenantId == CurrentTenantId);
+        modelBuilder.Entity<CommentReadModel>().HasQueryFilter(e => CurrentTenantId == Guid.Empty || e.TenantId == CurrentTenantId);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var method = typeof(SocialMediaReadDbContext)
+                    .GetMethod(nameof(SetGlobalQueryFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?.MakeGenericMethod(entityType.ClrType);
+                method?.Invoke(this, new object[] { modelBuilder });
+            }
+        }
 
         modelBuilder.Entity<PostReadModel>(entity =>
         {
@@ -86,5 +105,10 @@ public class SocialMediaReadDbContext : DbContext
         {
             entity.OwnsMany(s => s.ReactionBreakdown, b => b.ToJson());
         });
+    }
+
+    private void SetGlobalQueryFilter<T>(ModelBuilder builder) where T : BaseEntity
+    {
+        builder.Entity<T>().HasQueryFilter(e => CurrentTenantId == Guid.Empty || e.TenantId == CurrentTenantId);
     }
 }

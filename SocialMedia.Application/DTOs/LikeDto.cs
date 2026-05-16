@@ -3,6 +3,7 @@ namespace SocialMedia.Application;
 public class LikeDto
 {
     public Guid Id { get; set; }
+    public Guid TenantId { get; set; }
     public Guid UserId { get; set; }
     public Guid? PostId { get; set; }
     public Guid? CommentId { get; set; }

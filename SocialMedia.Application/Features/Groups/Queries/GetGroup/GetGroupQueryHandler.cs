@@ -21,7 +21,8 @@ public class GetGroupQueryHandler : IQueryHandler<GetGroupQuery, GroupDto?>
             Description = group.Description,
             Type = group.Type,
             CreatorId = group.CreatorId,
-            CreatedAt = group.CreatedAt
+            CreatedAt = group.CreatedAt,
+            TenantId = group.TenantId
         };
     }
 }

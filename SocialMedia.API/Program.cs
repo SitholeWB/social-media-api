@@ -67,6 +67,7 @@ app.UseCors("AllowAdminSPA");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<SocialMedia.API.Middleware.TenantValidationMiddleware>();
 
 app.MapControllers();
 

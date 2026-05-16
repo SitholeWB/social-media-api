@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/moderation")]
+[Route("api/v{version:apiVersion}/{tenantId}/moderation")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class ModerationController : ControllerBase

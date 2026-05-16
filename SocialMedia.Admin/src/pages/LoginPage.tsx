@@ -10,10 +10,16 @@ import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
 import GoogleIcon from '@mui/icons-material/Google';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import CircularProgress from '@mui/material/CircularProgress';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { login, loginWithGoogle, clearError } from '../store/slices/authSlice';
+import { tenantStorage, API_BASE_URL } from '../services/api';
 
 export default function LoginPage() {
 	const navigate = useNavigate();
@@ -24,6 +30,9 @@ export default function LoginPage() {
 		username: '',
 		password: '',
 	});
+	const [tenants, setTenants] = React.useState<any[]>([]);
+	const [selectedTenant, setSelectedTenant] = React.useState<string>('');
+	const [loadingTenants, setLoadingTenants] = React.useState(true);
 
 	React.useEffect(() => {
 		if (isAuthenticated) {
@@ -37,8 +46,39 @@ export default function LoginPage() {
 		};
 	}, [dispatch]);
 
+	React.useEffect(() => {
+		const fetchTenants = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/v1/tenants`);
+				if (response.ok) {
+					const data = await response.json();
+					setTenants(data);
+					if (data.length > 0) {
+						setSelectedTenant(data[0].id);
+						tenantStorage.setTenantId(data[0].id);
+					}
+				}
+			} catch (error) {
+				console.error('Failed to fetch tenants', error);
+			} finally {
+				setLoadingTenants(false);
+			}
+		};
+		fetchTenants();
+	}, []);
+
+	const handleTenantChange = (event: any) => {
+		const newTenant = event.target.value;
+		setSelectedTenant(newTenant);
+		tenantStorage.setTenantId(newTenant);
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!selectedTenant) {
+			alert('Please select a tenant');
+			return;
+		}
 		try {
 			await dispatch(login(formData)).unwrap();
 		} catch (err) {
@@ -104,6 +144,26 @@ export default function LoginPage() {
 
 					<form onSubmit={handleSubmit}>
 						<Stack spacing={2.5}>
+							{loadingTenants ? (
+								<Box display="flex" justifyContent="center">
+									<CircularProgress size={24} />
+								</Box>
+							) : (
+								<FormControl fullWidth variant="standard" required>
+									<InputLabel id="tenant-select-label">Tenant</InputLabel>
+									<Select
+										labelId="tenant-select-label"
+										value={selectedTenant}
+										onChange={handleTenantChange}
+										label="Tenant"
+									>
+										{tenants.map((t) => (
+											<MenuItem key={t.id} value={t.id}>{t.name}</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							)}
+
 							<TextField
 								label="Username"
 								type="text"

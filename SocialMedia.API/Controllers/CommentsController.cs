@@ -1,7 +1,7 @@
 namespace SocialMedia.API;
 
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/comments")]
+[Route("api/v{version:apiVersion}/{tenantId}/comments")]
 [ApiController]
 [Authorize]
 public class CommentsController : ControllerBase
@@ -14,14 +14,14 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateComment([FromBody] CreateCommentDto createCommentDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateComment([FromBody] CreateCommentDto createCommentDto, [FromRoute] string tenantId, CancellationToken cancellationToken)
     {
         createCommentDto.CreatedBy = this.GetUserNames();
         createCommentDto.AuthorId = this.GetUserId() ?? createCommentDto.AuthorId;
-        createCommentDto.Title = this.GetAppName();
+        createCommentDto.Title = this.GetAppName() ?? "Social Media";
         var command = new CreateCommentCommand(createCommentDto);
         var commentId = await _dispatcher.SendAsync<CreateCommentCommand, Guid>(command, cancellationToken);
-        return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, commentId);
+        return CreatedAtAction(nameof(GetCommentById), new { tenantId, id = commentId }, commentId);
     }
 
     [AllowAnonymous]

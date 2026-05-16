@@ -9,14 +9,14 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
 
         // Create a post first
         var createPostDto = new CreatePostDto { Title = "Test Post", Content = "Content", AuthorId = _userId };
-        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         postResponse.EnsureSuccessStatusCode();
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment", AuthorId = _userId };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -31,7 +31,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         var createCommentDto = new CreateCommentDto { PostId = Guid.NewGuid(), Content = "Test Comment", AuthorId = _userId };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Assert Since we throw KeyNotFoundException, and default middleware might return 500 or
         // 404 depending on config. Usually unhandled exception is 500. If we had exception
@@ -47,7 +47,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Test Post 2", Content = "Content 2", AuthorId = _userId };
-        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Process pending events to update read model
@@ -55,13 +55,13 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
 
         // Create a comment
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Test Comment 2", AuthorId = _userId };
-        await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Process pending events to update read model
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
 
         // Act
-        var response = await _client.GetAsync($"/api/v1/comments/post/{postId}", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync($"{Constants.ApiBase}/comments/post/{postId}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -78,7 +78,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Post for Comment Image", Content = "Content", AuthorId = _userId };
-        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var createCommentDto = new CreateCommentDto
@@ -90,7 +90,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
 
         // Process pending events to update read model
         await TestHelpers.ProcessPendingEventsAsync(_factory.Services, TestContext.Current.CancellationToken);
@@ -100,7 +100,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         var commentId = await response.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Verify retrieval
-        var getResponse = await _client.GetAsync($"/api/v1/comments/{commentId}", TestContext.Current.CancellationToken);
+        var getResponse = await _client.GetAsync($"{Constants.ApiBase}/comments/{commentId}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         var comment = await getResponse.Content.ReadFromJsonAsync<CommentDto>(TestContext.Current.CancellationToken);
         Assert.NotNull(comment);
@@ -114,7 +114,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         var commentId = Guid.NewGuid();
 
         // Act
-        var response = await _client.PutAsJsonAsync($"/api/v1/comments/{commentId}", "Updated Content", TestContext.Current.CancellationToken);
+        var response = await _client.PutAsJsonAsync($"{Constants.ApiBase}/comments/{commentId}", "Updated Content", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -127,7 +127,7 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
         var commentId = Guid.NewGuid();
 
         // Act
-        var response = await _client.DeleteAsync($"/api/v1/comments/{commentId}", TestContext.Current.CancellationToken);
+        var response = await _client.DeleteAsync($"{Constants.ApiBase}/comments/{commentId}", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -140,18 +140,18 @@ public class CommentsControllerTests(IntegrationTestWebApplicationFactory factor
 
         // Create a post
         var createPostDto = new CreatePostDto { Title = "Post for Report", Content = "Content", AuthorId = _userId };
-        var postResponse = await _client.PostAsJsonAsync($"/api/v1/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
+        var postResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/groups/{Constants.DefaultGroupId}/posts", createPostDto, TestContext.Current.CancellationToken);
         var postId = await postResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         // Create a comment
         var createCommentDto = new CreateCommentDto { PostId = postId, Content = "Comment to Report", AuthorId = _userId };
-        var commentResponse = await _client.PostAsJsonAsync("/api/v1/comments", createCommentDto, TestContext.Current.CancellationToken);
+        var commentResponse = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments", createCommentDto, TestContext.Current.CancellationToken);
         var commentId = await commentResponse.Content.ReadFromJsonAsync<Guid>(TestContext.Current.CancellationToken);
 
         var reportCommand = new ReportCommentCommand(commentId, Guid.NewGuid()) { Reason = "Spam" };
 
         // Act
-        var response = await _client.PostAsJsonAsync($"/api/v1/comments/{commentId}/report", reportCommand, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync($"{Constants.ApiBase}/comments/{commentId}/report", reportCommand, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
