@@ -1,6 +1,6 @@
 namespace SocialMedia.Infrastructure;
 
-public class StatsRepository(SocialMediaReadDbContext context) : IStatsRepository
+public class StatsRepository(SocialMediaDbContext context) : IStatsRepository
 {
     public async Task<StatsRecord?> GetCurrentStatsRecordAsync(StatsType type, DateTimeOffset date, CancellationToken cancellationToken)
     {

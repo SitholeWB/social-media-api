@@ -34,7 +34,6 @@ public class EventProcessorBackgroundService : BackgroundService
                 using var scope = _serviceProvider.CreateScope();
                 var eventProcessor = scope.ServiceProvider.GetRequiredService<IBackgroundEventProcessor>();
                 var rankService = scope.ServiceProvider.GetRequiredService<IPostRankService>();
-                var socialMediaReadDbContext = scope.ServiceProvider.GetRequiredService<SocialMediaReadDbContext>();
                 var socialMediaDbContext = scope.ServiceProvider.GetRequiredService<SocialMediaDbContext>();
                 var postService = scope.ServiceProvider.GetRequiredService<IPostService>();
 
@@ -45,7 +44,7 @@ public class EventProcessorBackgroundService : BackgroundService
                     {
                         // Update stale ranks (older than 1 hour)
                         await rankService.RecalculateAllRanksAsync(stoppingToken);
-                        await MaintainPostLimitAsync(socialMediaReadDbContext, socialMediaDbContext, postService, stoppingToken);
+                        await MaintainPostLimitAsync(socialMediaDbContext, postService, stoppingToken);
                         _lastRankingRun = DateTimeOffset.UtcNow;
                     }
                     _lastRun = DateTimeOffset.UtcNow;
@@ -76,12 +75,12 @@ public class EventProcessorBackgroundService : BackgroundService
         _logger.LogInformation("Event Processor Background Service stopped");
     }
 
-    private async Task MaintainPostLimitAsync(SocialMediaReadDbContext _context, SocialMediaDbContext _writeContext, IPostService postService, CancellationToken cancellationToken)
+    private async Task MaintainPostLimitAsync(SocialMediaDbContext _context, IPostService postService, CancellationToken cancellationToken)
     {
-        var groups = await _writeContext.Groups.ToListAsync(cancellationToken);
+        var groups = await _context.Groups.ToListAsync(cancellationToken);
         foreach (var group in groups)
         {
-            var activePosts = await _context.Posts.Where(x => x.GroupId == group.Id).CountAsync(cancellationToken);
+            var activePosts = await _context.PostReads.Where(x => x.GroupId == group.Id).CountAsync(cancellationToken);
             var _maxPosts = 20000;
             var maxBatchSize = 2000;
             if (activePosts > _maxPosts)
@@ -89,7 +88,7 @@ public class EventProcessorBackgroundService : BackgroundService
                 // Archive posts with lowest engagement and lowest scores NO assumptions about time
                 // - purely based on ranking and engagement
 
-                var postsToArchive = await _context.Posts
+                var postsToArchive = await _context.PostReads
                     .Where(x => x.GroupId == group.Id)
                     .OrderBy(p => p.TrendingScore)           // Lowest ranking first
                     .ThenBy(p => p.ReactionCount)        // Then least reactions

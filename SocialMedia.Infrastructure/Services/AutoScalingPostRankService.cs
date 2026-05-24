@@ -2,21 +2,18 @@
 
 public class AutoScalingPostRankService : IPostRankService
 {
-    private readonly SocialMediaReadDbContext _readDbContext;
-    private readonly SocialMediaDbContext _writeDbContext;
+    private readonly SocialMediaDbContext _readDbContext;
     private readonly ILogger<AutoScalingPostRankService> _logger;
     private readonly IDistributedCache _activityCache;
     private const int CACHE_DURATION_MINUTES = 30;
 
     public AutoScalingPostRankService(
-        SocialMediaReadDbContext readDbContext,
         ILogger<AutoScalingPostRankService> logger,
         SocialMediaDbContext writeDbContext,
         IDistributedCache cache)
     {
-        _readDbContext = readDbContext;
         _logger = logger;
-        _writeDbContext = writeDbContext;
+        _readDbContext = writeDbContext;
         _activityCache = cache;
     }
 
@@ -86,7 +83,7 @@ public class AutoScalingPostRankService : IPostRankService
         try
         {
             // Get group-specific metrics
-            var groupMetrics = await _readDbContext.Posts
+            var groupMetrics = await _readDbContext.PostReads
                 .Where(p => p.GroupId == groupId)
                 .GroupBy(p => 1)
                 .Select(g => new
@@ -108,7 +105,7 @@ public class AutoScalingPostRankService : IPostRankService
             }
 
             // Calculate engagement rate for this group
-            var engagedPosts = await _readDbContext.Posts
+            var engagedPosts = await _readDbContext.PostReads
                 .CountAsync(p => p.GroupId == groupId &&
                                  p.CreatedAt > DateTime.UtcNow.AddDays(-7) &&
                                 (p.ReactionCount > 0 || p.CommentCount > 0));
@@ -341,7 +338,7 @@ public class AutoScalingPostRankService : IPostRankService
     public async Task<List<PostReadModel>> GetRankedPostsAsync(Guid? groupId, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
         var currentTime = DateTime.UtcNow;
-        var query = _readDbContext.Posts.AsNoTracking();
+        var query = _readDbContext.PostReads.AsNoTracking();
 
         // Filter by group if specified
         if (groupId.HasValue)
@@ -362,7 +359,7 @@ public class AutoScalingPostRankService : IPostRankService
 
     public async Task UpdatePostRankAsync(Guid postId, CancellationToken cancellationToken)
     {
-        var post = await _readDbContext.Posts.FirstOrDefaultAsync(p => p.Id == postId, cancellationToken);
+        var post = await _readDbContext.PostReads.FirstOrDefaultAsync(p => p.Id == postId, cancellationToken);
 
         if (post != null)
         {
@@ -384,7 +381,7 @@ public class AutoScalingPostRankService : IPostRankService
         const int batchSize = 100;
         var totalProcessed = 0;
 
-        var postIds = await _readDbContext.Posts
+        var postIds = await _readDbContext.PostReads
             .Select(p => p.Id)
             .ToListAsync(cancellationToken);
 
@@ -392,7 +389,7 @@ public class AutoScalingPostRankService : IPostRankService
         {
             foreach (var postId in batch)
             {
-                var post = await _readDbContext.Posts.FirstOrDefaultAsync(p => p.Id == postId, cancellationToken);
+                var post = await _readDbContext.PostReads.FirstOrDefaultAsync(p => p.Id == postId, cancellationToken);
 
                 if (post != null)
                 {
@@ -413,7 +410,7 @@ public class AutoScalingPostRankService : IPostRankService
 
     public async Task<List<GroupActivityReportDto>> GetGroupActivityReportsAsync(CancellationToken cancellationToken)
     {
-        var groupIds = await _readDbContext.Posts
+        var groupIds = await _readDbContext.PostReads
             .Select(p => p.GroupId)
             .Distinct()
             .Where(g => g.HasValue)
@@ -456,13 +453,13 @@ public class AutoScalingPostRankService : IPostRankService
 
     private async Task<DateTimeOffset?> GetFirstEngagementTimeAsync(Guid postId, CancellationToken cancellationToken)
     {
-        var firstReaction = await _writeDbContext.Reactions
+        var firstReaction = await _readDbContext.Reactions
             .Where(r => r.PostId == postId)
             .OrderBy(r => r.CreatedAt)
             .Select(r => r.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
 
-        var firstComment = await _readDbContext.Comments
+        var firstComment = await _readDbContext.CommentReads
             .Where(c => c.PostId == postId)
             .OrderBy(c => c.CreatedAt)
             .Select(c => c.CreatedAt)

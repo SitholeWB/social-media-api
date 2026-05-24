@@ -8,33 +8,24 @@ public static class InfrastructureServiceRegistration
     {
         var env = services.BuildServiceProvider().GetRequiredService<IHostEnvironment>();
         var isTesting = env.IsEnvironment("Testing");
-        var connectionString = configuration.GetConnectionString("WriteConnection");
-        var connectionStringRead = configuration.GetConnectionString("ReadConnection");
+        var connectionString = configuration.GetConnectionString("default");
         //services.AddDbContext<SocialMediaDbContext>(options =>
         //    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-        //services.AddDbContext<SocialMediaReadDbContext>(options =>
-        //    options.UseMySql(connectionStringRead, ServerVersion.AutoDetect(connectionStringRead)));
         services.AddHttpContextAccessor();
         services.AddScoped<ITenantProvider, TenantProvider>();
 
         if (isTesting)
         {
             services.AddDbContext<SocialMediaDbContext>(options => options.UseInMemoryDatabase("write_db"));
-            services.AddDbContext<SocialMediaReadDbContext>(options => options.UseInMemoryDatabase("read_db"));
         }
         else
         {
-            services.AddDbContext<SocialMediaDbContext>((sp, options) => {
+            services.AddDbContext<SocialMediaDbContext>((sp, options) =>
+            {
                 var tenantProvider = sp.GetRequiredService<ITenantProvider>();
                 var tenantId = tenantProvider.GetTenantId();
                 var connString = configuration.GetConnectionString($"Tenant_{tenantId}") ?? connectionString;
-                options.UseSqlServer(connString);
-            });
-            services.AddDbContext<SocialMediaReadDbContext>((sp, options) => {
-                var tenantProvider = sp.GetRequiredService<ITenantProvider>();
-                var tenantId = tenantProvider.GetTenantId();
-                var connString = configuration.GetConnectionString($"TenantRead_{tenantId}") ?? connectionStringRead;
                 options.UseSqlServer(connString);
             });
         }

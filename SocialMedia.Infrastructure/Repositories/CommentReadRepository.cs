@@ -2,45 +2,45 @@ namespace SocialMedia.Infrastructure;
 
 public class CommentReadRepository : ICommentReadRepository
 {
-    private readonly SocialMediaReadDbContext _context;
+    private readonly SocialMediaDbContext _context;
 
-    public CommentReadRepository(SocialMediaReadDbContext context)
+    public CommentReadRepository(SocialMediaDbContext context)
     {
         _context = context;
     }
 
     public async Task AddAsync(CommentReadModel comment, CancellationToken cancellationToken = default)
     {
-        await _context.Comments.AddAsync(comment, cancellationToken);
+        await _context.CommentReads.AddAsync(comment, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(CommentReadModel comment, CancellationToken cancellationToken = default)
     {
-        _context.Comments.Update(comment);
+        _context.CommentReads.Update(comment);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<CommentReadModel?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Comments.FindAsync(new object[] { id }, cancellationToken);
+        return await _context.CommentReads.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var comment = await _context.Comments.FindAsync(new object[] { id }, cancellationToken);
+        var comment = await _context.CommentReads.FindAsync(new object[] { id }, cancellationToken);
         if (comment is null)
         {
             return false;
         }
-        _context.Comments.Remove(comment);
+        _context.CommentReads.Remove(comment);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
     public async Task<List<CommentReadModel>> GetByPostIdAsync(Guid postId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
-        return await _context.Comments
+        return await _context.CommentReads
             .Where(c => c.PostId == postId)
             .OrderByDescending(c => c.CreatedAt)
             .Skip((page - 1) * pageSize)

@@ -17,7 +17,7 @@ namespace SocialMedia.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -47,6 +47,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<string>("PreviousHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -87,6 +90,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -96,6 +102,52 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.CommentReadModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuthorProfilePicUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("CommentReads", (string)null);
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Feedback", b =>
@@ -113,6 +165,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -147,6 +202,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -169,6 +227,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -202,6 +263,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
@@ -240,6 +304,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("RelatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
@@ -290,6 +357,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.ToTable("OutboxEvents");
@@ -326,6 +396,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
@@ -346,6 +419,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("PollId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
@@ -372,6 +448,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("PollId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
@@ -416,6 +495,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<bool>("StatusFullScreen")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -425,6 +507,82 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.PostReadModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuthorProfilePicUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CommentCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime>("RankUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReactionCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("StatusFullScreen")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TrendingScore")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentCount")
+                        .HasDatabaseName("IX_Posts_CommentCount");
+
+                    b.HasIndex("CreatedAt")
+                        .IsDescending()
+                        .HasDatabaseName("IX_Posts_CreatedAt");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("ReactionCount")
+                        .HasDatabaseName("IX_Posts_ReactionCount");
+
+                    b.HasIndex("TrendingScore", "CreatedAt")
+                        .IsDescending()
+                        .HasDatabaseName("IX_Posts_RankScore_CreatedAt");
+
+                    b.ToTable("PostReads", (string)null);
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.Report", b =>
@@ -455,6 +613,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CommentId");
@@ -462,6 +623,77 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.StatsRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ActiveUsers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NewPosts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResultingComments")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResultingReactions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatsType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalPosts")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StatsRecords");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ThemeJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.User", b =>
@@ -505,6 +737,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -528,6 +763,9 @@ namespace SocialMedia.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LastSeenAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -558,6 +796,9 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BlockedUserId");
@@ -580,6 +821,9 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("PollOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UserId")
@@ -677,6 +921,134 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Navigation("Media");
 
                     b.Navigation("Post");
+
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.CommentReadModel", b =>
+                {
+                    b.OwnsMany("SocialMedia.Domain.TagDto", "AdminTags", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Text")
+                                .IsRequired();
+
+                            b1.Property<string>("Topic")
+                                .IsRequired();
+
+                            b1.HasKey("CommentReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("CommentReads");
+
+                            b1
+                                .ToJson("AdminTags")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Url")
+                                .IsRequired();
+
+                            b1.HasKey("CommentReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("CommentReads");
+
+                            b1
+                                .ToJson("Media")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.ReactionReadDto", "Reactions", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<int>("Count");
+
+                            b1.Property<string>("Emoji")
+                                .IsRequired();
+
+                            b1.HasKey("CommentReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("CommentReads");
+
+                            b1
+                                .ToJson("Reactions")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.TagDto", "Tags", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Text")
+                                .IsRequired();
+
+                            b1.Property<string>("Topic")
+                                .IsRequired();
+
+                            b1.HasKey("CommentReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("CommentReads");
+
+                            b1
+                                .ToJson("Tags")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.OwnsOne("SocialMedia.Domain.CommentStatsDto", "Stats", b1 =>
+                        {
+                            b1.Property<Guid>("CommentReadModelId");
+
+                            b1.Property<int>("LikeCount");
+
+                            b1.HasKey("CommentReadModelId");
+
+                            b1.ToTable("CommentReads");
+
+                            b1
+                                .ToJson("Stats")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CommentReadModelId");
+                        });
+
+                    b.Navigation("AdminTags");
+
+                    b.Navigation("Media");
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Stats")
+                        .IsRequired();
 
                     b.Navigation("Tags");
                 });
@@ -848,6 +1220,255 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Navigation("Tags");
                 });
 
+            modelBuilder.Entity("SocialMedia.Domain.PostReadModel", b =>
+                {
+                    b.OwnsMany("SocialMedia.Domain.CommentReadDto", "TopComments", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<Guid>("AuthorId");
+
+                            b1.Property<string>("AuthorName")
+                                .IsRequired();
+
+                            b1.Property<string>("AuthorProfilePicUrl");
+
+                            b1.Property<Guid>("CommentId");
+
+                            b1.Property<string>("Content")
+                                .IsRequired();
+
+                            b1.Property<DateTimeOffset>("CreatedAt");
+
+                            b1.Property<string>("CreatedBy");
+
+                            b1.Property<int>("LikeCount");
+
+                            b1.Property<Guid>("TenantId");
+
+                            b1.Property<string>("Title")
+                                .IsRequired();
+
+                            b1.Property<string>("UserReaction");
+
+                            b1.HasKey("PostReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("PostReads");
+
+                            b1
+                                .ToJson("TopComments")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+
+                            b1.OwnsMany("SocialMedia.Domain.TagDto", "AdminTags", b2 =>
+                                {
+                                    b2.Property<Guid>("CommentReadDtoPostReadModelId");
+
+                                    b2.Property<int>("CommentReadDto__synthesizedOrdinal");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAddOrUpdate();
+
+                                    b2.Property<string>("Text")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Topic")
+                                        .IsRequired();
+
+                                    b2.HasKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                    b2.ToTable("PostReads");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal");
+                                });
+
+                            b1.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b2 =>
+                                {
+                                    b2.Property<Guid>("CommentReadDtoPostReadModelId");
+
+                                    b2.Property<int>("CommentReadDto__synthesizedOrdinal");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAddOrUpdate();
+
+                                    b2.Property<string>("Url")
+                                        .IsRequired();
+
+                                    b2.HasKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                    b2.ToTable("PostReads");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal");
+                                });
+
+                            b1.OwnsMany("SocialMedia.Domain.ReactionReadDto", "Reactions", b2 =>
+                                {
+                                    b2.Property<Guid>("CommentReadDtoPostReadModelId");
+
+                                    b2.Property<int>("CommentReadDto__synthesizedOrdinal");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAddOrUpdate();
+
+                                    b2.Property<int>("Count");
+
+                                    b2.Property<string>("Emoji")
+                                        .IsRequired();
+
+                                    b2.HasKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                    b2.ToTable("PostReads");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal");
+                                });
+
+                            b1.OwnsMany("SocialMedia.Domain.TagDto", "Tags", b2 =>
+                                {
+                                    b2.Property<Guid>("CommentReadDtoPostReadModelId");
+
+                                    b2.Property<int>("CommentReadDto__synthesizedOrdinal");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAddOrUpdate();
+
+                                    b2.Property<string>("Text")
+                                        .IsRequired();
+
+                                    b2.Property<string>("Topic")
+                                        .IsRequired();
+
+                                    b2.HasKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal", "__synthesizedOrdinal");
+
+                                    b2.ToTable("PostReads");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("CommentReadDtoPostReadModelId", "CommentReadDto__synthesizedOrdinal");
+                                });
+
+                            b1.Navigation("AdminTags");
+
+                            b1.Navigation("Media");
+
+                            b1.Navigation("Reactions");
+
+                            b1.Navigation("Tags");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.TagDto", "AdminTags", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Text")
+                                .IsRequired();
+
+                            b1.Property<string>("Topic")
+                                .IsRequired();
+
+                            b1.HasKey("PostReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("PostReads");
+
+                            b1
+                                .ToJson("AdminTags")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.MediaDto", "Media", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Url")
+                                .IsRequired();
+
+                            b1.HasKey("PostReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("PostReads");
+
+                            b1
+                                .ToJson("Media")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.ReactionReadDto", "Reactions", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<int>("Count");
+
+                            b1.Property<string>("Emoji")
+                                .IsRequired();
+
+                            b1.HasKey("PostReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("PostReads");
+
+                            b1
+                                .ToJson("Reactions")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+                        });
+
+                    b.OwnsMany("SocialMedia.Domain.TagDto", "Tags", b1 =>
+                        {
+                            b1.Property<Guid>("PostReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Text")
+                                .IsRequired();
+
+                            b1.Property<string>("Topic")
+                                .IsRequired();
+
+                            b1.HasKey("PostReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("PostReads");
+
+                            b1
+                                .ToJson("Tags")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostReadModelId");
+                        });
+
+                    b.Navigation("AdminTags");
+
+                    b.Navigation("Media");
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Tags");
+
+                    b.Navigation("TopComments");
+                });
+
             modelBuilder.Entity("SocialMedia.Domain.Report", b =>
                 {
                     b.HasOne("SocialMedia.Domain.Comment", "Comment")
@@ -863,6 +1484,35 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Navigation("Comment");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("SocialMedia.Domain.StatsRecord", b =>
+                {
+                    b.OwnsMany("SocialMedia.Domain.ReactionStat", "ReactionBreakdown", b1 =>
+                        {
+                            b1.Property<Guid>("StatsRecordId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<int>("Count");
+
+                            b1.Property<string>("Emoji")
+                                .IsRequired();
+
+                            b1.HasKey("StatsRecordId", "__synthesizedOrdinal");
+
+                            b1.ToTable("StatsRecords");
+
+                            b1
+                                .ToJson("ReactionBreakdown")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StatsRecordId");
+                        });
+
+                    b.Navigation("ReactionBreakdown");
                 });
 
             modelBuilder.Entity("SocialMedia.Domain.UserActivity", b =>

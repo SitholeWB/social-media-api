@@ -1,78 +1,61 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Hosting;
 using Moq;
 using StackExchange.Redis;
 
-namespace SocialMedia.IntegrationTests
+namespace SocialMedia.IntegrationTests;
+
+public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
 {
-    public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
+    private readonly string _dbName = Guid.NewGuid().ToString();
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        private readonly string _dbName = Guid.NewGuid().ToString();
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        builder.UseEnvironment("Testing");
+        builder.ConfigureServices(services =>
         {
-            builder.UseEnvironment("Testing");
-            builder.ConfigureServices(services =>
+            // Remove and replace SocialMediaDbContext
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<SocialMediaDbContext>));
+
+            if (descriptor != null)
             {
-                // Remove and replace SocialMediaDbContext
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<SocialMediaDbContext>));
+                services.Remove(descriptor);
+            }
 
-                if (descriptor != null)
-                {
-                    services.Remove(descriptor);
-                }
-
-                services.AddDbContext<SocialMediaDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase(_dbName);
-                });
-
-                // Remove and replace SocialMediaReadDbContext
-                var readDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<SocialMediaReadDbContext>));
-
-                if (readDescriptor != null)
-                {
-                    services.Remove(readDescriptor);
-                }
-
-                services.AddDbContext<SocialMediaReadDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase($"{_dbName}_Read");
-                });
-
-                // Mock PostVectorService to avoid persistent file side effects and ONNX dependency
-                // in tests
-                var mockVectorService = new Mock<IPostVectorService>();
-                services.AddSingleton(mockVectorService.Object);
-
-                // Also mock IEmbeddingGenerator just in case
-                var mockEmbeddingGenerator = new Mock<IEmbeddingGenerator>();
-                services.AddSingleton(mockEmbeddingGenerator.Object);
-
-                // Remove real SqliteVectorStore registration if present
-                var vectorStoreDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(SqliteVectorStore));
-                if (vectorStoreDescriptor != null)
-                {
-                    services.Remove(vectorStoreDescriptor);
-                }
-
-                // Replace IConnectionMultiplexer with a mock to avoid Garnet dependency
-                var redisDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionMultiplexer));
-                if (redisDescriptor != null)
-                {
-                    services.Remove(redisDescriptor);
-                }
-
-                // Replace IDistributedCache with in-memory cache for tests
-                var cacheDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDistributedCache));
-                if (cacheDescriptor != null)
-                {
-                    services.Remove(cacheDescriptor);
-                }
-                services.AddDistributedMemoryCache();
+            services.AddDbContext<SocialMediaDbContext>(options =>
+            {
+                options.UseInMemoryDatabase(_dbName);
             });
-        }
+
+            // Mock PostVectorService to avoid persistent file side effects and ONNX dependency in tests
+            var mockVectorService = new Mock<IPostVectorService>();
+            services.AddSingleton(mockVectorService.Object);
+
+            // Also mock IEmbeddingGenerator just in case
+            var mockEmbeddingGenerator = new Mock<IEmbeddingGenerator>();
+            services.AddSingleton(mockEmbeddingGenerator.Object);
+
+            // Remove real SqliteVectorStore registration if present
+            var vectorStoreDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(SqliteVectorStore));
+            if (vectorStoreDescriptor != null)
+            {
+                services.Remove(vectorStoreDescriptor);
+            }
+
+            // Replace IConnectionMultiplexer with a mock to avoid Garnet dependency
+            var redisDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionMultiplexer));
+            if (redisDescriptor != null)
+            {
+                services.Remove(redisDescriptor);
+            }
+
+            // Replace IDistributedCache with in-memory cache for tests
+            var cacheDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDistributedCache));
+            if (cacheDescriptor != null)
+            {
+                services.Remove(cacheDescriptor);
+            }
+            services.AddDistributedMemoryCache();
+        });
     }
 }
