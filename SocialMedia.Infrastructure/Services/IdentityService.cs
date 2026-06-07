@@ -7,12 +7,18 @@ public class IdentityService : IIdentityService
     private readonly SocialMediaDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly IUserActivityRepository _userActivityRepository;
+    private readonly IEnumerable<ISocialTokenVerifier> _socialVerifiers;
 
-    public IdentityService(SocialMediaDbContext context, IConfiguration configuration, IUserActivityRepository userActivityRepository)
+    public IdentityService(
+        SocialMediaDbContext context,
+        IConfiguration configuration,
+        IUserActivityRepository userActivityRepository,
+        IEnumerable<ISocialTokenVerifier> socialVerifiers)
     {
         _context = context;
         _configuration = configuration;
         _userActivityRepository = userActivityRepository;
+        _socialVerifiers = socialVerifiers;
     }
 
     public async Task<AuthResponse> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -105,6 +111,69 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(user);
 
+        await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
+    }
+
+    public async Task<AuthResponse> LoginWithExternalProviderAsync(ExternalLoginRequest request, CancellationToken cancellationToken = default)
+    {
+        // Dispatch to the correct verifier for this provider
+        var verifier = _socialVerifiers.FirstOrDefault(v => v.Provider == request.Provider)
+            ?? throw new InvalidOperationException($"No token verifier registered for provider '{request.Provider}'. " +
+                "Add the provider config in appsettings.json and register the verifier in InfrastructureServiceRegistration.");
+
+        ExternalUserInfo userInfo;
+        try
+        {
+            userInfo = await verifier.VerifyAsync(request.AccessToken, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Social login failed ({request.Provider}): {ex.Message}");
+        }
+
+        // Find existing user by email OR create a new one (upsert)
+        var user = await _context.Users.FirstOrDefaultAsync(
+            u => u.Email.ToLower() == userInfo.Email.ToLower(), cancellationToken);
+
+        if (user == null)
+        {
+            var userId = Guid.NewGuid();
+            var baseUsername = (userInfo.Email.Contains('@')
+                ? userInfo.Email.Split('@')[0]
+                : userInfo.Email).ToLower();
+
+            user = new User
+            {
+                Id = userId,
+                Username = baseUsername,
+                Email = userInfo.Email,
+                PasswordHash = HashPassword(Guid.NewGuid().ToString(), userId), // Random — social users don't use passwords
+                CreatedAt = DateTime.UtcNow,
+                LastActiveAt = DateTime.UtcNow,
+                Role = UserRole.User,
+                Names = userInfo.GivenName ?? baseUsername,
+                Surname = userInfo.FamilyName ?? string.Empty
+            };
+
+            // Guarantee unique username
+            if (await _context.Users.AnyAsync(u => u.Username.ToLower() == user.Username.ToLower(), cancellationToken))
+                user.Username = $"{user.Username}_{Guid.NewGuid().ToString()[..4]}";
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            var userActivity = new UserActivity { UserId = userId };
+            await _userActivityRepository.AddAsync(userActivity, cancellationToken);
+        }
+
+        if (user.IsBanned)
+            throw new Exception("User is banned");
+
+        user.LastActiveAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+
+        var token = GenerateJwtToken(user);
         await _userActivityRepository.RefreshCacheAsync(user.Id, cancellationToken);
         return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }

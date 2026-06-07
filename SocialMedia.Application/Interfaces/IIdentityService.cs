@@ -8,9 +8,12 @@ public interface IIdentityService
 
     Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request, CancellationToken cancellationToken = default);
 
+    /// <summary>Generic social login — works for any provider registered as ISocialTokenVerifier.</summary>
+    Task<AuthResponse> LoginWithExternalProviderAsync(ExternalLoginRequest request, CancellationToken cancellationToken = default);
+
     Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
 
     string HashPassword(string password, Guid userId);
 
     bool VerifyPassword(string password, string storedHash, Guid userId);
-}
+}

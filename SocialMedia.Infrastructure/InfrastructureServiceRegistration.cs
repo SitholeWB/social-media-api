@@ -53,6 +53,24 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<INotificationService, FakeNotificationService>();
 
+        // ── Social Login Providers ────────────────────────────────────────────
+        // To add a new provider: implement ISocialTokenVerifier, add AddScoped below,
+        // and add its config block under "SocialProviders" in appsettings.json.
+        services.AddHttpClient("FacebookGraph", c =>
+            c.BaseAddress = new Uri("https://graph.facebook.com/"));
+        services.AddHttpClient("TwitterApi", c =>
+            c.BaseAddress = new Uri("https://api.twitter.com/"));
+        services.AddHttpClient("GitHubApi", c =>
+        {
+            c.BaseAddress = new Uri("https://api.github.com/");
+            c.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
+        });
+
+        services.AddScoped<ISocialTokenVerifier, FacebookTokenVerifier>();
+        services.AddScoped<ISocialTokenVerifier, TwitterTokenVerifier>();
+        services.AddScoped<ISocialTokenVerifier, GitHubTokenVerifier>();
+        // ─────────────────────────────────────────────────────────────────────
+
         // Embedding Generator for Semantic Search
         services.AddSingleton<IEmbeddingGenerator, TensorFlowEmbeddingGenerator>();
 

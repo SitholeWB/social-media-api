@@ -69,6 +69,31 @@ public class AuthController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Generic social login endpoint — supports Facebook, X (Twitter), GitHub, and more.
+    /// POST body: { "provider": "Facebook" | "Twitter" | "GitHub" | "Google", "accessToken": "..." }
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("social")]
+    public async Task<ActionResult<AuthResponse>> LoginWithSocial(ExternalLoginRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new LoginWithExternalProviderCommand(request);
+            var response = await _dispatcher.SendAsync<LoginWithExternalProviderCommand, AuthResponse>(command, cancellationToken);
+            return Ok(response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
