@@ -69,7 +69,10 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISocialTokenVerifier, FacebookTokenVerifier>();
         services.AddScoped<ISocialTokenVerifier, TwitterTokenVerifier>();
         services.AddScoped<ISocialTokenVerifier, GitHubTokenVerifier>();
+        services.AddScoped<ISocialTokenVerifier, AppleTokenVerifier>();
+        services.AddScoped<ISocialTokenVerifier, GoogleTokenVerifier>();
         // ─────────────────────────────────────────────────────────────────────
+
 
         // Embedding Generator for Semantic Search
         services.AddSingleton<IEmbeddingGenerator, TensorFlowEmbeddingGenerator>();

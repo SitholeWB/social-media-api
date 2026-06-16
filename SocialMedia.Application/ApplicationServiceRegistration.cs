@@ -40,6 +40,9 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<LoginCommand, AuthResponse>, LoginCommandHandler>();
         services.AddScoped<ICommandHandler<RegisterCommand, AuthResponse>, RegisterCommandHandler>();
         services.AddScoped<ICommandHandler<ForgotPasswordCommand, bool>, ForgotPasswordCommandHandler>();
+        services.AddScoped<ICommandHandler<LoginWithGoogleCommand, AuthResponse>, LoginWithGoogleCommandHandler>();
+        services.AddScoped<ICommandHandler<LoginWithExternalProviderCommand, AuthResponse>, LoginWithExternalProviderCommandHandler>();
+        services.AddScoped<ICommandHandler<ExchangeTenantCommand, AuthResponse>, ExchangeTenantCommandHandler>();
 
         // Register Event Handlers
         services.AddScoped<IEventHandler<PostCreatedEvent>, EmailNotificationHandler>();
@@ -67,6 +70,8 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICommandHandler<AddUserToGroupCommand, bool>, AddUserToGroupCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveUserFromGroupCommand, bool>, RemoveUserFromGroupCommandHandler>();
         services.AddScoped<ICommandHandler<CreateDefaultGroupsCommand, string>, CreateDefaultGroupsCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateDefaultTenantsCommand, string>, CreateDefaultTenantsCommandHandler>();
+
         services.AddScoped<IQueryHandler<GetGroupsQuery, PagedResult<GroupDto>>, GetGroupsQueryHandler>();
         services.AddScoped<IQueryHandler<GetGroupQuery, GroupDto?>, GetGroupQueryHandler>();
 

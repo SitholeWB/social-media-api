@@ -40,10 +40,12 @@ export default function AppTheme(props: AppThemeProps) {
 								...colorSchemes?.light?.palette?.primary,
 								...(themeConfig?.primaryColor && { main: themeConfig.primaryColor })
 							},
-							secondary: {
-								...colorSchemes?.light?.palette?.secondary,
-								...(themeConfig?.secondaryColor && { main: themeConfig.secondaryColor })
-							}
+							...(themeConfig?.secondaryColor && {
+								secondary: {
+									...colorSchemes?.light?.palette?.secondary,
+									main: themeConfig.secondaryColor
+								}
+							})
 						}
 					}
 				},

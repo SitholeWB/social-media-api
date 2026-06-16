@@ -11,6 +11,7 @@ public class User : BaseEntity
     public bool IsBanned { get; set; }
     public DateTimeOffset? LastActiveAt { get; set; }
     public string Avatar { get; set; } = string.Empty;
+    public DateTimeOffset? NextAvailableTenantSwitch { get; set; }
 
     public string GetFullName()
     {

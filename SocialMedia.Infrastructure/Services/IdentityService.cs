@@ -210,6 +210,43 @@ public class IdentityService : IIdentityService
         return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
     }
 
+    public async Task<AuthResponse> ExchangeTenantAsync(Guid userId, string newTenantId, CancellationToken cancellationToken = default)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (user == null)
+        {
+            throw new Exception("User Not Found");
+        }
+
+        if (user.IsBanned)
+        {
+            throw new Exception("User is banned");
+        }
+
+        // Check 7-day rule
+        if (user.NextAvailableTenantSwitch.HasValue && user.NextAvailableTenantSwitch.Value > DateTimeOffset.UtcNow)
+        {
+            var diff = user.NextAvailableTenantSwitch.Value - DateTimeOffset.UtcNow;
+            var remainingDays = Math.Ceiling(diff.TotalDays);
+            throw new Exception($"You can only change teams every 7 days. Please wait {remainingDays} more days.");
+        }
+
+        if (!Guid.TryParse(newTenantId, out var parsedTenantId))
+        {
+            throw new Exception("Invalid tenant ID format");
+        }
+
+        // Apply new tenant and enforce lock
+        user.TenantId = parsedTenantId;
+        user.NextAvailableTenantSwitch = DateTimeOffset.UtcNow.AddDays(7);
+        user.LastActiveAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        var token = GenerateJwtToken(user);
+        return new AuthResponse(user.Id.ToString(), user.GetFullName(), user.Email, user.Names, user.Surname, token, user.TenantId.ToString());
+    }
+
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");

@@ -13,6 +13,8 @@ public interface IIdentityService
 
     Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
 
+    Task<AuthResponse> ExchangeTenantAsync(Guid userId, string newTenantId, CancellationToken cancellationToken = default);
+
     string HashPassword(string password, Guid userId);
 
     bool VerifyPassword(string password, string storedHash, Guid userId);

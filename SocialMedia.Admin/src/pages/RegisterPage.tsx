@@ -16,7 +16,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { register, clearError } from '../store/slices/authSlice';
 import { tenantStorage, API_BASE_URL } from '../services/api';
-import { register, clearError } from '../store/slices/authSlice';
 
 export default function RegisterPage() {
 	const navigate = useNavigate();

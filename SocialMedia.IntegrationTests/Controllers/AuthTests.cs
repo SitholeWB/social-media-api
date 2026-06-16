@@ -138,4 +138,115 @@ public class AuthTests(IntegrationTestWebApplicationFactory factory) : BaseContr
         var result = await response.Content.ReadFromJsonAsync<bool>(TestContext.Current.CancellationToken);
         Assert.True(result);
     }
+
+    [Fact]
+    public async Task LoginWithSocial_ShouldCreateNewUser_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new ExternalLoginRequest(SocialProvider.Facebook, "valid_token");
+
+        // Act
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            throw new Exception($"Request failed with status {response.StatusCode} and content: {content}");
+        }
+        response.EnsureSuccessStatusCode();
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(authResponse);
+        Assert.Equal("Facebook User", authResponse.Username);
+        Assert.Equal("fbuser@example.com", authResponse.Email);
+        Assert.False(string.IsNullOrEmpty(authResponse.Token));
+    }
+
+    [Fact]
+    public async Task LoginWithSocial_ShouldLoginExistingUser_WhenUserExists()
+    {
+        // Arrange: Use a separate client to avoid sharing state with other tests.
+        // We call social login TWICE — the first call creates the social user,
+        // the second call exercises the "existing user" code path.
+        var client = _factory.CreateClient();
+        var request = new ExternalLoginRequest(SocialProvider.Twitter, "valid_token");
+
+        // Act — first call creates the user
+        var firstResponse = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+        if (!firstResponse.IsSuccessStatusCode)
+        {
+            var content = await firstResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            throw new Exception($"First social login failed with status {firstResponse.StatusCode} and content: {content}");
+        }
+
+        // Act — second call should find and log in the existing user
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            throw new Exception($"Second social login failed with status {response.StatusCode} and content: {content}");
+        }
+        response.EnsureSuccessStatusCode();
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(authResponse);
+        // GetFullName() returns Names + " " + Surname ("Twitter" + " " + "User") for social users
+        Assert.Equal("Twitter User", authResponse.Username);
+        Assert.Equal("twuser@twitter.social-app.internal", authResponse.Email);
+        Assert.False(string.IsNullOrEmpty(authResponse.Token));
+    }
+
+    [Fact]
+    public async Task LoginWithSocial_ShouldReturnInternalServerError_WhenVerifierThrows()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new ExternalLoginRequest(SocialProvider.Facebook, "invalid_token");
+
+        // Act
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task LoginWithSocial_ShouldCreateGoogleUser_WhenUsingGoogle()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new ExternalLoginRequest(SocialProvider.Google, "valid_token");
+
+        // Act
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(authResponse);
+        Assert.Equal("Google User", authResponse.Username);
+        Assert.Equal("googleuser@example.com", authResponse.Email);
+        Assert.False(string.IsNullOrEmpty(authResponse.Token));
+    }
+
+    [Fact]
+    public async Task LoginWithSocial_ShouldCreateAppleUser_WhenUsingApple()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new ExternalLoginRequest(SocialProvider.Apple, "valid_token");
+
+        // Act
+        var response = await client.PostAsJsonAsync($"{Constants.ApiBase}/auth/social", request, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(authResponse);
+        Assert.Equal("Apple User", authResponse.Username);
+        Assert.Equal("appleuser@example.com", authResponse.Email);
+        Assert.False(string.IsNullOrEmpty(authResponse.Token));
+    }
 }

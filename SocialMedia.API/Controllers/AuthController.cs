@@ -110,6 +110,27 @@ public class AuthController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpPost("exchange/{newTenantId}")]
+    public async Task<ActionResult<AuthResponse>> ExchangeTenantToken(string newTenantId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var userId = this.GetUserId();
+            if (!userId.HasValue)
+            {
+                return Unauthorized(new { error = "User ID not found in token." });
+            }
+            var command = new ExchangeTenantCommand(userId.Value, newTenantId);
+            var response = await _dispatcher.SendAsync<ExchangeTenantCommand, AuthResponse>(command, cancellationToken);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
     [AllowAnonymous]
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request, CancellationToken cancellationToken)

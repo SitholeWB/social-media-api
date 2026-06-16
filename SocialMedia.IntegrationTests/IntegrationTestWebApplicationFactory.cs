@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using StackExchange.Redis;
+using SocialMedia.Application;
 
 namespace SocialMedia.IntegrationTests;
 
@@ -56,6 +58,69 @@ public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Progra
                 services.Remove(cacheDescriptor);
             }
             services.AddDistributedMemoryCache();
+
+            // Remove real ISocialTokenVerifier registrations and replace with fakes
+            var verifierDescriptors = services.Where(d => d.ServiceType == typeof(ISocialTokenVerifier)).ToList();
+            foreach (var d in verifierDescriptors)
+            {
+                services.Remove(d);
+            }
+
+            services.AddScoped<ISocialTokenVerifier, FakeFacebookTokenVerifier>();
+            services.AddScoped<ISocialTokenVerifier, FakeTwitterTokenVerifier>();
+            services.AddScoped<ISocialTokenVerifier, FakeGitHubTokenVerifier>();
+            services.AddScoped<ISocialTokenVerifier, FakeAppleTokenVerifier>();
+            services.AddScoped<ISocialTokenVerifier, FakeGoogleTokenVerifier>();
         });
+    }
+
+    private class FakeFacebookTokenVerifier : ISocialTokenVerifier
+    {
+        public SocialProvider Provider => SocialProvider.Facebook;
+        public Task<ExternalUserInfo> VerifyAsync(string accessToken, CancellationToken cancellationToken = default)
+        {
+            if (accessToken == "invalid_token") throw new Exception("Invalid Facebook token");
+            return Task.FromResult(new ExternalUserInfo("fbuser@example.com", "Facebook", "User", "fb_12345", SocialProvider.Facebook));
+        }
+    }
+
+    private class FakeTwitterTokenVerifier : ISocialTokenVerifier
+    {
+        public SocialProvider Provider => SocialProvider.Twitter;
+        public Task<ExternalUserInfo> VerifyAsync(string accessToken, CancellationToken cancellationToken = default)
+        {
+            if (accessToken == "invalid_token") throw new Exception("Invalid Twitter token");
+            return Task.FromResult(new ExternalUserInfo("twuser@twitter.social-app.internal", "Twitter", "User", "tw_12345", SocialProvider.Twitter));
+        }
+    }
+
+    private class FakeGitHubTokenVerifier : ISocialTokenVerifier
+    {
+        public SocialProvider Provider => SocialProvider.GitHub;
+        public Task<ExternalUserInfo> VerifyAsync(string accessToken, CancellationToken cancellationToken = default)
+        {
+            if (accessToken == "invalid_token") throw new Exception("Invalid GitHub token");
+            return Task.FromResult(new ExternalUserInfo("ghuser@example.com", "GitHub", "User", "gh_12345", SocialProvider.GitHub));
+        }
+    }
+
+    private class FakeAppleTokenVerifier : ISocialTokenVerifier
+    {
+        public SocialProvider Provider => SocialProvider.Apple;
+        public Task<ExternalUserInfo> VerifyAsync(string accessToken, CancellationToken cancellationToken = default)
+        {
+            if (accessToken == "invalid_token") throw new Exception("Invalid Apple token");
+            return Task.FromResult(new ExternalUserInfo("appleuser@example.com", "Apple", "User", "apple_12345", SocialProvider.Apple));
+        }
+    }
+
+    private class FakeGoogleTokenVerifier : ISocialTokenVerifier
+    {
+        public SocialProvider Provider => SocialProvider.Google;
+        public Task<ExternalUserInfo> VerifyAsync(string accessToken, CancellationToken cancellationToken = default)
+        {
+            if (accessToken == "invalid_token") throw new Exception("Invalid Google token");
+            return Task.FromResult(new ExternalUserInfo("googleuser@example.com", "Google", "User", "google_12345", SocialProvider.Google));
+        }
     }
 }
